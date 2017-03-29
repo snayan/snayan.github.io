@@ -6,14 +6,21 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://snayan.com">
-  <title>Archives: 2017/3 | 三洋的博客</title>
+  <title>test | 三洋的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="三洋的博客">
-<meta property="og:url" content="http://snayan.com/archives/2017/03/index.html">
+  <meta name="description" content="js基本数据类型7种基本数据类型：string,number,boolean,undefined,null,object,symbol(es6新增)。string,number,boolean这3种是原始数据类型，undefined,null是特殊数据类型,object是组合数据类型。object包含，狭义object,function,array。
+类型判断：typeof.12345678typ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="test">
+<meta property="og:url" content="http://snayan.com/2017/03/29/test/index.html">
 <meta property="og:site_name" content="三洋的博客">
+<meta property="og:description" content="js基本数据类型7种基本数据类型：string,number,boolean,undefined,null,object,symbol(es6新增)。string,number,boolean这3种是原始数据类型，undefined,null是特殊数据类型,object是组合数据类型。object包含，狭义object,function,array。
+类型判断：typeof.12345678typ">
+<meta property="og:updated_time" content="2017-03-29T13:43:04.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="三洋的博客">
+<meta name="twitter:title" content="test">
+<meta name="twitter:description" content="js基本数据类型7种基本数据类型：string,number,boolean,undefined,null,object,symbol(es6新增)。string,number,boolean这3种是原始数据类型，undefined,null是特殊数据类型,object是组合数据类型。object包含，狭义object,function,array。
+类型判断：typeof.12345678typ">
   
     <link rel="alternative" href="/atom.xml" title="三洋的博客" type="application/atom+xml">
   
@@ -147,36 +154,160 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-test" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/03/29/test/" class="archive-article-date">
-  	<time datetime="2017-03-29T12:52:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-29</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/29/test/">test</a>
+    <h1 class="article-title" itemprop="name">
+      test
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2017/03/29/test/" class="archive-article-date">
+  	<time datetime="2017-03-29T12:52:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="js基本数据类型"><a href="#js基本数据类型" class="headerlink" title="js基本数据类型"></a>js基本数据类型</h2><h3 id="7种基本数据类型："><a href="#7种基本数据类型：" class="headerlink" title="7种基本数据类型："></a>7种基本数据类型：</h3><p><code>string</code>,<code>number</code>,<code>boolean</code>,<code>undefined</code>,<code>null</code>,<code>object</code>,<code>symbol(es6新增)</code>。<code>string</code>,<code>number</code>,<code>boolean</code>这3种是原始数据类型，<code>undefined</code>,<code>null</code>是特殊数据类型,<code>object</code>是组合数据类型。<code>object</code>包含，<code>狭义object</code>,<code>function</code>,<code>array</code>。</p>
+<h3 id="类型判断：typeof"><a href="#类型判断：typeof" class="headerlink" title="类型判断：typeof."></a>类型判断：typeof.</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">typeof 1 // &apos;number&apos;,</div><div class="line">typeof &apos;1&apos; // &apos;string&apos;,</div><div class="line">typeof true // &apos;boolean&apos;,</div><div class="line">typeof undefined // &apos;undefined&apos;,</div><div class="line">typeof null // &apos;object&apos;</div><div class="line">typeof function()&#123;&#125; // &apos;function&apos;</div><div class="line">typeof [] // &apos;object&apos;</div><div class="line">typeof NaN // &apos;number&apos;</div></pre></td></tr></table></figure>
+<h3 id="类型转化"><a href="#类型转化" class="headerlink" title="类型转化"></a>类型转化</h3><ol>
+<li><p>Number<br><code>string</code>,<code>number</code>,<code>boolean</code> 直接调用<code>Number</code>进行转化。<code>undefined</code>会转为<code>NaN</code>,<code>null</code>会转为0,<code>object</code>类型时，先调用<code>object.valueOf()</code>获取返回值A，如果返回值A也为<code>object</code>,则调用<code>object.toString()</code>获取返回值B，则调用<code>Number(B)</code>进行转换。如果B也是<code>object</code>，则会报错。</p>
+<ul>
+<li><p>number</p>
+<pre><code>Number(1) // 1
+</code></pre></li>
+<li><p>string</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Number</span>(<span class="string">''</span>)  <span class="comment">// 0</span></div><div class="line"><span class="built_in">Number</span>(<span class="string">'1'</span>) <span class="comment">// 1            </span></div><div class="line"><span class="built_in">Number</span>(<span class="string">'a'</span>) <span class="comment">// NaN</span></div><div class="line"><span class="built_in">Number</span>(<span class="string">'   1    '</span>)  <span class="comment">//1 Number会自动忽略开始和结尾的空格</span></div><div class="line"><span class="built_in">Number</span>(<span class="string">'1a'</span>) <span class="comment">// NaN 注意与parseInt的区别</span></div><div class="line"><span class="built_in">parseInt</span>(<span class="string">'1a'</span>) <span class="comment">// 1 Number是整体解析转换，而parseInt是逐个解析字符</span></div></pre></td></tr></table></figure>
+</li>
+<li><p>boolean</p>
+<pre><code>Number(true) // 1
+Number(false) // 0
+</code></pre></li>
+<li><p>undefined</p>
+<pre><code>Number(undefined)  // NaN
+</code></pre></li>
+<li><p>null</p>
+<pre><code>Number(null)  // 0
+</code></pre></li>
+<li><p>object</p>
+<pre><code>Number({}) // NaN
+</code></pre><p>object的valueOf和toString是可以自定义的。例如</p>
+<p>   var o={</p>
+<pre><code>valueOf:funcion(){
+    return 2;
+}
+</code></pre><p>   }<br>   Number(o) // 2</p>
+<p>   var o2={</p>
+<pre><code>toString:function(){
+    return 3;
+}
+</code></pre><p>   }<br>   Number(o2) // 3</p>
+<p>   var o3={</p>
+<pre><code>valueOf:function(){
+    return 2
+},
+toString:function(){
+    return 3
+}
+</code></pre><p>   }<br>   Number(o3) // 2</p>
+<p>   var o4={</p>
+<pre><code>valueOf:function(){
+    return {};
+},
+toString:function(){
+    return {};
+}
+</code></pre><p>   }<br>   Number(o4) //Uncaught TypeError: Cannot convert object to primitive value(…)<br>思考<code>Number([1])</code>是多少？<code>Number([1,2])</code>是多少？</p>
+<a id="more"></a></li>
+</ul>
+</li>
+<li><p>String<br><code>String()</code>可以将任意类型转为string类型。<code>string</code>,<code>number</code>,<code>boolean</code>原始类型直接转为<code>string</code>类型；<code>undefined</code>转为’undefined’,<code>null</code>转为’null’；<code>object</code>类型转换时，先调用<code>object.toString()</code>方法获取返回值A，如果A是<code>string</code>,<code>number</code>,<code>boolean</code>,<code>undefined</code>,<code>null</code>则直接调用<code>String(A)</code>转化，如果A是<code>object</code>，则继续调用<code>object.valueOf()</code>获取返回值B，如果B是<code>string</code>,<code>number</code>,<code>boolean</code>,<code>undefined</code>,<code>null</code>则直接调用<code>String(B)</code>转化，否则报错。</p>
+<ul>
+<li><p>number</p>
+<pre><code>String(1) // &apos;1&apos;
+</code></pre></li>
+<li><p>string</p>
+<pre><code>String(&apos;1&apos;) // &apos;1&apos;
+</code></pre></li>
+<li><p>boolean</p>
+<pre><code>String(true) // &apos;true&apos;
+String(false) // &apos;false&apos;
+</code></pre></li>
+<li><p>undefined</p>
+<pre><code>String(undefined) // &apos;undefined&apos;
+</code></pre></li>
+<li><p>null</p>
+<pre><code>String(null)  // &apos;null&apos;
+</code></pre></li>
+<li><p>object</p>
+<pre><code>String({}) // &apos;[object Object]&apos;
+</code></pre><p>object的<code>valueOf</code>和<code>toString</code>是可以自己定义的，例如</p>
+<pre><code>var o1={
+   toString:function(){
+       return 1;
+   }
+}
+String(o1) // &apos;1&apos;
+
+var o2={
+   valueOf:function(){
+       return 1;
+   }
+}
+String(o2) // &apos;[object Object]&apos;
+
+var o3={
+   toString:function(){
+       return 1;
+   },
+   valueOf:function(){
+       return 2;
+   }
+}
+String(o3) // &apos;1&apos;
+
+var o4={
+   toString:function(){
+       return {};
+   },
+   valueOf:function(){
+       return {};
+   }
+}
+String(o4) // Uncaught TypeError: Cannot convert object to primitive value(…)
+</code></pre><p>思考<code>String([1])</code>是多少？<code>String([1,2])</code>是多少？</p>
+</li>
+</ul>
+</li>
+<li><p>Boolean<br><code>Boolean()</code>可以讲任意类型转为<code>boolean</code>类型，转化规则相对简单，除了以下8个转换时为<code>false</code>，其他情况全部都为<code>true</code>。</p>
+<pre><code>Boolean(undefined) // false
+Boolean(null) // false
+Boolean(false) // false
+Boolean(&apos;&apos;) // false
+Boolean(0) // false
+Boolean(+0) // false
+Boolean(-0) // false
+Boolean(NaN) // false
+</code></pre><p> 所有的<code>object</code>都会转为<code>true</code>,空对象,空数组或则<code>new Boolean(false)</code>对象，都会被转为<code>true</code>。</p>
+<pre><code>Boolean({}) // true
+Boolean([]) // true
+Boolean(new Boolean(false)) // true
+</code></pre></li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -188,46 +319,88 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://snayan.com/2017/03/29/test/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/03/27/hello-world/" class="archive-article-date">
-  	<time datetime="2017-03-27T13:10:10.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-03-27</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/03/27/hello-world/">Hello World</a>
-    </h1>
+  
+    <a href="/2017/03/27/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Hello World</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+
+  
+    <div class="duoshuo"></div>
   
 
-        <div class="article-info info-on-right">
-          
-          
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -250,8 +423,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
