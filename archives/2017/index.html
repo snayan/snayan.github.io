@@ -80,7 +80,7 @@
 		        
 					<a class="douban" target="_blank" href="https://www.douban.com/people/snayan/" title="douban"><i class="icon-douban"></i></a>
 		        
-					<a class="rss" target="_blank" href="/atom.xml" title="rss"><i class="icon-rss"></i></a>
+					<a class="rss" target="_blank" href="/atom" title="rss"><i class="icon-rss"></i></a>
 		        
 			</div>
 		</nav>
@@ -121,7 +121,7 @@
 			        
 						<a class="douban" target="_blank" href="https://www.douban.com/people/snayan/" title="douban"><i class="icon-douban"></i></a>
 			        
-						<a class="rss" target="_blank" href="/atom.xml" title="rss"><i class="icon-rss"></i></a>
+						<a class="rss" target="_blank" href="/atom" title="rss"><i class="icon-rss"></i></a>
 			        
 				</div>
 			</nav>
@@ -177,6 +177,21 @@
 
         <div class="article-info info-on-right">
           
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">hello world</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">test</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
           
 
         </div>
@@ -272,6 +287,14 @@
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">hello world</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">test</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>
