@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>三洋同学的blog</title>
+  
+  <subtitle>十心十意，脚踏实地</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://snayan.github.io/"/>
+  <updated>2018-03-28T14:12:19.812Z</updated>
+  <id>https://snayan.github.io/</id>
+  
+  <author>
+    <name>三洋</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>React 16.2.0学习(二)</title>
+    <link href="https://snayan.github.io/2018/03/02/react16%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A02/"/>
+    <id>https://snayan.github.io/2018/03/02/react16源码学习2/</id>
+    <published>2018-03-02T13:05:48.000Z</published>
+    <updated>2018-03-28T14:12:19.812Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;上篇大致说了react16的结构，今天来看看react16中新增的Fragment。&lt;/p&gt;
+&lt;p&gt;react16中新增的可以渲染的类型：fragments和strings。&lt;/p&gt;
+&lt;h3 id=&quot;Fragments&quot;&gt;&lt;a href=&quot;#Fragments&quot; class=&quot;headerlink&quot; title=&quot;Fragments&quot;&gt;&lt;/a&gt;Fragments&lt;/h3&gt;&lt;p&gt;在react16中，component的render方法现在可以返回一个数组了，而在react16之前只能返回一个ReactElement，一般被&lt;code&gt;div&lt;/code&gt;包裹着。在实际使用时，页面会输出一些很多没有用处的&lt;code&gt;div&lt;/code&gt;，增加了dom结构的嵌套层数，不利于页面快速的渲染。&lt;/p&gt;
+&lt;h5 id=&quot;react16之前&quot;&gt;&lt;a href=&quot;#react16之前&quot; class=&quot;headerlink&quot; title=&quot;react16之前&quot;&gt;&lt;/a&gt;react16之前&lt;/h5&gt;&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Demo&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;React&lt;/span&gt;.&lt;span class=&quot;title&quot;&gt;Component&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  render() &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;xml&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;div&lt;/span&gt;&amp;gt;&lt;/span&gt;&amp;#123;[1, 2, 3].map(v =&amp;gt; &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;key&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&amp;#123;v&amp;#125;&lt;/span&gt;&amp;gt;&lt;/span&gt;&amp;#123;`链接$&amp;#123;v&amp;#125;`&amp;#125;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;a&lt;/span&gt;&amp;gt;&lt;/span&gt;)&amp;#125;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;div&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+    
+      <category term="react" scheme="https://snayan.github.io/tags/react/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>React 16.2.0学习(-)</title>
+    <link href="https://snayan.github.io/2018/03/01/react16%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A01/"/>
+    <id>https://snayan.github.io/2018/03/01/react16源码学习1/</id>
+    <published>2018-03-01T12:11:21.000Z</published>
+    <updated>2018-03-28T14:12:32.731Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;趁着离职期这段时间，制定了一个计划，再次学习React16，React16是一个大版本的更新，其中新增了许多的新特性，并且重写了核心模块的架构，叫做&lt;strong&gt;Fiber&lt;/strong&gt;，最令人兴奋的是&lt;strong&gt;async rendering&lt;/strong&gt;。之前也浅显的阅读过React15的部分源码，发现这次React16与之有很大的不同。&lt;/p&gt;
+&lt;h3 id=&quot;核心文件&quot;&gt;&lt;a href=&quot;#核心文件&quot; class=&quot;headerlink&quot; title=&quot;核心文件&quot;&gt;&lt;/a&gt;核心文件&lt;/h3&gt;&lt;p&gt;React16真的是重新梳理了代码结构，并且解耦了很多，下面为React16的文件结构&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assert/img/react16_file_structure.jpg&quot; alt=&quot;react16的文件结构&quot;&gt;&lt;/p&gt;
+&lt;p&gt;可以看到我们熟悉的react和react-dom。react-art是绘制图形的，比如Canvas，SVG，VML。react-call-return是一个试验性的，用于react中的多遍渲染。react-reconciler是Fiber的实现。share中存放着一些公用的方法和属性。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="react" scheme="https://snayan.github.io/tags/react/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>简单的五子棋</title>
+    <link href="https://snayan.github.io/2018/01/23/%E7%AE%80%E5%8D%95%E7%9A%84%E4%BA%94%E5%AD%90%E6%A3%8B/"/>
+    <id>https://snayan.github.io/2018/01/23/简单的五子棋/</id>
+    <published>2018-01-23T09:14:43.000Z</published>
+    <updated>2018-03-28T13:57:53.484Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在某次求职过程中，收到了一个笔试题，要求写一个人机对战的五子棋，题目要求如下：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;  请编写一个单机【五子棋】游戏，要求如下：&lt;br&gt;  使用原生技术实现，兼容 Chrome 浏览器即可。&lt;br&gt;  实现胜负判断，并给出赢棋提示；任意玩家赢得棋局，锁定棋盘。&lt;br&gt;  请尽可能的考虑游戏的扩展性，界面可以使用 DOM / Canvas 实现。考虑后续切换界面实现的方式成本最低。（比如选择使用 DOM 实现界面，需求改变为使用 Canvas 实现时尽可能少的改动代码）。&lt;br&gt;  实现一个悔棋功能&lt;br&gt;  实现一个撤销悔棋功能&lt;br&gt;  实现一个人机对战功能&lt;br&gt;  尽可能的考虑实现的灵活性和扩展性&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;自己收到这个题目之后感觉有点棘手，自己没有开发过游戏，时间也比较紧。下班之后就开始弄了，简单介绍下自己的实现过程。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="javascript" scheme="https://snayan.github.io/tags/javascript/"/>
+    
+      <category term="五子棋" scheme="https://snayan.github.io/tags/%E4%BA%94%E5%AD%90%E6%A3%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>2017年小结</title>
+    <link href="https://snayan.github.io/2017/12/14/2017%E5%B0%8F%E7%BB%93/"/>
+    <id>https://snayan.github.io/2017/12/14/2017小结/</id>
+    <published>2017-12-14T15:10:35.000Z</published>
+    <updated>2018-03-28T13:57:53.482Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;嗯，又到了年末，是时候对17年做个了断，好好开始18年。&lt;br&gt;17年的年初计划是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;找一家靠谱的互联网公司&lt;/li&gt;
+&lt;li&gt;阅读12本书&lt;/li&gt;
+&lt;li&gt;报个英语培训班&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 id=&quot;找一家靠谱的互联网公司&quot;&gt;&lt;a h
+      
+    
+    </summary>
+    
+    
+      <category term="2017" scheme="https://snayan.github.io/tags/2017/"/>
+    
+      <category term="小结" scheme="https://snayan.github.io/tags/%E5%B0%8F%E7%BB%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笔记之decorator</title>
+    <link href="https://snayan.github.io/2017/11/26/%E7%AC%94%E8%AE%B0%E4%B9%8Bdecorator/"/>
+    <id>https://snayan.github.io/2017/11/26/笔记之decorator/</id>
+    <published>2017-11-26T14:30:33.000Z</published>
+    <updated>2018-03-28T13:57:53.484Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近一个月都在忙公司的新项目&lt;strong&gt;会过精选&lt;/strong&gt;，加上双11大促，真的是很忙。加上最近的烦心事比较多，心情一直不是很好，做什么事情，都效率低下。收拾收拾心情，继续努力吧。一切都不会那么糟糕。&lt;br&gt;在做会过精选M站时，我们前端组选型的技术栈是React,Redux,TypeScript。一直都知道 decorator这个东西，但之前在卷皮没有机会用，现在在会过，我就高高兴兴的开始用起来了。&lt;br&gt;装饰者的功能实际就是在不改原功能的前提下，对原目标进行额外功能的增强，比如：日志记录，缓存，访问控制等。&lt;/p&gt;
+&lt;h3 id=&quot;对类进行装饰&quot;&gt;&lt;a href=&quot;#对类进行装饰&quot; class=&quot;headerlink&quot; title=&quot;对类进行装饰&quot;&gt;&lt;/a&gt;对类进行装饰&lt;/h3&gt;&lt;p&gt;decorator可以作用在类上，达到对类的属性或者原型进行改造。&lt;br&gt;&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//定义这个页面是需要登陆权限的页面&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;@needPageLogin&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;OpenCoupons&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;React&lt;/span&gt;.&lt;span class=&quot;title&quot;&gt;Component&lt;/span&gt;&amp;lt;&lt;span class=&quot;title&quot;&gt;OpenCouponsProps&lt;/span&gt;, &lt;span class=&quot;title&quot;&gt;ComponentState&lt;/span&gt;&amp;gt;&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="javascript" scheme="https://snayan.github.io/tags/javascript/"/>
+    
+      <category term="decorator" scheme="https://snayan.github.io/tags/decorator/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>小程序组件化编程</title>
+    <link href="https://snayan.github.io/2017/09/17/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%BB%84%E4%BB%B6%E5%8C%96%E7%BC%96%E7%A8%8B/"/>
+    <id>https://snayan.github.io/2017/09/17/小程序组件化编程/</id>
+    <published>2017-09-17T14:24:28.000Z</published>
+    <updated>2018-03-28T13:57:53.484Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在开发微信小程序时，发现缺少了组件化开发体验，在网上找了一波资源，发现都不是很好。其中，有用开发Vue的方式去开发小程序，比如，WePY，最后将源代码编译成小程序的官方文件模式。这种方式，开发感觉爽，但是如果小程序版本升级变了之后，不在支持这种方式，那么就得重新开发一套小程序官方支持的代码了，成本代价很大。并且，这次项目时间非常紧，团队成员不熟悉vue的情况下，不敢用WePY。但是，小程序官方又对组件化支持不是很友好。于是，决定自己弄一套，既有组件化开发体验，又是最大限度的接近小程序官方的开发模式。&lt;/p&gt;
+&lt;p&gt;目前项目已经成功上线，小程序：会过精选&lt;br&gt;&lt;a href=&quot;https://github.com/snayan/weChart-component&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;源码地址以及实例地址&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&quot;第一步，改写Page&quot;&gt;&lt;a href=&quot;#第一步，改写Page&quot; class=&quot;headerlink&quot; title=&quot;第一步，改写Page&quot;&gt;&lt;/a&gt;第一步，改写Page&lt;/h3&gt;&lt;p&gt;由于小程序的页面定义是通过&lt;code&gt;Page&lt;/code&gt;方法去定义的，那么，&lt;code&gt;Page&lt;/code&gt;一定在小程序内可以认为是一个全局变量，我只需要改写&lt;code&gt;Page&lt;/code&gt;这个方法，去可以引用组件，调用组件，触发组件的生命周期方法，维持组件内部的数据状态，那么，是不是就可以接近了组件化的编程体验了，并且可以抽离常用组件，达到复用的目的。&lt;br&gt;&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//先保存原Page&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; nativePage = Page;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/* 自定义Page */&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;Page = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;params&quot;&gt;data&lt;/span&gt; =&amp;gt;&lt;/span&gt; &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;//...改写Page逻辑，增加自己的功能&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;//最后一定得调用原Page方法，不然，小程序页面无法生成&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  nativePage(c);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="小程序" scheme="https://snayan.github.io/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>移动端布局方案浅谈</title>
+    <link href="https://snayan.github.io/2017/07/31/mobile-layout/"/>
+    <id>https://snayan.github.io/2017/07/31/mobile-layout/</id>
+    <published>2017-07-31T14:23:19.000Z</published>
+    <updated>2018-03-28T13:57:53.482Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;一直想抽时间总结一下现在业界可用的移动端布局方案。需求多，995模式，身心被掏空，一拖再拖，终于在周六的晚上，做着梦弄完成的，不足之道😪，请指教改正🤠。&lt;/p&gt;
+&lt;h3 id=&quot;media-百分比&quot;&gt;&lt;a href=&quot;#media-百分比&quot; class=&quot;headerlink&quot; title=&quot;media+百分比&quot;&gt;&lt;/a&gt;media+百分比&lt;/h3&gt;&lt;p&gt;直接采用媒体查询加百分比去布局。&lt;br&gt;核心思想：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;页面主体布局基本采用百分比去设置。&lt;/li&gt;
+&lt;li&gt;然后，其他块内布局,例如font-size等可通过设置媒体查询的断点来分设置，已达到兼容其他手机尺寸。&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+    
+      <category term="mobile" scheme="https://snayan.github.io/tags/mobile/"/>
+    
+      <category term="h5" scheme="https://snayan.github.io/tags/h5/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>响应式图片加载</title>
+    <link href="https://snayan.github.io/2017/07/24/img_srcset_seizes/"/>
+    <id>https://snayan.github.io/2017/07/24/img_srcset_seizes/</id>
+    <published>2017-07-24T14:08:34.000Z</published>
+    <updated>2018-03-28T13:57:53.482Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在做响应式图片加载需要使用到的两个关键属性就是&lt;code&gt;srcset&lt;/code&gt;和&lt;code&gt;sizes&lt;/code&gt; ，这两个属性是H5中新加的，是给img标签提供多个不同尺寸的图片，在不同设备，不同分辨率的情况下加载不同的图片。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;根据屏幕分辨率选择&lt;br&gt;当只需要根据屏幕分辨率去选择不同的图片的时候，有2种情况。&lt;br&gt;第1种，语法形式为：&lt;/p&gt;
+&lt;figure class=&quot;highlight html&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;srcset=&quot;[url] [dpr]x,[url] [dpr]x,....etc&quot;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;一般屏幕的分辨率会到3倍，例如iphone6plus，其dpr=3，这种是直接给出每种图片的分辨率规格，例子如下：&lt;/p&gt;
+&lt;figure class=&quot;highlight html&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;img&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;src&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;./mm-width-128px.jpg&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;alt&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;示例图片&quot;&lt;/span&gt; &lt;span class=&quot;attr&quot;&gt;srcset&lt;/span&gt;=&lt;span class=&quot;string&quot;&gt;&quot;./mm-width-256px.jpg 2x,./mm-width-512px.jpg 3x&quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;上面的示例表示，在dpr=1的屏幕下加载128px这张图片；在1&amp;lt;dpr&amp;lt;=2时，加载256px这张图片；当dpr&amp;gt;2时就加载512px这张图片了。&lt;br&gt;注意，srcset里的&lt;strong&gt;x&lt;/strong&gt;一定要是小写，大写的话，chrome会无法识别。&lt;br&gt;&lt;a href=&quot;https://webkit.org/demos/srcset/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;查看demo&lt;/a&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="resposive" scheme="https://snayan.github.io/tags/resposive/"/>
+    
+      <category term="mobile" scheme="https://snayan.github.io/tags/mobile/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>javascript中ToPrimitive详解</title>
+    <link href="https://snayan.github.io/2017/07/06/javascript%E4%B8%ADToPrimitive%E8%AF%A6%E8%A7%A3/"/>
+    <id>https://snayan.github.io/2017/07/06/javascript中ToPrimitive详解/</id>
+    <published>2017-07-06T15:36:19.000Z</published>
+    <updated>2018-03-28T13:57:53.482Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;看了这么多框架方面的东西，但注意，基础很重要。今天就来说说javascipt中容易忽略的类型转换问题。&lt;br&gt;在javascript中有7种基本类型，它们为：string，number，boolean，undefined，null，symbol，object。判断类型的方式是&lt;code&gt;typeof&lt;/code&gt;。我们把string，number，boolean，undefined，null，symbol这几类称为原始类型。&lt;br&gt;&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//&#39;number&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;aa&#39;&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//&#39;string&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//&#39;boolean&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;Symbol&lt;/span&gt;() &lt;span class=&quot;comment&quot;&gt;//&#39;symbol&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;undefined&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//&#39;undefined&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//&#39;object&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &amp;#123;&amp;#125; &lt;span class=&quot;comment&quot;&gt;//&#39;object&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;)&lt;/span&gt;&amp;#123;&amp;#125; &lt;span class=&quot;comment&quot;&gt;//&#39;function&#39;&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;注意两点，一是，对于函数，实际上也可以认为是object，但使用typeof得到的结果是’function’；二是，对于null，typeof得到的结果是’object’。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="javascript" scheme="https://snayan.github.io/tags/javascript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>react组件生命周期浅谈</title>
+    <link href="https://snayan.github.io/2017/06/19/react-component-life-cycle/"/>
+    <id>https://snayan.github.io/2017/06/19/react-component-life-cycle/</id>
+    <published>2017-06-19T15:25:17.000Z</published>
+    <updated>2018-03-28T13:57:53.483Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;众所周知，react的组件是有一个个的钩子函数，构建成的生命周期，在用es6的class与用createClass有所不同，其中createClass还包括了&lt;code&gt;getDefaultProps&lt;/code&gt;与&lt;code&gt;getInitialState&lt;/code&gt;。由于createClass 将在后续版本中移除，建议使用class形式。所以，下面讨论的都是class形式下的生命周期方式。&lt;/p&gt;
+&lt;h3 id=&quot;初始阶段&quot;&gt;&lt;a href=&quot;#初始阶段&quot; class=&quot;headerlink&quot; title=&quot;初始阶段&quot;&gt;&lt;/a&gt;初始阶段&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;constructor ，构造函数，在初始化实例时首先触发&lt;/li&gt;
+&lt;li&gt;componentWillMount，组件将渲染出来之前触发，可以调用setState，简单的合并state，不会触发render重新渲染&lt;/li&gt;
+&lt;li&gt;render ，将组件渲染，不可以调用setState&lt;/li&gt;
+&lt;li&gt;componentDidMount，组件渲染之后触发，可以调用setState，会重新触发render&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+    
+      <category term="react" scheme="https://snayan.github.io/tags/react/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>阅读react-dom源码--ReactMount部分</title>
+    <link href="https://snayan.github.io/2017/06/10/react-dom-ReactMount-source/"/>
+    <id>https://snayan.github.io/2017/06/10/react-dom-ReactMount-source/</id>
+    <published>2017-06-10T03:46:20.000Z</published>
+    <updated>2018-03-28T13:57:53.483Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;ReactMount为react-dom对象提供了&lt;code&gt;render&lt;/code&gt;和&lt;code&gt;unmountComponentAtNode&lt;/code&gt;这2个方法，其中第一个&lt;code&gt;render&lt;/code&gt;就是我们常用的输出react element到真实的dom里。&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; ReactMount=&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  scrollMonitor:&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;container,renderCallback&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  renderSubtreeIntoContainer:&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;parentComponent,nextElement,container,callback&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  render:&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;nextElement,container,callback&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  unmountComponentAtNode:&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;container&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+    
+      <category term="react" scheme="https://snayan.github.io/tags/react/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>阅读react源码--ReactElement部分</title>
+    <link href="https://snayan.github.io/2017/05/30/react-ReactElement-source/"/>
+    <id>https://snayan.github.io/2017/05/30/react-ReactElement-source/</id>
+    <published>2017-05-30T08:12:19.000Z</published>
+    <updated>2018-03-28T13:57:53.483Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;ReactElement对象为React提供了&lt;code&gt;createElement&lt;/code&gt;，&lt;code&gt;createFactory&lt;/code&gt;，&lt;code&gt;cloneElement&lt;/code&gt;，&lt;code&gt;isValidElement&lt;/code&gt;四个方法。ReactElement是一个工厂方法，不是类模式，不要使用&lt;code&gt;new&lt;/code&gt;去调用。检查一个对象是否是react element对象，通过检查这个对象的&lt;code&gt;$$typeof&lt;/code&gt;是否等于&lt;code&gt;Symbol.for(&amp;#39;react.element&amp;#39;)&lt;/code&gt;&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; ReactElement=&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;type,key,ref,self,source,owner,props&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; element=&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	$$&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt;:REACT_ELEMENT_TYPE,&lt;span class=&quot;comment&quot;&gt;//Symbol[&#39;for&#39;](&#39;react.element&#39;)&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    type:type,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    key:key,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    ref:ref,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    props:props,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    _owner:owner&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(process.env.NODE_ENV!==&lt;span class=&quot;string&quot;&gt;&#39;production&#39;&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      .......&lt;span class=&quot;comment&quot;&gt;//增加一些其他的属性&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(&lt;span class=&quot;built_in&quot;&gt;Object&lt;/span&gt;.freeze)&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      &lt;span class=&quot;built_in&quot;&gt;Object&lt;/span&gt;.freeze(element.props);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      &lt;span class=&quot;built_in&quot;&gt;Object&lt;/span&gt;.freeze(element);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; element;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+    
+      <category term="react" scheme="https://snayan.github.io/tags/react/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>阅读react源码--createClass部分</title>
+    <link href="https://snayan.github.io/2017/05/22/react-ReactClass-source/"/>
+    <id>https://snayan.github.io/2017/05/22/react-ReactClass-source/</id>
+    <published>2017-05-22T14:16:40.000Z</published>
+    <updated>2018-03-28T13:57:53.483Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;ReactClass对象为React提供了&lt;code&gt;createClass&lt;/code&gt;方法，实际上ReactClass有2个属性，一个是&lt;code&gt;createClass&lt;/code&gt;，另外一个是&lt;code&gt;injection&lt;/code&gt;对象。&lt;br&gt;&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; ReactClass=&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  createClass:&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;spec&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//createClass实现&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  injection:&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    injectMixin:&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;mixin&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      injectedMixins.push(mixin);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="react" scheme="https://snayan.github.io/tags/react/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>阅读react源码--component部分</title>
+    <link href="https://snayan.github.io/2017/05/09/react-Component-source/"/>
+    <id>https://snayan.github.io/2017/05/09/react-Component-source/</id>
+    <published>2017-05-09T13:28:39.000Z</published>
+    <updated>2018-03-28T13:57:53.482Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天主要看下&lt;code&gt;React.Component&lt;/code&gt;，实际上&lt;code&gt;Component&lt;/code&gt;是&lt;code&gt;React&lt;/code&gt;对象上一个构造函数。&lt;br&gt;构造函数接受三个参数，&lt;code&gt;props&lt;/code&gt;，&lt;code&gt;context&lt;/code&gt;，&lt;code&gt;updater&lt;/code&gt;，&lt;code&gt;updater&lt;/code&gt;实际是在&lt;code&gt;render&lt;/code&gt;中注入的，它是用来实际更新&lt;code&gt;state&lt;/code&gt;&lt;br&gt;&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ReactComponent&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;props,context,updater&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;.props=props;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;.context=context;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;//emptyObject 是一个空对象&amp;#123;&amp;#125;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;.refs=emptyObject;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;//ReactNoopUpdateQueue is the abstract API for an update queue&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;.updater=updater||ReactNoopUpdateQueue;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="react" scheme="https://snayan.github.io/tags/react/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>阅读react源码--react整体结构</title>
+    <link href="https://snayan.github.io/2017/05/04/react-total-constructor/"/>
+    <id>https://snayan.github.io/2017/05/04/react-total-constructor/</id>
+    <published>2017-05-04T15:11:29.000Z</published>
+    <updated>2018-03-28T13:57:53.483Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近打算学习react与redux的源码，以此记录在学习过程中做的笔记吧。&lt;br&gt;先来整体看看react的结构吧，实际上react就是一个对象，在实际使用的时候是这样的方式&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; React &lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;react&#39;&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//或则&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; &amp;#123;Component,createElement&amp;#125; &lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;react&#39;&lt;/span&gt;;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;查看源码发现，react对象就是一些包含一些属性的常见对象。常见的属性包括&lt;code&gt;Component&lt;/code&gt;，&lt;code&gt;createElement&lt;/code&gt;，&lt;code&gt;cloneElement&lt;/code&gt;，&lt;code&gt;createClass&lt;/code&gt;，&lt;code&gt;DOM&lt;/code&gt;等。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="react" scheme="https://snayan.github.io/tags/react/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>单例模式</title>
+    <link href="https://snayan.github.io/2017/05/02/singleton/"/>
+    <id>https://snayan.github.io/2017/05/02/singleton/</id>
+    <published>2017-05-02T15:24:19.000Z</published>
+    <updated>2018-03-28T13:57:53.484Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;单例模式，简单的说就是保证一个特定的类仅有一个实例，也就是不管实例化几次，都是返回的同一个实例。在javascript中，没有类的概念，每一个对象字面量都可以是认为是一个单例。对象全等，表示引用的同一个内存地址。&lt;/p&gt;
+&lt;p&gt;在javascript中实现单例模式，有如下几种方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;全局变量方式，这种方式不好，全局变量可被随意改变，且可能与其他类库命名冲突&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; instance;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Singleton&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(!(&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;instanceof&lt;/span&gt; Singleton))&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; Singleton();&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(instance &lt;span class=&quot;keyword&quot;&gt;instanceof&lt;/span&gt; Singleton)&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; instance;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;//做一些其他操作&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  instance=&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+    
+    </summary>
+    
+    
+      <category term="设计模式" scheme="https://snayan.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+  </entry>
+  
+</feed>
