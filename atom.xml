@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://snayan.github.io/"/>
-  <updated>2018-03-29T03:10:43.804Z</updated>
+  <updated>2018-03-29T04:07:30.609Z</updated>
   <id>https://snayan.github.io/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>React 16.2.0学习(二)</title>
+    <title>React 16.2.0源码学习(二)</title>
     <link href="https://snayan.github.io/2018/03/02/react16%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A02/"/>
     <id>https://snayan.github.io/2018/03/02/react16源码学习2/</id>
     <published>2018-03-02T13:05:48.000Z</published>
-    <updated>2018-03-29T03:10:43.804Z</updated>
+    <updated>2018-03-29T04:07:30.609Z</updated>
     
     <summary type="html">
     
@@ -38,15 +38,15 @@
   </entry>
   
   <entry>
-    <title>React 16.2.0学习(-)</title>
+    <title>React 16.2.0源码学习(-)</title>
     <link href="https://snayan.github.io/2018/03/01/react16%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A01/"/>
     <id>https://snayan.github.io/2018/03/01/react16源码学习1/</id>
     <published>2018-03-01T12:11:21.000Z</published>
-    <updated>2018-03-29T03:10:43.804Z</updated>
+    <updated>2018-03-29T04:07:30.609Z</updated>
     
     <summary type="html">
     
-      &lt;p&gt;趁着离职期这段时间，制定了一个计划，再次学习React16，React16是一个大版本的更新，其中新增了许多的新特性，并且重写了核心模块的架构，叫做&lt;strong&gt;Fiber&lt;/strong&gt;，最令人兴奋的是&lt;strong&gt;async rendering&lt;/strong&gt;。之前也浅显的阅读过React15的部分源码，发现这次React16与之有很大的不同。&lt;/p&gt;
+      &lt;p&gt;趁着离职期这段时间，制定了一个计划，再次阅读React16的源码，React16是一个大版本的更新，其中新增了许多的新特性，并且重写了核心模块的架构，叫做&lt;strong&gt;Fiber&lt;/strong&gt;，最令人兴奋的是&lt;strong&gt;async rendering&lt;/strong&gt;。之前也浅显的阅读过React15的部分源码，发现这次React16与之有很大的不同。&lt;/p&gt;
 &lt;h3 id=&quot;核心文件&quot;&gt;&lt;a href=&quot;#核心文件&quot; class=&quot;headerlink&quot; title=&quot;核心文件&quot;&gt;&lt;/a&gt;核心文件&lt;/h3&gt;&lt;p&gt;React16真的是重新梳理了代码结构，并且解耦了很多，下面为React16的文件结构&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;/assert/img/react16_file_structure.jpg&quot; alt=&quot;react16的文件结构&quot;&gt;&lt;/p&gt;
 &lt;p&gt;可以看到我们熟悉的react和react-dom。react-art是绘制图形的，比如Canvas，SVG，VML。react-call-return是一个试验性的，用于react中的多遍渲染。react-reconciler是Fiber的实现。share中存放着一些公用的方法和属性。&lt;br&gt;
