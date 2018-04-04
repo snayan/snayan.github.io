@@ -161,6 +161,73 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-react-component-life-cycle" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/19/react-component-life-cycle/">react组件生命周期浅谈</a>
+    </h1>
+  
+
+        
+        <a href="/2017/06/19/react-component-life-cycle/" class="archive-article-date">
+  	<time datetime="2017-06-19T15:25:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>众所周知，react的组件是有一个个的钩子函数，构建成的生命周期，在用es6的class与用createClass有所不同，其中createClass还包括了<code>getDefaultProps</code>与<code>getInitialState</code>。由于createClass 将在后续版本中移除，建议使用class形式。所以，下面讨论的都是class形式下的生命周期方式。</p>
+<h3 id="初始阶段"><a href="#初始阶段" class="headerlink" title="初始阶段"></a>初始阶段</h3><ul>
+<li>constructor ，构造函数，在初始化实例时首先触发</li>
+<li>componentWillMount，组件将渲染出来之前触发，可以调用setState，简单的合并state，不会触发render重新渲染</li>
+<li>render ，将组件渲染，不可以调用setState</li>
+<li>componentDidMount，组件渲染之后触发，可以调用setState，会重新触发render</li>
+</ul>
+        
+          <a class="article-more-a" href="/2017/06/19/react-component-life-cycle/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/06/19/react-component-life-cycle/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-react-dom-ReactMount-source" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
