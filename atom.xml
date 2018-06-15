@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://snayan.github.io/"/>
-  <updated>2018-04-11T01:54:20.000Z</updated>
+  <updated>2018-06-15T02:06:07.000Z</updated>
   <id>https://snayan.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>vue 全家桶初探</title>
+    <link href="https://snayan.github.io/2018/06/15/vue-%E5%85%A8%E5%AE%B6%E6%A1%B6%E5%88%9D%E6%8E%A2/"/>
+    <id>https://snayan.github.io/2018/06/15/vue-全家桶初探/</id>
+    <published>2018-06-15T01:51:44.000Z</published>
+    <updated>2018-06-15T02:06:07.000Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;目的&quot;&gt;&lt;a href=&quot;#目的&quot; class=&quot;headerlink&quot; title=&quot;目的&quot;&gt;&lt;/a&gt;目的&lt;/h3&gt;&lt;p&gt;这个项目主要是用vue+vuex实现一个单页面应用，纯粹是熟悉vue全家桶相关开发模式，用于练手非常合适。&lt;br&gt;着手开发完了之后可以学的东
+      
+    
+    </summary>
+    
+    
+      <category term="vue" scheme="https://snayan.github.io/tags/vue/"/>
+    
+  </entry>
   
   <entry>
     <title>react 16学习(四)</title>
