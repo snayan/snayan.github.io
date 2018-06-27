@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://snayan.github.io/"/>
-  <updated>2018-06-27T07:51:11.000Z</updated>
+  <updated>2018-06-27T07:53:54.000Z</updated>
   <id>https://snayan.github.io/</id>
   
   <author>
@@ -21,14 +21,23 @@
     <link href="https://snayan.github.io/2018/06/15/vue-%E5%85%A8%E5%AE%B6%E6%A1%B6%E5%88%9D%E6%8E%A2/"/>
     <id>https://snayan.github.io/2018/06/15/vue-全家桶初探/</id>
     <published>2018-06-15T01:51:44.000Z</published>
-    <updated>2018-06-27T07:51:11.000Z</updated>
+    <updated>2018-06-27T07:53:54.000Z</updated>
     
     <summary type="html">
     
-      
-      
-        &lt;h3 id=&quot;目的&quot;&gt;&lt;a href=&quot;#目的&quot; class=&quot;headerlink&quot; title=&quot;目的&quot;&gt;&lt;/a&gt;目的&lt;/h3&gt;&lt;p&gt;这个项目主要是用vue+vuex实现一个单页面应用，纯粹是熟悉vue全家桶相关开发模式，用于练手非常合适。&lt;br&gt;着手开发完了之后可以学的东
-      
+      &lt;h3 id=&quot;目的&quot;&gt;&lt;a href=&quot;#目的&quot; class=&quot;headerlink&quot; title=&quot;目的&quot;&gt;&lt;/a&gt;目的&lt;/h3&gt;&lt;p&gt;这个项目主要是用vue+vuex实现一个单页面应用，纯粹是熟悉vue全家桶相关开发模式，用于练手非常合适。&lt;br&gt;着手开发完了之后可以学的东西：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;熟悉vue单文件组件开发方式&lt;/li&gt;
+&lt;li&gt;熟悉如何写一个vue插件&lt;/li&gt;
+&lt;li&gt;熟悉如何使用vue-router以及挂载路由钩子函数&lt;/li&gt;
+&lt;li&gt;熟悉vuex是如何运作的，模块化维护应用状态数据&lt;/li&gt;
+&lt;li&gt;体验typescript的开发方式&lt;br&gt;如果想学vue的不妨进来看看。&lt;br&gt;项目源码地址：&lt;a href=&quot;https://github.com/snayan/vue-task&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;点击这里&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&quot;技术栈&quot;&gt;&lt;a href=&quot;#技术栈&quot; class=&quot;headerlink&quot; title=&quot;技术栈&quot;&gt;&lt;/a&gt;技术栈&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;vue&lt;/li&gt;
+&lt;li&gt;vuex&lt;/li&gt;
+&lt;li&gt;vue-router&lt;/li&gt;
+&lt;li&gt;typescript
     
     </summary>
     
