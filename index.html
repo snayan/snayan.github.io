@@ -161,6 +161,72 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-常见webpack构建项目流程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/27/常见webpack构建项目流程/">webpack构建常见流程</a>
+    </h1>
+  
+
+        
+        <a href="/2018/06/27/常见webpack构建项目流程/" class="archive-article-date">
+  	<time datetime="2018-06-27T08:03:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>现在前端项目的构建一般基本都是基于webpack的。项目的技术栈目前比较主流的是react全家桶和vue全家桶。<br>趁空闲，以公司一个项目整理了webpack构建常见的流程,这个项目是使用vue全家桶开发的。</p>
+<h5 id="技术栈："><a href="#技术栈：" class="headerlink" title="技术栈："></a>技术栈：</h5><ul>
+<li>vue</li>
+<li>typescript</li>
+</ul>
+<h4 id="浏览器支持："><a href="#浏览器支持：" class="headerlink" title="浏览器支持："></a>浏览器支持：</h4><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">"browserslist": [</div><div class="line">    "&gt; 1%",</div><div class="line">    "last 2 versions",</div><div class="line">    "not ie &lt;= 9",</div><div class="line">    <span class="string">"Android &gt;= 4.3"</span></div><div class="line">]</div></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2018/06/27/常见webpack构建项目流程/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">webpack</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/06/27/常见webpack构建项目流程/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-vue-全家桶初探" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -193,7 +259,8 @@
 <li>vue</li>
 <li>vuex</li>
 <li>vue-router</li>
-<li>typescript
+<li>typescript</li>
+</ul>
         
           <a class="article-more-a" href="/2018/06/15/vue-全家桶初探/#more">more >></a>
         
@@ -759,76 +826,6 @@
 
 
   
-    <article id="post-mobile-layout" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/31/mobile-layout/">移动端布局方案浅谈</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/31/mobile-layout/" class="archive-article-date">
-  	<time datetime="2017-07-31T14:23:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>一直想抽时间总结一下现在业界可用的移动端布局方案。需求多，995模式，身心被掏空，一拖再拖，终于在周六的晚上，做着梦弄完成的，不足之道😪，请指教改正🤠。</p>
-<h3 id="media-百分比"><a href="#media-百分比" class="headerlink" title="media+百分比"></a>media+百分比</h3><p>直接采用媒体查询加百分比去布局。<br>核心思想：</p>
-<ul>
-<li>页面主体布局基本采用百分比去设置。</li>
-<li>然后，其他块内布局,例如font-size等可通过设置媒体查询的断点来分设置，已达到兼容其他手机尺寸。</li>
-</ul>
-        
-          <a class="article-more-a" href="/2017/07/31/mobile-layout/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">mobile</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">h5</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/31/mobile-layout/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -954,11 +951,15 @@
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">decorator</a>
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">decorator</a>
               </li>
             
             <div class="clearfix"></div>

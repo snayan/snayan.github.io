@@ -6,20 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://snayan.github.io">
-  <title>2017年小结 | 三洋同学的blog</title>
+  <title>webpack构建常见流程 | 三洋同学的blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="嗯，又到了年末，是时候对17年做个了断，好好开始18年。17年的年初计划是：  找一家靠谱的互联网公司 阅读12本书 报个英语培训班  找一家靠谱的互联网公司年初，3月份从广田智能来到了深圳卷皮，是找到了一家互联网公司，很互联网😂。从PC端半路子前端到移动端的纯前端了，恶补各种移动端开发基础知识，移动端布局方案，详见移动端布局方案。从grunt的使用到gulp，再到webpack。用gulp也写">
-<meta name="keywords" content="2017,小结">
+  <meta name="description" content="现在前端项目的构建一般基本都是基于webpack的。项目的技术栈目前比较主流的是react全家桶和vue全家桶。趁空闲，以公司一个项目整理了webpack构建常见的流程,这个项目是使用vue全家桶开发的。 技术栈： vue typescript  浏览器支持：123456&quot;browserslist&quot;: [    &quot;&amp;gt; 1%&quot;,    &quot;last 2 versions&quot;,    &quot;not ie">
+<meta name="keywords" content="webpack">
 <meta property="og:type" content="article">
-<meta property="og:title" content="2017年小结">
-<meta property="og:url" content="https://snayan.github.io/2017/12/14/2017小结/index.html">
+<meta property="og:title" content="webpack构建常见流程">
+<meta property="og:url" content="https://snayan.github.io/2018/06/27/常见webpack构建项目流程/index.html">
 <meta property="og:site_name" content="三洋同学的blog">
-<meta property="og:description" content="嗯，又到了年末，是时候对17年做个了断，好好开始18年。17年的年初计划是：  找一家靠谱的互联网公司 阅读12本书 报个英语培训班  找一家靠谱的互联网公司年初，3月份从广田智能来到了深圳卷皮，是找到了一家互联网公司，很互联网😂。从PC端半路子前端到移动端的纯前端了，恶补各种移动端开发基础知识，移动端布局方案，详见移动端布局方案。从grunt的使用到gulp，再到webpack。用gulp也写">
+<meta property="og:description" content="现在前端项目的构建一般基本都是基于webpack的。项目的技术栈目前比较主流的是react全家桶和vue全家桶。趁空闲，以公司一个项目整理了webpack构建常见的流程,这个项目是使用vue全家桶开发的。 技术栈： vue typescript  浏览器支持：123456&quot;browserslist&quot;: [    &quot;&amp;gt; 1%&quot;,    &quot;last 2 versions&quot;,    &quot;not ie">
 <meta property="og:locale" content="zh">
-<meta property="og:updated_time" content="2018-03-28T13:57:53.482Z">
+<meta property="og:image" content="https://snayan.github.io/assert/img/webpack_build.png">
+<meta property="og:updated_time" content="2018-06-27T08:22:37.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="2017年小结">
-<meta name="twitter:description" content="嗯，又到了年末，是时候对17年做个了断，好好开始18年。17年的年初计划是：  找一家靠谱的互联网公司 阅读12本书 报个英语培训班  找一家靠谱的互联网公司年初，3月份从广田智能来到了深圳卷皮，是找到了一家互联网公司，很互联网😂。从PC端半路子前端到移动端的纯前端了，恶补各种移动端开发基础知识，移动端布局方案，详见移动端布局方案。从grunt的使用到gulp，再到webpack。用gulp也写">
+<meta name="twitter:title" content="webpack构建常见流程">
+<meta name="twitter:description" content="现在前端项目的构建一般基本都是基于webpack的。项目的技术栈目前比较主流的是react全家桶和vue全家桶。趁空闲，以公司一个项目整理了webpack构建常见的流程,这个项目是使用vue全家桶开发的。 技术栈： vue typescript  浏览器支持：123456&quot;browserslist&quot;: [    &quot;&amp;gt; 1%&quot;,    &quot;last 2 versions&quot;,    &quot;not ie">
+<meta name="twitter:image" content="https://snayan.github.io/assert/img/webpack_build.png">
   
     <link rel="alternative" href="/atom.xml" title="三洋同学的blog" type="application/atom+xml">
   
@@ -161,38 +163,71 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-2017小结" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-常见webpack构建项目流程" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      2017年小结
+      webpack构建常见流程
     </h1>
   
 
         
-        <a href="/2017/12/14/2017小结/" class="archive-article-date">
-  	<time datetime="2017-12-14T15:10:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-14</time>
+        <a href="/2018/06/27/常见webpack构建项目流程/" class="archive-article-date">
+  	<time datetime="2018-06-27T08:03:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-27</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>嗯，又到了年末，是时候对17年做个了断，好好开始18年。<br>17年的年初计划是：</p>
-<ul>
-<li>找一家靠谱的互联网公司</li>
-<li>阅读12本书</li>
-<li>报个英语培训班</li>
+        <p>现在前端项目的构建一般基本都是基于webpack的。项目的技术栈目前比较主流的是react全家桶和vue全家桶。<br>趁空闲，以公司一个项目整理了webpack构建常见的流程,这个项目是使用vue全家桶开发的。</p>
+<h5 id="技术栈："><a href="#技术栈：" class="headerlink" title="技术栈："></a>技术栈：</h5><ul>
+<li>vue</li>
+<li>typescript</li>
 </ul>
-<h5 id="找一家靠谱的互联网公司"><a href="#找一家靠谱的互联网公司" class="headerlink" title="找一家靠谱的互联网公司"></a>找一家靠谱的互联网公司</h5><p>年初，3月份从广田智能来到了深圳卷皮，是找到了一家互联网公司，很互联网😂。<br>从PC端半路子前端到移动端的纯前端了，恶补各种移动端开发基础知识，移动端布局方案，详见<a href="https://snayan.github.io/2017/07/31/mobile-layout/">移动端布局方案</a>。<br>从grunt的使用到gulp，再到webpack。用gulp也写一个小的脚手架工具，详见<a href="https://github.com/snayan/web-scaffold" target="_blank" rel="external">web-scaffold</a>。<br>从backbone的开发框架到react，也稍微阅读了一下react15的部分源码，详见<a href="https://snayan.github.io/2017/05/04/react-total-constructor/">阅读react源码部分</a>。<br>从0到1开始开发微信小程序，写了一个小程序组件化开发，详见<a href="https://snayan.github.io/2017/09/17/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%BB%84%E4%BB%B6%E5%8C%96%E7%BC%96%E7%A8%8B/">小程序组件化编程</a>。</p>
-<h5 id="阅读12本书"><a href="#阅读12本书" class="headerlink" title="阅读12本书"></a>阅读12本书</h5><p>从3月份开始，一直都坚持在看书，期间虽也断续停了一段，但幸好的是，现在依然坚持着。数数，应该有12本书了，详见<a href="https://github.com/snayan/bookLists#2017计划" target="_blank" rel="external">2017书单</a>。好习惯，要坚持啊✊。</p>
-<h5 id="报个英语培训班"><a href="#报个英语培训班" class="headerlink" title="报个英语培训班"></a>报个英语培训班</h5><p>额，这个计划实在是没有办，之前6月份好像在天虹里有个培训班的招生柜台，大致去了解了一下。下半年就一直在加班，真的没有时间（没时间不是理由，好吧！），一直到现在也没有个没有。明年估计也不会报了，没钱啊（吃土了）。</p>
-<h5 id="额外收获"><a href="#额外收获" class="headerlink" title="额外收获"></a>额外收获</h5><p>17年，抽空搭了一个免费的GitHub博客，地址<a href="https://snayan.github.io/">三洋同学的blog</a>。到现在，写了有接近10篇了吧，就是随便写写，总结也好，做笔记也好，当书签也好，反正，这是一个好习惯，不能放弃，要坚持。</p>
-<p>好吧，时间不早了，来小结吧。嗯，17年确实累了不少，通宵都熬了不少，老了不少，我相信，收获也是不少的。题外话哈，负能量，12月初也体会了一些凉心的事，但是也收获一些暖心的事。不管怎么样，还是抱着一颗感恩的心，去过18年。</p>
-<p>18年的计划呢？明年再定。</p>
+<h4 id="浏览器支持："><a href="#浏览器支持：" class="headerlink" title="浏览器支持："></a>浏览器支持：</h4><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">"browserslist": [</div><div class="line">    "&gt; 1%",</div><div class="line">    "last 2 versions",</div><div class="line">    "not ie &lt;= 9",</div><div class="line">    <span class="string">"Android &gt;= 4.3"</span></div><div class="line">]</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<h4 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h4><p><img src="/assert/img/webpack_build.png" alt=""></p>
+<h4 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h4><ul>
+<li>babel</li>
+<li>postcss</li>
+<li>eslint</li>
+</ul>
+<h6 id="babel"><a href="#babel" class="headerlink" title="babel"></a>babel</h6><p>javascript compiler，让我们可以在项目中使用较新JavaScript特性。可以通过<strong>.babelrc</strong>文件指定我们需要编译到的目标版本<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"presets"</span>: [</div><div class="line">    [<span class="string">"env"</span>, &#123;</div><div class="line">      <span class="attr">"modules"</span>: <span class="literal">false</span>,</div><div class="line">      <span class="attr">"useBuiltIns"</span>: <span class="string">"usage"</span></div><div class="line">    &#125;],</div><div class="line">    <span class="string">"stage-2"</span></div><div class="line">  ],</div><div class="line">  <span class="attr">"plugins"</span>: [<span class="string">"transform-vue-jsx"</span>, <span class="string">"transform-runtime"</span>]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h6 id="postcss"><a href="#postcss" class="headerlink" title="postcss"></a>postcss</h6><p>a tool for transforming styles with JS plugins，可以让我们在项目使用一些较新css的特性。可以通过<strong>.postcssrc.js</strong>文件指定我们配置的postcss插件</p>
+<ul>
+<li>可以通过rem方案来处理移动设备上的适配，在构建过程中，使用了px2rem插件来将px转为rem。</li>
+<li>使用了postcss-import将@import引入的css文件内容内联到当前文件内</li>
+<li>postcss-url，配合postcss-import使用</li>
+<li>postcss-cssnext，使用一些css新特性，<strong>目前已建议使用postcss-preset-env替换</strong>。</li>
+<li>postss-pxtorem，将px转为rem</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">module</span>.exports = &#123;</div><div class="line">  <span class="string">"plugins"</span>: &#123;</div><div class="line">    <span class="string">"postcss-import"</span>: &#123;</div><div class="line">      path: <span class="string">"src/css/"</span></div><div class="line">    &#125;,</div><div class="line">    <span class="string">"postcss-url"</span>: &#123;&#125;,</div><div class="line">    <span class="string">"postcss-cssnext"</span>: &#123;&#125;,</div><div class="line">    <span class="string">"postcss-pxtorem"</span>: &#123;</div><div class="line">      rootValue: <span class="number">75</span>,</div><div class="line">      unitPrecision: <span class="number">5</span>,</div><div class="line">      propList: [<span class="string">'*'</span>],</div><div class="line">      selectorBlackList: [],</div><div class="line">      replace: <span class="literal">true</span>,</div><div class="line">      mediaQuery: <span class="literal">false</span>,</div><div class="line">      minPixelValue: <span class="number">2</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h6 id="tslint"><a href="#tslint" class="headerlink" title="tslint"></a>tslint</h6><p>定制项目javascript使用的标准化，建议将多个项目统一定制为一套。可以在tslint.json中定制项目的检查规则。<br><figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="attr">"extends"</span>: <span class="string">"tslint:recommended"</span>,</div><div class="line">    <span class="attr">"rulesDirectory"</span>: [<span class="string">"path/to/custom/rules/directory/"</span>, <span class="string">"another/path/"</span>],</div><div class="line">    <span class="attr">"rules"</span>: &#123;</div><div class="line">        <span class="attr">"max-line-length"</span>: &#123;</div><div class="line">            <span class="attr">"options"</span>: [<span class="number">120</span>]</div><div class="line">        &#125;,</div><div class="line">        <span class="attr">"new-parens"</span>: <span class="literal">true</span>,</div><div class="line">        <span class="attr">"no-arg"</span>: <span class="literal">true</span>,</div><div class="line">        <span class="attr">"no-bitwise"</span>: <span class="literal">true</span>,</div><div class="line">        <span class="attr">"no-conditional-assignment"</span>: <span class="literal">true</span>,</div><div class="line">        <span class="attr">"no-consecutive-blank-lines"</span>: <span class="literal">false</span>,</div><div class="line">        <span class="attr">"no-console"</span>: &#123;</div><div class="line">            <span class="attr">"severity"</span>: <span class="string">"warning"</span>,</div><div class="line">            <span class="attr">"options"</span>: [</div><div class="line">                <span class="string">"debug"</span>,</div><div class="line">                <span class="string">"info"</span>,</div><div class="line">                <span class="string">"log"</span>,</div><div class="line">                <span class="string">"time"</span>,</div><div class="line">                <span class="string">"timeEnd"</span>,</div><div class="line">                <span class="string">"trace"</span></div><div class="line">            ]</div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">"jsRules"</span>: &#123;</div><div class="line">        <span class="attr">"max-line-length"</span>: &#123;</div><div class="line">            <span class="attr">"options"</span>: [<span class="number">120</span>]</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h4><p>在配置webpack文件时，分dev和prod环境，不同的环境配置项有所差别，主要体现在plugin的使用上。主要有三个webpack配置文件</p>
+<ul>
+<li>webpack.base.conf.js，dev和prod公用的基础配置，主要loader的配置</li>
+<li>webpack.dev.conf.js，dev环境的配置，主要配置了webpack-dev-serve，供开发环境使用</li>
+<li><p>webpack.prod.conf.js，production环境的配置，主要增加了一些优化的配置，比如OptimizeCSSPlugin，UglifyJsPlugin<br>可以根据实际业务情况，配置不同环境变量，比如，我整理的这个项目，是会区分不同国家，以及不同的测试部署环境。在区分不同国家，不同部署环境时，采用了test，staging，live等环境名称。development和production只是针对开发人员而言的，在本地开发就是development，代码部署到test，staging，live都是production。对不同国家，不同部署环境，又有dev.env.js和prod.env.js.这两个文件其实是一样的，只不过参数不同而已。<strong>可以统一从process.env.env和process.env.cid拿参数，这样就可以不需要这两个配置文件了，且不需要在build脚本中去动态替换prod.env.js里的配置项（个人觉得，可以讨论）</strong></p>
+</li>
+<li><p>dev.env.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> merge = <span class="built_in">require</span>(<span class="string">'webpack-merge'</span>);</div><div class="line"><span class="keyword">const</span> prodEnv = <span class="built_in">require</span>(<span class="string">'./prod.env'</span>);</div><div class="line"></div><div class="line"><span class="built_in">module</span>.exports = merge(prodEnv, &#123;</div><div class="line">  NODE_ENV: <span class="string">'"development"'</span>,</div><div class="line">  country: <span class="string">'"sg"'</span>,</div><div class="line">  environment: <span class="string">'"test"'</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+</li>
+<li><p>prod.env.js</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> COUNTRY = <span class="string">'sg'</span>;</div><div class="line"><span class="keyword">const</span> shopeeEnvironment = <span class="string">'live'</span>;</div><div class="line"></div><div class="line"><span class="built_in">module</span>.exports = &#123;</div><div class="line">  NODE_ENV: <span class="string">'"production"'</span>,</div><div class="line">  country: <span class="string">'"'</span> + COUNTRY + <span class="string">'"'</span>,</div><div class="line">  environment: <span class="string">'"'</span> + shopeeEnvironment + <span class="string">'"'</span></div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><ul>
+<li>在dev开发环境，需执行<code>npm run start</code>或者<code>yarn start</code></li>
+<li>在build时，需执行<code>npm run build</code>或者<code>yarn build</code></li>
+</ul>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
+<li>babel-polyfill，对不同设备对js的兼容，<strong>可以考虑使用polyfill.io，针对具体设备引入具体的feature</strong></li>
+<li>normalize.css，针对Html5，样式reset</li>
+</ul>
 
       
 
@@ -206,11 +241,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2017</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">小结</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">webpack</a>
         		</li>
       		
 		</ul>
@@ -266,7 +297,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=https://snayan.github.io/2017/12/14/2017小结/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=https://snayan.github.io/2018/06/27/常见webpack构建项目流程/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -280,18 +311,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/01/23/简单的五子棋/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          简单的五子棋
-        
-      </div>
-    </a>
   
-  
-    <a href="/2017/11/26/笔记之decorator/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">笔记之decorator</div>
+    <a href="/2018/06/15/vue-全家桶初探/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">vue 全家桶初探</div>
       <i class="icon-circle-right"></i>
     </a>
   
