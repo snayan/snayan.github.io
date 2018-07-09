@@ -6,18 +6,28 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://blog.snayan.com">
-  <title>Tag: 五子棋 | 三洋同学的笔记本</title>
+  <title>canvas核心技术-如何绘制线段 | 三洋同学的笔记本</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="三洋同学的笔记本">
-<meta property="og:type" content="website">
-<meta property="og:title" content="三洋同学的笔记本">
-<meta property="og:url" content="https://blog.snayan.com/tags/五子棋/index.html">
+  <meta name="description" content="这篇是学习和回顾canvas系列笔记的第一篇，完整笔记详见：canvas核心技术学习canvas，首先得知道如何去绘制线段，然后才能通过很多简单的线段去实现比较复杂的图形，比如常见的图表，柱状图，折线图等都是通过一段一段的线段实现的。 基础知识canvas 的基础知识不算多，主要掌握如何绘制线段，图形，图片，文本等。canvas可以在浏览器中绘制，也可以借助 node-canvas在node服务端">
+<meta name="keywords" content="canvas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="canvas核心技术-如何绘制线段">
+<meta property="og:url" content="https://blog.snayan.com/2018/07/09/canvas核心技术-如何绘制线段/index.html">
 <meta property="og:site_name" content="三洋同学的笔记本">
-<meta property="og:description" content="三洋同学的笔记本">
+<meta property="og:description" content="这篇是学习和回顾canvas系列笔记的第一篇，完整笔记详见：canvas核心技术学习canvas，首先得知道如何去绘制线段，然后才能通过很多简单的线段去实现比较复杂的图形，比如常见的图表，柱状图，折线图等都是通过一段一段的线段实现的。 基础知识canvas 的基础知识不算多，主要掌握如何绘制线段，图形，图片，文本等。canvas可以在浏览器中绘制，也可以借助 node-canvas在node服务端">
 <meta property="og:locale" content="zh">
+<meta property="og:image" content="https://blog.snayan.com/assert/img/canvas/coordinate.png">
+<meta property="og:image" content="https://blog.snayan.com/assert/img/canvas/line.jpg">
+<meta property="og:image" content="https://blog.snayan.com/assert/img/canvas/lineCap.jpg">
+<meta property="og:image" content="https://blog.snayan.com/assert/img/canvas/lineJoin.jpg">
+<meta property="og:image" content="https://blog.snayan.com/assert/img/canvas/lineDashOffset.jpg">
+<meta property="og:image" content="https://blog.snayan.com/assert/img/canvas/setLineDash.jpg">
+<meta property="og:image" content="https://blog.snayan.com/assert/img/canvas/dynamicLineDashOffset.jpg">
+<meta property="og:updated_time" content="2018-07-09T12:33:53.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="三洋同学的笔记本">
-<meta name="twitter:description" content="三洋同学的笔记本">
+<meta name="twitter:title" content="canvas核心技术-如何绘制线段">
+<meta name="twitter:description" content="这篇是学习和回顾canvas系列笔记的第一篇，完整笔记详见：canvas核心技术学习canvas，首先得知道如何去绘制线段，然后才能通过很多简单的线段去实现比较复杂的图形，比如常见的图表，柱状图，折线图等都是通过一段一段的线段实现的。 基础知识canvas 的基础知识不算多，主要掌握如何绘制线段，图形，图片，文本等。canvas可以在浏览器中绘制，也可以借助 node-canvas在node服务端">
+<meta name="twitter:image" content="https://blog.snayan.com/assert/img/canvas/coordinate.png">
   
     <link rel="alternative" href="/atom.xml" title="三洋同学的笔记本" type="application/atom+xml">
   
@@ -159,64 +169,188 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-canvas核心技术-如何绘制线段" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/01/23/简单的五子棋/" class="archive-article-date">
-  	<time datetime="2018-01-23T09:14:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-01-23</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/01/23/简单的五子棋/">简单的五子棋</a>
+    <h1 class="article-title" itemprop="name">
+      canvas核心技术-如何绘制线段
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/07/09/canvas核心技术-如何绘制线段/" class="archive-article-date">
+  	<time datetime="2018-07-09T12:16:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这篇是学习和回顾canvas系列笔记的第一篇，完整笔记详见：<a href="https://blog.snayan.com/2018/07/09/canvas-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF/">canvas核心技术</a><br>学习canvas，首先得知道如何去绘制线段，然后才能通过很多简单的线段去实现比较复杂的图形，比如常见的图表，柱状图，折线图等都是通过一段一段的线段实现的。</p>
+<h4 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h4><p>canvas 的基础知识不算多，主要掌握如何绘制线段，图形，图片，文本等。canvas可以在浏览器中绘制，也可以借助 <a href="https://github.com/Automattic/node-canvas" target="_blank" rel="external">node-canvas</a>在node服务端绘制简单的图片。本文只记录在浏览器中绘制，至于在node端如何绘制，自己可以去查看相关资料。</p>
+<p>在浏览器中绘制，就先在html中定义canvas元素，默认宽高是300 * 150，可以通过<code>width</code>和<code>height</code>设置。注意canvas元素样式宽高和canvas绘图画布宽高不是一个东西，详见<em>知识点5中canvas宽高</em>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">"canvas"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>当前浏览器不支持canvas，请升级浏览器<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></div></pre></td></tr></table></figure>
+<a id="more"></a>
+<p>在绘制之前，我们要先获取当前canvas的2d绘制上下文context，后续总是通过操作context来进行绘制。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> canvas = <span class="built_in">document</span>.querySelector(<span class="string">'#canvas'</span>);</div><div class="line"><span class="keyword">if</span> (!canvas) &#123;</div><div class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">'can not find canvas element'</span>);</div><div class="line">&#125;</div><div class="line"><span class="comment">// 注意2d.参数必须是小写的；</span></div><div class="line"><span class="comment">// 通过设置参数为webgl，可以获取3d绘制上下文</span></div><div class="line"><span class="keyword">let</span> ctx = canvas.getContext(<span class="string">'2d'</span>);</div></pre></td></tr></table></figure>
+<p><em>注：后续示例中会忽略上面的代码片段，直接使用 <code>ctx</code>  变量表示canvas的2d绘制上下文。</em></p>
+<p>再来看看canvas 2d绘制中的坐标系统，当前canvas元素左上角为坐标原点(0,0)，水平向右为X轴正方向，垂直向下为Y轴正方向，如下图。可以通过平移(translate)，旋转(rotate)，缩放(scale)来操作坐标系，实现一些动画，这部分将在动画知识部分详细讲解。</p>
+<p><img src="/assert/img/canvas/coordinate.png" alt="坐标系统"></p>
+<h4 id="线段"><a href="#线段" class="headerlink" title="线段"></a>线段</h4><p>在绘制一条简单的线段时，一般会先设置线段的样式，比如，颜色，线条宽度，线条端点样式等，我们通过设置<code>strokeStyle</code>来设置<code>ctx</code>的全局绘制样式，可以是<code>rgba</code>或合法的16进制颜色值，或者渐变对象等。如下代码简单的绘制了一条从(10,10)到(50,60)的，宽度为10的，红色的线段。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ctx.strokeStyle = <span class="string">'red'</span>;</div><div class="line">ctx.lineWidth = <span class="number">10</span>;</div><div class="line">ctx.moveTo(<span class="number">10</span>, <span class="number">10</span>);</div><div class="line">ctx.lineTo(<span class="number">50</span>, <span class="number">60</span>);</div><div class="line">ctx.stroke();</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/line.jpg" alt="line"></p>
+<p>先看看与绘制线段相关的方法以及属性，</p>
+<p>相关属性：</p>
+<ul>
+<li>lineCap，该值告诉浏览器如何绘制线段的端点，可选值为以下三个之一：butt，round，square。默认为butt。</li>
+<li>lineWidth，该值决定了线段的像素宽度。必须为非负，非无穷，默认为1.0。</li>
+<li>lineJoin，决定了两条线段相交时如何绘制焦点，只有当两条线段方向不同时，才会生效。可取值：bevel，round，miter。默认值是miter。</li>
+<li>miterLimit，告诉浏览器如何绘制miter形式的线段焦点，只有当<code>lineJoin=&#39;miter&#39;</code>有效，默认为10.0。</li>
+<li>lineDashOffset，设置虚线偏移量，默认为0.0。</li>
+</ul>
+<p>相关方法：</p>
+<ul>
+<li>beginPath，将当前路径之中的所有子路径都要清除掉，以此来重置当前路径。一般在绘制闭合图形时要先调用。</li>
+<li>closePath ,显示的封闭某段路径。该方法用于封闭圆弧路径以及由曲线或线段所创建的开放路径。</li>
+<li>moveTo，移动当前绘制点到指定的坐标。</li>
+<li>lineTo，从上一个点绘制一条到指定坐标点的线段。</li>
+<li>setLineDash，用来设置虚线的方法，参数是一个数组，表明绘制实线的长度，以及实线之间的间隙的长度。</li>
+</ul>
+<p>试试用设置不同的<code>lineCap</code>值来绘制同样的线段</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">ctx.lineWidth = <span class="number">10</span>;</div><div class="line">ctx.textAlign = <span class="string">'center'</span>;</div><div class="line"><span class="keyword">let</span> colors = [<span class="string">'red'</span>, <span class="string">'green'</span>, <span class="string">'blue'</span>];</div><div class="line"><span class="keyword">let</span> lineCaps = [<span class="string">'butt'</span>, <span class="string">'round'</span>, <span class="string">'square'</span>];</div><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> [index, lc] <span class="keyword">of</span> lineCaps.entries()) &#123;</div><div class="line">  ctx.strokeStyle = colors[index]; <span class="comment">//设置线段的颜色</span></div><div class="line">  ctx.lineCap = lc; <span class="comment">// 设置lineCap</span></div><div class="line">  ctx.beginPath(); <span class="comment">// 清空当前路径</span></div><div class="line">  ctx.moveTo(<span class="number">10</span>, <span class="number">20</span> + <span class="number">20</span> * index);</div><div class="line">  ctx.lineTo(<span class="number">50</span>, <span class="number">20</span> + <span class="number">20</span> * index);</div><div class="line">  ctx.stroke();</div><div class="line">  ctx.fillText(lc, <span class="number">80</span>, <span class="number">25</span> + <span class="number">20</span> * index);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/lineCap.jpg" alt="lineCap"></p>
+<p>从上图结果可以看出，再将<code>lineCap</code>设置为<strong>round</strong> 和<strong>square</strong>时会在原线段的两端加上一定长度的端点，只不过<strong>round</strong>是圆弧样式，<strong>square</strong>是矩形样式。需要注意的一点是，在canvas绘制上下文中同一时刻只能存在一个当前路径，为了绘制不同的线段，必须在每次绘制之前调用<code>beginPath()</code>来清空当前路线，开始新的路径。</p>
+<p>再来试试用不同的<code>lineJoin</code>值来绘制两个线段焦点处的样式</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">ctx.lineWidth = <span class="number">20</span>;</div><div class="line">ctx.textAlign = <span class="string">'center'</span>;</div><div class="line">ctx.lineCap = <span class="string">'butt'</span>;</div><div class="line"><span class="keyword">let</span> colors = [<span class="string">'red'</span>, <span class="string">'green'</span>, <span class="string">'blue'</span>];</div><div class="line"><span class="keyword">let</span> lineJoins = [<span class="string">'bevel'</span>, <span class="string">'round'</span>, <span class="string">'miter'</span>];</div><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> [index, lj] <span class="keyword">of</span> lineJoins.entries()) &#123;</div><div class="line">  ctx.strokeStyle = colors[index]; <span class="comment">//设置线段的颜色</span></div><div class="line">  ctx.lineJoin = lj; <span class="comment">//设置lineJoin</span></div><div class="line">  ctx.beginPath(); <span class="comment">//清空当前路径</span></div><div class="line">  ctx.moveTo(<span class="number">10</span> + <span class="number">80</span> * index, <span class="number">20</span>);</div><div class="line">  ctx.lineTo(<span class="number">50</span> + <span class="number">80</span> * index, <span class="number">20</span>);</div><div class="line">  ctx.lineTo(<span class="number">50</span> + <span class="number">80</span> * index, <span class="number">60</span>);</div><div class="line">  ctx.stroke();</div><div class="line">  ctx.fillText(lj, <span class="number">40</span> + <span class="number">80</span> * index, <span class="number">80</span>);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/lineJoin.jpg" alt="lineJoin"></p>
+<p>可以看到，三种<code>lineJoin</code>在处理两条线段的焦点处的不同。其中，在设置<code>lineJoin=&quot;miter&quot;</code>时，通过设置<code>miterLimit</code>属性可以设置斜接线的长度与二分之一线宽的最大比值，当超过这个比值时，则<code>lineJoin</code>会采用<strong>bevel</strong>方式。</p>
+<p>canvas不仅可以绘制实线，还可以绘制虚线。绘制虚线，通过设置<code>lineDashOffset</code>属性和调用<code>setLineDash()</code>方式。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">ctx.lineWidth = <span class="number">10</span>;</div><div class="line">ctx.textAlign = <span class="string">'center'</span>;</div><div class="line">ctx.setLineDash([<span class="number">8</span>, <span class="number">8</span>]); <span class="comment">//表示实线部分8个像素，间隙部分8个像素</span></div><div class="line"><span class="keyword">let</span> colors = [<span class="string">'red'</span>, <span class="string">'green'</span>, <span class="string">'blue'</span>];</div><div class="line"><span class="keyword">let</span> lineDashOffsets = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">4</span>];</div><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> [index, ldOffset] <span class="keyword">of</span> lineDashOffsets.entries()) &#123;</div><div class="line">  ctx.strokeStyle = colors[index]; <span class="comment">//线段颜色</span></div><div class="line">  ctx.lineDashOffset = ldOffset; <span class="comment">//设置了偏移量</span></div><div class="line">  ctx.beginPath();</div><div class="line">  ctx.moveTo(<span class="number">10</span>, <span class="number">20</span> + <span class="number">20</span> * index);</div><div class="line">  ctx.lineTo(<span class="number">100</span>, <span class="number">20</span> + <span class="number">20</span> * index);</div><div class="line">  ctx.stroke();</div><div class="line">  ctx.fillText(<span class="string">`lineDashOffset:<span class="subst">$&#123;ldOffset&#125;</span>`</span>, <span class="number">160</span>, <span class="number">25</span> + <span class="number">20</span> * index);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/lineDashOffset.jpg" alt="lineDashOffset"></p>
+<p>从图可以看到<code>lineDashOffset</code>就是设置的开始绘制虚线的偏移量。<code>setLineDash()</code>方法，接受一个数组参数，如果数组个数是奇数，则会默认把当前数组元素复制一份，使之变成偶数。从第0个元素，表示实线部分长度，第1个元素，表示间隙部分长度，第2个元素，表示实线部分长度，第3个元素，表示间隙部分长度，如果到数组最后一个元素了，又会从头开始，以此类推。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">ctx.lineWidth = <span class="number">10</span>;</div><div class="line">ctx.textAlign = <span class="string">'center'</span>;</div><div class="line"><span class="keyword">let</span> colors = [<span class="string">'red'</span>, <span class="string">'green'</span>, <span class="string">'blue'</span>, <span class="string">'gray'</span>];</div><div class="line"><span class="keyword">let</span> lineDashes = [[<span class="number">20</span>, <span class="number">20</span>], [<span class="number">40</span>, <span class="number">40</span>], [<span class="number">20</span>, <span class="number">40</span>], [<span class="number">20</span>, <span class="number">40</span>, <span class="number">20</span>]];</div><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> [index, ld] <span class="keyword">of</span> lineDashes.entries()) &#123;</div><div class="line">  ctx.strokeStyle = colors[index]; <span class="comment">//设置颜色</span></div><div class="line">  ctx.setLineDash(ld); <span class="comment">//设置lineDash</span></div><div class="line">  ctx.beginPath();</div><div class="line">  ctx.moveTo(<span class="number">10</span>, <span class="number">20</span> + <span class="number">20</span> * index);</div><div class="line">  ctx.lineTo(<span class="number">171</span>, <span class="number">20</span> + <span class="number">20</span> * index);</div><div class="line">  ctx.stroke();</div><div class="line">  ctx.fillText(<span class="string">`lineDashes:[<span class="subst">$&#123;ld&#125;</span>]`</span>, <span class="number">240</span>, <span class="number">25</span> + <span class="number">20</span> * index);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/setLineDash.jpg" alt="setLineDash"></p>
+<p>可以通过动态设置<code>lineDashOffset</code>来实现蚁线，比如选择PS中选区边缘的蚁线。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> lineDashOffset = <span class="number">0</span>; <span class="comment">//初始lineDashOffset</span></div><div class="line">ctx.strokeStyle = <span class="string">'green'</span>;</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">animate</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">if</span> (lineDashOffset &gt; <span class="number">25</span>) &#123;</div><div class="line">    lineDashOffset = <span class="number">0</span>;</div><div class="line">  &#125;</div><div class="line">  ctx.clearRect(<span class="number">0</span>, <span class="number">0</span>, width, height); <span class="comment">//清空当前canvas</span></div><div class="line">  ctx.lineDashOffset = -lineDashOffset; <span class="comment">//设置lineDashOffset</span></div><div class="line">  ctx.setLineDash([<span class="number">4</span>, <span class="number">4</span>]); <span class="comment">// 设置实线长度和间隙长度</span></div><div class="line">  ctx.rect(<span class="number">20</span>, <span class="number">20</span>, <span class="number">100</span>, <span class="number">100</span>); <span class="comment">//绘制一个矩形</span></div><div class="line">  ctx.stroke(); <span class="comment">//对canvas当前路径描边</span></div><div class="line">  lineDashOffset += <span class="number">1</span>; <span class="comment">//lineDashOffset偏移加1</span></div><div class="line">  <span class="built_in">window</span>.requestAnimationFrame(animate); <span class="comment">//用浏览器帧速率来反复执行animate函数</span></div><div class="line">&#125;</div><div class="line">animate();</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/dynamicLineDashOffset.jpg" alt="dynamicLineDashOffset"></p>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>绘制线段时，要理解canvas当前路径概念，某一时刻，canvas中当前路径只有一条，在开始新的路径时，必须调用<code>beginPath()</code>。可以通过设置<code>lineWidth</code>，<code>lineCap</code>，<code>lineJoin</code>设置线段的绘制样式。在描边线段时，可以通过<code>strokeStyle</code>来设置线段的颜色。</p>
+<p>canvas中不仅可以绘制实线，还可以通过<code>lineDashOffset</code>和<code>setLineDash()</code>来绘制虚线。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">javascript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">五子棋</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">canvas</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//img.fanhaobai.com/qrcode.php?url=https://blog.snayan.com/2018/07/09/canvas核心技术-如何绘制线段/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2018/07/09/canvas-核心技术/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">canvas核心技术</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
   
 
-    
+  
+  <div id="SOHUCS" sid="canvas核心技术-如何绘制线段" ></div>
+<script type="text/javascript">
+(function(){
+var appid = "cytGCMhYC";
+var conf = "prod_4115b792b4b45e18c214d4bbd947a0db";
+var width = window.innerWidth || document.documentElement.clientWidth;
+if (width < 960) {
+window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("//changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+
+  
+
+  
 
 
           </div>
@@ -239,9 +373,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		root: "/",

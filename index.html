@@ -161,6 +161,70 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-canvas核心技术-如何绘制线段" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/09/canvas核心技术-如何绘制线段/">canvas核心技术-如何绘制线段</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/09/canvas核心技术-如何绘制线段/" class="archive-article-date">
+  	<time datetime="2018-07-09T12:16:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这篇是学习和回顾canvas系列笔记的第一篇，完整笔记详见：<a href="https://blog.snayan.com/2018/07/09/canvas-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF/">canvas核心技术</a><br>学习canvas，首先得知道如何去绘制线段，然后才能通过很多简单的线段去实现比较复杂的图形，比如常见的图表，柱状图，折线图等都是通过一段一段的线段实现的。</p>
+<h4 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h4><p>canvas 的基础知识不算多，主要掌握如何绘制线段，图形，图片，文本等。canvas可以在浏览器中绘制，也可以借助 <a href="https://github.com/Automattic/node-canvas" target="_blank" rel="external">node-canvas</a>在node服务端绘制简单的图片。本文只记录在浏览器中绘制，至于在node端如何绘制，自己可以去查看相关资料。</p>
+<p>在浏览器中绘制，就先在html中定义canvas元素，默认宽高是300 * 150，可以通过<code>width</code>和<code>height</code>设置。注意canvas元素样式宽高和canvas绘图画布宽高不是一个东西，详见<em>知识点5中canvas宽高</em>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">canvas</span> <span class="attr">id</span>=<span class="string">"canvas"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>当前浏览器不支持canvas，请升级浏览器<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">canvas</span>&gt;</span></div></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2018/07/09/canvas核心技术-如何绘制线段/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">canvas</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/09/canvas核心技术-如何绘制线段/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-canvas-核心技术" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -777,72 +841,6 @@
 
 
   
-    <article id="post-笔记之decorator" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/11/26/笔记之decorator/">笔记之decorator</a>
-    </h1>
-  
-
-        
-        <a href="/2017/11/26/笔记之decorator/" class="archive-article-date">
-  	<time datetime="2017-11-26T14:30:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近一个月都在忙公司的新项目<strong>会过精选</strong>，加上双11大促，真的是很忙。加上最近的烦心事比较多，心情一直不是很好，做什么事情，都效率低下。收拾收拾心情，继续努力吧。一切都不会那么糟糕。<br>在做会过精选M站时，我们前端组选型的技术栈是React,Redux,TypeScript。一直都知道 decorator这个东西，但之前在卷皮没有机会用，现在在会过，我就高高兴兴的开始用起来了。<br>装饰者的功能实际就是在不改原功能的前提下，对原目标进行额外功能的增强，比如：日志记录，缓存，访问控制等。</p>
-<h3 id="对类进行装饰"><a href="#对类进行装饰" class="headerlink" title="对类进行装饰"></a>对类进行装饰</h3><p>decorator可以作用在类上，达到对类的属性或者原型进行改造。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//定义这个页面是需要登陆权限的页面</span></div><div class="line">@needPageLogin</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">OpenCoupons</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span>&lt;<span class="title">OpenCouponsProps</span>, <span class="title">ComponentState</span>&gt;</span>&#123;</div><div class="line">  <span class="comment">//...</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-        
-          <a class="article-more-a" href="/2017/11/26/笔记之decorator/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">javascript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">decorator</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/11/26/笔记之decorator/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -928,15 +926,15 @@
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">canvas</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">2017</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">小结</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">canvas</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -964,19 +962,19 @@
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">vue</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
+                <a href="javascript:void(0)" class="js-tag color5">decorator</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">decorator</a>
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
               </li>
              
               <li class="article-tag-list-item">
