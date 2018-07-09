@@ -6,18 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://blog.snayan.com">
-  <title>Archives: 2018/4 | 三洋同学的笔记本</title>
+  <title>canvas核心技术 | 三洋同学的笔记本</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="三洋同学的笔记本">
-<meta property="og:type" content="website">
-<meta property="og:title" content="三洋同学的笔记本">
-<meta property="og:url" content="https://blog.snayan.com/archives/2018/04/index.html">
+  <meta name="description" content="最近项目需求中要写较多H5小游戏，游戏本身体量不是很复杂，主要是承载较多业务逻辑，所以决定用canvas来完成游戏部分。之前只是知道H5中有canvas这个东西，也知道它大概是画图的，但具体怎么用，还是一无所知的。在MDN在看了一些相关资料，一口气也看了HTML 5 Canvas 核心技术和HTML5 2D 游戏编程核心技术，对canvas H5 游戏编程有了大致的了解，发现canvas游戏编程其">
+<meta name="keywords" content="canvas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="canvas核心技术">
+<meta property="og:url" content="https://blog.snayan.com/2018/07/09/canvas-核心技术/index.html">
 <meta property="og:site_name" content="三洋同学的笔记本">
-<meta property="og:description" content="三洋同学的笔记本">
+<meta property="og:description" content="最近项目需求中要写较多H5小游戏，游戏本身体量不是很复杂，主要是承载较多业务逻辑，所以决定用canvas来完成游戏部分。之前只是知道H5中有canvas这个东西，也知道它大概是画图的，但具体怎么用，还是一无所知的。在MDN在看了一些相关资料，一口气也看了HTML 5 Canvas 核心技术和HTML5 2D 游戏编程核心技术，对canvas H5 游戏编程有了大致的了解，发现canvas游戏编程其">
 <meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2018-07-09T11:57:41.782Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="三洋同学的笔记本">
-<meta name="twitter:description" content="三洋同学的笔记本">
+<meta name="twitter:title" content="canvas核心技术">
+<meta name="twitter:description" content="最近项目需求中要写较多H5小游戏，游戏本身体量不是很复杂，主要是承载较多业务逻辑，所以决定用canvas来完成游戏部分。之前只是知道H5中有canvas这个东西，也知道它大概是画图的，但具体怎么用，还是一无所知的。在MDN在看了一些相关资料，一口气也看了HTML 5 Canvas 核心技术和HTML5 2D 游戏编程核心技术，对canvas H5 游戏编程有了大致的了解，发现canvas游戏编程其">
   
     <link rel="alternative" href="/atom.xml" title="三洋同学的笔记本" type="application/atom+xml">
   
@@ -159,98 +161,161 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-canvas-核心技术" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/04/11/react16源码学习4/" class="archive-article-date">
-  	<time datetime="2018-04-11T01:48:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-11</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/04/11/react16源码学习4/">react 16学习(四)</a>
+    <h1 class="article-title" itemprop="name">
+      canvas核心技术
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/07/09/canvas-核心技术/" class="archive-article-date">
+  	<time datetime="2018-07-09T11:53:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近项目需求中要写较多H5小游戏，游戏本身体量不是很复杂，主要是承载较多业务逻辑，所以决定用canvas来完成游戏部分。之前只是知道H5中有canvas这个东西，也知道它大概是画图的，但具体怎么用，还是一无所知的。在<a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial" target="_blank" rel="external">MDN</a>在看了一些相关资料，一口气也看了<a href="https://book.douban.com/subject/24533314/" target="_blank" rel="external">HTML 5 Canvas 核心技术</a>和<a href="https://book.douban.com/subject/27088021/" target="_blank" rel="external">HTML5 2D 游戏编程核心技术</a>，对canvas H5 游戏编程有了大致的了解，发现canvas游戏编程其实挺有趣的。目前也在学习webgl相关知识，打算把前端可视化这一块也深入学习。现在先记录一些自己认为canvas比较重要的知识，回顾和再学习。后续在记录webgl相关知识。</p>
+<h4 id="主要知识点"><a href="#主要知识点" class="headerlink" title="主要知识点"></a>主要知识点</h4><p>本系列主要深入学习canvas 2d编程中相关比较重要和基础的知识，算是对<strong>HTML 5 Canvas 核心技术</strong>这本书的读后感，大致知识点如下：</p>
+<ol>
+<li>基础知识，学习如何绘制线段，图形，图片，文本等。</li>
+<li>动画知识，学习如何用canvas实现简单的动画以及相关影响因素</li>
+<li>碰撞检测，学习如何检测两个物体在运动过程中是否发生碰撞</li>
+<li>2D游戏开发，学习用canvas开发2D游戏</li>
+<li>canvas相关小知识点</li>
+</ol>
+<p>在学习过程中，最好是自己能动手实现，我就专门建了一个canvas demo的项目，里面都是自己在学习canvas时动手写的一些例子，感兴趣的可以去看看。<br>项目仓库地址：<a href="https://github.com/snayan/canvas-demo" target="_blank" rel="external">https://github.com/snayan/canvas-demo</a><br>demo预览地址：<a href="https://blog.snayan.com/canvas-demo/">https://blog.snayan.com/canvas-demo/</a></p>
+<p>我会按照上面的主要知识点，分篇幅来学习和回顾canvas 相关的核心技术。主要如下：</p>
+<ul>
+<li>canvas核心技术-如何绘制线段</li>
+<li>canvas核心技术-如何绘制图形</li>
+<li>canvas核心技术-如何图片和文本</li>
+<li>canvas核心技术-如何实现简单动画</li>
+<li>canvas核心技术-如何实现复杂动画</li>
+<li>canvas核心技术-如何实现碰撞检测</li>
+<li>canvas核心技术-如何实现一个简单的2D游戏引擎</li>
+<li>canvas核心技术-宽高，渐变，绘制真正1px线段</li>
+<li>canvas核心技术-向量，三角函数</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">canvas</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//img.fanhaobai.com/qrcode.php?url=https://blog.snayan.com/2018/07/09/canvas-核心技术/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/04/04/react16源码学习3/" class="archive-article-date">
-  	<time datetime="2018-04-04T01:11:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-04</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/04/04/react16源码学习3/">react 16学习(三)</a>
-    </h1>
+  
+    <a href="/2018/06/27/常见webpack构建项目流程/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">webpack构建常见流程</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-  
-    </div></section>
+  <div id="SOHUCS" sid="canvas-核心技术" ></div>
+<script type="text/javascript">
+(function(){
+var appid = "cytGCMhYC";
+var conf = "prod_4115b792b4b45e18c214d4bbd947a0db";
+var width = window.innerWidth || document.documentElement.clientWidth;
+if (width < 960) {
+window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("//changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+
   
 
-    
+  
 
 
           </div>
@@ -273,8 +338,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
