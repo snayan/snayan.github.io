@@ -161,6 +161,72 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-canvas核心技术-如何绘制图形" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/18/canvas核心技术-如何绘制图形/">canvas核心技术-如何绘制图形</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/18/canvas核心技术-如何绘制图形/" class="archive-article-date">
+  	<time datetime="2018-07-18T00:58:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这篇学习和回顾canvas系列笔记的第二篇，完整笔记详见：<a href="https://blog.snayan.com/2018/07/09/canvas-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF/">canvas核心技术</a></p>
+<p>通过上一篇<a href="https://blog.snayan.com/2018/07/09/canvas%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E5%A6%82%E4%BD%95%E7%BB%98%E5%88%B6%E7%BA%BF%E6%AE%B5/">canvas核心技术-如何绘制线段</a>的学习，我们知道了如何去绘制线段。很多的线段的拼接就组成了图形了，比如常见的三角形，矩形，圆形等。</p>
+<p>常见图形的绘制可以查看我的在线示例：<a href="https://blog.snayan.com/canvas-demo/?module=shape">canvas shape</a></p>
+<p>示例项目仓库地址：<a href="https://github.com/snayan/canvas-demo" target="_blank" rel="external">canvas demo</a></p>
+<h4 id="图形"><a href="#图形" class="headerlink" title="图形"></a>图形</h4><h5 id="三角形"><a href="#三角形" class="headerlink" title="三角形"></a>三角形</h5><p>先来看看如何绘制一个三角形。三角形就是由三条边组成，我们可以理解为三个线段组成。确定了三角形的三个顶点的坐标位置，然后用线连接起来。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> point1 = [<span class="number">100</span>, <span class="number">30</span>]; <span class="comment">//顶底1</span></div><div class="line"><span class="keyword">let</span> point2 = [<span class="number">50</span>, <span class="number">100</span>]; <span class="comment">//顶点2</span></div><div class="line"><span class="keyword">let</span> point3 = [<span class="number">180</span>, <span class="number">120</span>]; <span class="comment">//顶点3</span></div><div class="line">ctx.beginPath(); <span class="comment">//开始一段新路径</span></div><div class="line">ctx.moveTo(point1[<span class="number">0</span>], point1[<span class="number">1</span>]); <span class="comment">//移动起点到顶点1</span></div><div class="line">ctx.lineTo(point2[<span class="number">0</span>], point2[<span class="number">1</span>]); <span class="comment">//连接顶点1与顶点2</span></div><div class="line">ctx.lineTo(point3[<span class="number">0</span>], point3[<span class="number">1</span>]); <span class="comment">//连接顶点2与顶点3</span></div><div class="line">ctx.stroke(); <span class="comment">//描边</span></div><div class="line"><span class="comment">//绘制顶点坐标显示出来</span></div><div class="line">ctx.textAlign=<span class="string">'center'</span>; <span class="comment">//绘制文本水平居中</span></div><div class="line">ctx.fillText(<span class="string">`(<span class="subst">$&#123;point1[<span class="number">0</span>]&#125;</span>,<span class="subst">$&#123;point1[<span class="number">1</span>]&#125;</span>)`</span>, point1[<span class="number">0</span>], point1[<span class="number">1</span>]<span class="number">-10</span>); <span class="comment">//绘制顶点1文本</span></div><div class="line">ctx.fillText(<span class="string">`(<span class="subst">$&#123;point2[<span class="number">0</span>]&#125;</span>,<span class="subst">$&#123;point2[<span class="number">1</span>]&#125;</span>)`</span>, point2[<span class="number">0</span>]<span class="number">-25</span>, point2[<span class="number">1</span>]+<span class="number">5</span>); <span class="comment">//绘制顶点2文本</span></div><div class="line">ctx.fillText(<span class="string">`(<span class="subst">$&#123;point3[<span class="number">0</span>]&#125;</span>,<span class="subst">$&#123;point3[<span class="number">1</span>]&#125;</span>)`</span>, point3[<span class="number">0</span>]+<span class="number">30</span>, point3[<span class="number">1</span>]+<span class="number">5</span>); <span class="comment">//绘制顶点3文本</span></div></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2018/07/18/canvas核心技术-如何绘制图形/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">canvas</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/18/canvas核心技术-如何绘制图形/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-canvas核心技术-如何绘制线段" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -767,80 +833,6 @@
 
 
   
-    <article id="post-2017小结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/12/14/2017小结/">2017年小结</a>
-    </h1>
-  
-
-        
-        <a href="/2017/12/14/2017小结/" class="archive-article-date">
-  	<time datetime="2017-12-14T15:10:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-12-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>嗯，又到了年末，是时候对17年做个了断，好好开始18年。<br>17年的年初计划是：</p>
-<ul>
-<li>找一家靠谱的互联网公司</li>
-<li>阅读12本书</li>
-<li>报个英语培训班</li>
-</ul>
-<h5 id="找一家靠谱的互联网公司"><a href="#找一家靠谱的互联网公司" class="headerlink" title="找一家靠谱的互联网公司"></a>找一家靠谱的互联网公司</h5><p>年初，3月份从广田智能来到了深圳卷皮，是找到了一家互联网公司，很互联网😂。<br>从PC端半路子前端到移动端的纯前端了，恶补各种移动端开发基础知识，移动端布局方案，详见<a href="https://snayan.github.io/2017/07/31/mobile-layout/" target="_blank" rel="external">移动端布局方案</a>。<br>从grunt的使用到gulp，再到webpack。用gulp也写一个小的脚手架工具，详见<a href="https://github.com/snayan/web-scaffold" target="_blank" rel="external">web-scaffold</a>。<br>从backbone的开发框架到react，也稍微阅读了一下react15的部分源码，详见<a href="https://snayan.github.io/2017/05/04/react-total-constructor/" target="_blank" rel="external">阅读react源码部分</a>。<br>从0到1开始开发微信小程序，写了一个小程序组件化开发，详见<a href="https://snayan.github.io/2017/09/17/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%BB%84%E4%BB%B6%E5%8C%96%E7%BC%96%E7%A8%8B/" target="_blank" rel="external">小程序组件化编程</a>。</p>
-<h5 id="阅读12本书"><a href="#阅读12本书" class="headerlink" title="阅读12本书"></a>阅读12本书</h5><p>从3月份开始，一直都坚持在看书，期间虽也断续停了一段，但幸好的是，现在依然坚持着。数数，应该有12本书了，详见<a href="https://github.com/snayan/bookLists#2017计划" target="_blank" rel="external">2017书单</a>。好习惯，要坚持啊✊。</p>
-<h5 id="报个英语培训班"><a href="#报个英语培训班" class="headerlink" title="报个英语培训班"></a>报个英语培训班</h5><p>额，这个计划实在是没有办，之前6月份好像在天虹里有个培训班的招生柜台，大致去了解了一下。下半年就一直在加班，真的没有时间（没时间不是理由，好吧！），一直到现在也没有个没有。明年估计也不会报了，没钱啊（吃土了）。</p>
-<h5 id="额外收获"><a href="#额外收获" class="headerlink" title="额外收获"></a>额外收获</h5><p>17年，抽空搭了一个免费的GitHub博客，地址<a href="https://snayan.github.io/" target="_blank" rel="external">三洋同学的blog</a>。到现在，写了有接近10篇了吧，就是随便写写，总结也好，做笔记也好，当书签也好，反正，这是一个好习惯，不能放弃，要坚持。</p>
-<p>好吧，时间不早了，来小结吧。嗯，17年确实累了不少，通宵都熬了不少，老了不少，我相信，收获也是不少的。题外话哈，负能量，12月初也体会了一些凉心的事，但是也收获一些暖心的事。不管怎么样，还是抱着一颗感恩的心，去过18年。</p>
-<p>18年的计划呢？明年再定。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2017</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">小结</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/12/14/2017小结/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -938,15 +930,15 @@
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">resposive</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">mobile</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -966,19 +958,19 @@
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">decorator</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">vue</a>
+                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
               </li>
             
             <div class="clearfix"></div>

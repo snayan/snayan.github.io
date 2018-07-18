@@ -161,6 +161,67 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-react-Component-source" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/09/react-Component-source/">阅读react源码--component部分</a>
+    </h1>
+  
+
+        
+        <a href="/2017/05/09/react-Component-source/" class="archive-article-date">
+  	<time datetime="2017-05-09T13:28:39.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天主要看下<code>React.Component</code>，实际上<code>Component</code>是<code>React</code>对象上一个构造函数。<br>构造函数接受三个参数，<code>props</code>，<code>context</code>，<code>updater</code>，<code>updater</code>实际是在<code>render</code>中注入的，它是用来实际更新<code>state</code><br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">ReactComponent</span>(<span class="params">props,context,updater</span>)</span>&#123;</div><div class="line">  <span class="keyword">this</span>.props=props;</div><div class="line">  <span class="keyword">this</span>.context=context;</div><div class="line">  <span class="comment">//emptyObject 是一个空对象&#123;&#125;</span></div><div class="line">  <span class="keyword">this</span>.refs=emptyObject;</div><div class="line">  <span class="comment">//ReactNoopUpdateQueue is the abstract API for an update queue</span></div><div class="line">  <span class="keyword">this</span>.updater=updater||ReactNoopUpdateQueue;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+        
+          <a class="article-more-a" href="/2017/05/09/react-Component-source/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/05/09/react-Component-source/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-react-total-constructor" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -388,15 +449,15 @@
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">resposive</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">mobile</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -416,19 +477,19 @@
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">decorator</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">vue</a>
+                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
               </li>
             
             <div class="clearfix"></div>
