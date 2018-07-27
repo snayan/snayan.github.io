@@ -161,6 +161,74 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-canvas核心技术-如何绘制图片和文本" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/27/canvas核心技术-如何绘制图片和文本/">canvas核心技术-如何绘制图片和文本</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/27/canvas核心技术-如何绘制图片和文本/" class="archive-article-date">
+  	<time datetime="2018-07-27T00:36:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这篇是学习和回顾canvas系列笔记的第三篇，完整笔记详见：<a href="https://snayan.github.io/2018/07/09/canvas-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF/">canvas 核心技术</a></p>
+<p>通过上一篇<a href="https://snayan.github.io/2018/07/18/canvas%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E5%A6%82%E4%BD%95%E7%BB%98%E5%88%B6%E5%9B%BE%E5%BD%A2/">canvas核心技术-如何绘制图形</a>的学习，我们知道了如何绘制任意多边形以及图片的填充规则。在canvas中应用比较多的还有绘制图片和文本。这篇文章，我们就来详细聊聊图片和文本的绘制。</p>
+<h4 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h4><p>在canvas中，我们可以把一张图片直接绘制到canvas上，跟使用<code>img</code>标签类似，不同的是，图片是绘制到canvas画布上的，而非独立的html元素。canvas提供了<code>drawImage</code>方法来绘制图片，这个方法可以有三种形式的用法，如下，</p>
+<ul>
+<li><code>void drawImage(image,dx,dy);</code>直接将图片绘制到指定的canvas坐标上，图片由image传入，坐标由dx和dy传入。</li>
+<li><code>void drawImage(image,dx,dy,dw,dh);</code>同上面形式，只不过指定了图片绘制的宽度和高度，宽高由dw和dh传入。</li>
+<li><code>void drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh);</code>这个是最复杂，最灵活的使用形式，第一参数是待绘制的图片元素，第二个到第五个参数，指定了原图片上的坐标和宽高，这部分区域将会被绘制到canvas中，而其他区域将忽略，最后四个参数跟形式二一样，指定了canvas目标中的坐标和宽高。</li>
+</ul>
+        
+          <a class="article-more-a" href="/2018/07/27/canvas核心技术-如何绘制图片和文本/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">canvas</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/27/canvas核心技术-如何绘制图片和文本/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-canvas核心技术-如何绘制图形" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -764,75 +832,6 @@
 
 
   
-    <article id="post-简单的五子棋" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/01/23/简单的五子棋/">简单的五子棋</a>
-    </h1>
-  
-
-        
-        <a href="/2018/01/23/简单的五子棋/" class="archive-article-date">
-  	<time datetime="2018-01-23T09:14:43.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-01-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在某次求职过程中，收到了一个笔试题，要求写一个人机对战的五子棋，题目要求如下：</p>
-<blockquote>
-<p>  请编写一个单机【五子棋】游戏，要求如下：<br>  使用原生技术实现，兼容 Chrome 浏览器即可。<br>  实现胜负判断，并给出赢棋提示；任意玩家赢得棋局，锁定棋盘。<br>  请尽可能的考虑游戏的扩展性，界面可以使用 DOM / Canvas 实现。考虑后续切换界面实现的方式成本最低。（比如选择使用 DOM 实现界面，需求改变为使用 Canvas 实现时尽可能少的改动代码）。<br>  实现一个悔棋功能<br>  实现一个撤销悔棋功能<br>  实现一个人机对战功能<br>  尽可能的考虑实现的灵活性和扩展性</p>
-</blockquote>
-<p>自己收到这个题目之后感觉有点棘手，自己没有开发过游戏，时间也比较紧。下班之后就开始弄了，简单介绍下自己的实现过程。<br>
-        
-          <a class="article-more-a" href="/2018/01/23/简单的五子棋/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">javascript</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">五子棋</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/01/23/简单的五子棋/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -951,10 +950,6 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">resposive</a>
               </li>
              
@@ -963,11 +958,15 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">react</a>
+                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">h5</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">react</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -983,11 +982,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
+                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
               </li>
              
               <li class="article-tag-list-item">

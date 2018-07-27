@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <link rel="dns-prefetch" href="https://snayan.github.io">
+  <title>canvas核心技术-如何绘制图片和文本 | 三洋同学的笔记本</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这篇是学习和回顾canvas系列笔记的第三篇，完整笔记详见：canvas 核心技术 通过上一篇canvas核心技术-如何绘制图形的学习，我们知道了如何绘制任意多边形以及图片的填充规则。在canvas中应用比较多的还有绘制图片和文本。这篇文章，我们就来详细聊聊图片和文本的绘制。 图片在canvas中，我们可以把一张图片直接绘制到canvas上，跟使用img标签类似，不同的是，图片是绘制到canvas">
+<meta name="keywords" content="canvas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="canvas核心技术-如何绘制图片和文本">
+<meta property="og:url" content="https://snayan.github.io/2018/07/27/canvas核心技术-如何绘制图片和文本/index.html">
+<meta property="og:site_name" content="三洋同学的笔记本">
+<meta property="og:description" content="这篇是学习和回顾canvas系列笔记的第三篇，完整笔记详见：canvas 核心技术 通过上一篇canvas核心技术-如何绘制图形的学习，我们知道了如何绘制任意多边形以及图片的填充规则。在canvas中应用比较多的还有绘制图片和文本。这篇文章，我们就来详细聊聊图片和文本的绘制。 图片在canvas中，我们可以把一张图片直接绘制到canvas上，跟使用img标签类似，不同的是，图片是绘制到canvas">
+<meta property="og:locale" content="zh">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/drawImage1.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/drawImage2.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/drawImage3.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/drawImage4.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/drawImage5.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/getImageData1.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/putImageData1.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/putImageData2.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/putImageData3.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/putImageData4.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/strokeText1.png">
+<meta property="og:image" content="https://snayan.github.io/assert/img/canvas/strokeText2.png">
+<meta property="og:updated_time" content="2018-07-27T00:50:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="canvas核心技术-如何绘制图片和文本">
+<meta name="twitter:description" content="这篇是学习和回顾canvas系列笔记的第三篇，完整笔记详见：canvas 核心技术 通过上一篇canvas核心技术-如何绘制图形的学习，我们知道了如何绘制任意多边形以及图片的填充规则。在canvas中应用比较多的还有绘制图片和文本。这篇文章，我们就来详细聊聊图片和文本的绘制。 图片在canvas中，我们可以把一张图片直接绘制到canvas上，跟使用img标签类似，不同的是，图片是绘制到canvas">
+<meta name="twitter:image" content="https://snayan.github.io/assert/img/canvas/drawImage1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="三洋同学的笔记本" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/assert/img/favicon.png">
+  
+  <link rel="stylesheet" type="text/css" href="/./main.080185.css">
+  <style type="text/css">
+  
+    #container.show {
+      background: linear-gradient(200deg,#a0cfe4,#e8c37e);
+    }
+  </style>
+  
+
+  
+
+</head>
+
+<body>
+  <div id="container" q-class="show:isCtnShow">
+    <canvas id="anm-canvas" class="anm-canvas"></canvas>
+    <div class="left-col" q-class="show:isShow">
+      
+<div class="overlay" style="background: #4d4d4d"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img src="/assert/img/my.jpg" class="js-avatar">
+		</a>
+		<hgroup>
+		  <h1 class="header-author"><a href="/">三洋</a></h1>
+		</hgroup>
+		
+		<p class="header-subtitle">十心十意，脚踏实地</p>
+		
+
+		<nav class="header-menu">
+			<ul>
+			
+				<li><a href="/">主页</a></li>
+	        
+				<li><a href="/favorite">收藏</a></li>
+	        
+				<li><a href="/photo">相册</a></li>
+	        
+			</ul>
+		</nav>
+		<nav class="header-smart-menu">
+    		
+    			
+    			<a q-on="click: openSlider(e, 'innerArchive')" href="javascript:void(0)">所有文章</a>
+    			
+            
+    			
+    			<a q-on="click: openSlider(e, 'aboutme')" href="javascript:void(0)">关于我</a>
+    			
+            
+		</nav>
+		<nav class="header-nav">
+			<div class="social">
+				
+					<a class="github" target="_blank" href="https://github.com/snayan" title="github"><i class="icon-github"></i></a>
+		        
+					<a class="douban" target="_blank" href="https://www.douban.com/people/snayan/" title="douban"><i class="icon-douban"></i></a>
+		        
+					<a class="rss" target="_blank" href="/atom.xml" title="rss"><i class="icon-rss"></i></a>
+		        
+					<a class="mail" target="_blank" href="mailto:snayan@sina.com" title="mail"><i class="icon-mail"></i></a>
+		        
+			</div>
+		</nav>
+	</header>		
+</div>
+
+    </div>
+    <div class="mid-col" q-class="show:isShow,hide:isShow|isFalse">
+      
+<nav id="mobile-nav">
+  	<div class="overlay js-overlay" style="background: #4d4d4d"></div>
+	<div class="btnctn js-mobile-btnctn">
+  		<div class="slider-trigger list" q-on="click: openSlider(e)"><i class="icon icon-sort"></i></div>
+	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img src="/assert/img/my.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author js-header-author">三洋</h1>
+			</hgroup>
+			
+			<p class="header-subtitle"><i class="icon icon-quo-left"></i>十心十意，脚踏实地<i class="icon icon-quo-right"></i></p>
+			
+			
+			
+				
+			
+				
+			
+				
+			
+			
+			
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/snayan" title="github"><i class="icon-github"></i></a>
+			        
+						<a class="douban" target="_blank" href="https://www.douban.com/people/snayan/" title="douban"><i class="icon-douban"></i></a>
+			        
+						<a class="rss" target="_blank" href="/atom.xml" title="rss"><i class="icon-rss"></i></a>
+			        
+						<a class="mail" target="_blank" href="mailto:snayan@sina.com" title="mail"><i class="icon-mail"></i></a>
+			        
+				</div>
+			</nav>
+
+			<nav class="header-menu js-header-menu">
+				<ul style="width: 70%">
+				
+				
+					<li style="width: 33.333333333333336%"><a href="/">主页</a></li>
+		        
+					<li style="width: 33.333333333333336%"><a href="/favorite">收藏</a></li>
+		        
+					<li style="width: 33.333333333333336%"><a href="/photo">相册</a></li>
+		        
+				</ul>
+			</nav>
+		</header>				
+	</div>
+	<div class="mobile-mask" style="display:none" q-show="isShow"></div>
+</nav>
+
+      <div id="wrapper" class="body-wrap">
+        <div class="menu-l">
+          <div class="canvas-wrap">
+            <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
+          </div>
+          <div id="js-content" class="content-ll">
+            <article id="post-canvas核心技术-如何绘制图片和文本" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      canvas核心技术-如何绘制图片和文本
+    </h1>
+  
+
+        
+        <a href="/2018/07/27/canvas核心技术-如何绘制图片和文本/" class="archive-article-date">
+  	<time datetime="2018-07-27T00:36:58.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这篇是学习和回顾canvas系列笔记的第三篇，完整笔记详见：<a href="https://snayan.github.io/2018/07/09/canvas-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF/">canvas 核心技术</a></p>
+<p>通过上一篇<a href="https://snayan.github.io/2018/07/18/canvas%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E5%A6%82%E4%BD%95%E7%BB%98%E5%88%B6%E5%9B%BE%E5%BD%A2/">canvas核心技术-如何绘制图形</a>的学习，我们知道了如何绘制任意多边形以及图片的填充规则。在canvas中应用比较多的还有绘制图片和文本。这篇文章，我们就来详细聊聊图片和文本的绘制。</p>
+<h4 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h4><p>在canvas中，我们可以把一张图片直接绘制到canvas上，跟使用<code>img</code>标签类似，不同的是，图片是绘制到canvas画布上的，而非独立的html元素。canvas提供了<code>drawImage</code>方法来绘制图片，这个方法可以有三种形式的用法，如下，</p>
+<ul>
+<li><code>void drawImage(image,dx,dy);</code>直接将图片绘制到指定的canvas坐标上，图片由image传入，坐标由dx和dy传入。</li>
+<li><code>void drawImage(image,dx,dy,dw,dh);</code>同上面形式，只不过指定了图片绘制的宽度和高度，宽高由dw和dh传入。</li>
+<li><code>void drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh);</code>这个是最复杂，最灵活的使用形式，第一参数是待绘制的图片元素，第二个到第五个参数，指定了原图片上的坐标和宽高，这部分区域将会被绘制到canvas中，而其他区域将忽略，最后四个参数跟形式二一样，指定了canvas目标中的坐标和宽高。</li>
+</ul>
+<a id="more"></a>
+<p>根据参数个数，我们会分别调用不同形式的<code>drawImage</code>，第一种形式最简单，就是将原图片直接绘制到目标canvas指定坐标处，图片宽高就是原图片宽高，不会缩放。第二种形式呢，指定了目标canvas绘制区域的宽高，那么图片最终被绘制在canvas上的宽高被固定了，图片会被缩放，如果指定的dw和dh与原图片的宽高不是等比咧的，图片会被压缩或者拉伸变形。第三种形式，分别指定了原图片被绘制的区域和目标canvas中的区域，通过sx，sy，sw，sh我们可只选择原图片中某一部分区域，也可以指定完整的图片，通过dx，dy，dw，dh我们待绘制的目标canvas区域。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> img = <span class="built_in">document</span>.createElement(<span class="string">'img'</span>); <span class="comment">//创建img元素</span></div><div class="line">img.src = <span class="string">'./learn9/google.png'</span>; <span class="comment">//指定img的src</span></div><div class="line">img.addEventListener(</div><div class="line">  <span class="string">'load'</span>,</div><div class="line">  () =&gt; &#123;</div><div class="line">    ctx.drawImage(img, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">// 将img元素调用drawImage(img,dx,dy)绘制出来</span></div><div class="line">  &#125;,</div><div class="line">  <span class="literal">false</span>,</div><div class="line">);</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/drawImage1.png" alt="drawImage1"></p>
+<p>上面这个示例，这张Google图片的原始大小是544*184，而canvas区域的大小是默认的300*150。我们调用了第一种形式，直接将图片绘制到canvas的坐标原点处，图片没有被缩放，超出了canvas区域，超出的部分，会被canvas忽略的。有一点需要注意的是，我是在图片的<code>onload</code>事件中才开始绘制的，因为图片没有加载完毕，直接绘制图片是无效的。下面的代码示例，我都将只贴出<code>onload</code>事件里的代码，图片加载部分代码都相同，就省略了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> canvasWidth = canvas.width; <span class="comment">//获取canvas宽度</span></div><div class="line"><span class="keyword">let</span> canvasHeight = canvas.height; <span class="comment">//获取canvas高度</span></div><div class="line">ctx.drawImage(img, <span class="number">0</span>, <span class="number">0</span>, canvasWidth, canvasHeight);</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/drawImage2.png" alt="drawImage2"></p>
+<p>我们把目标canvas区域指定为canvas的宽高，图片总是会被绘制在整个canvas中，同时也可以看到绘制出来的图片变形了。我们可以通过计算出原图片的宽高比，根据canvas目标区域的宽度来计算出canvas目标区域的高度，或者根据canvas目标区域的高度来计算出canvas目标区域的宽度。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> imgWidth = img.width; <span class="comment">//获取图片的宽度</span></div><div class="line"><span class="keyword">let</span> imgHeight = img.height; <span class="comment">//获取图片的高度</span></div><div class="line"><span class="keyword">let</span> targetWidth = canvasWidth; <span class="comment">//指定目标canvas区域的宽度</span></div><div class="line"><span class="keyword">let</span> targetHeight = (imgHeight * targetWidth) / imgWidth; <span class="comment">//计算出目标canvas区域的高度</span></div><div class="line">ctx.drawImage(img, <span class="number">0</span>, <span class="number">0</span>, targetWidth, targetHeight);</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/drawImage3.png" alt="drawImage3"></p>
+<p>从图可以看到，根据图片宽高比计算出来的目标canvas区域，最终，图片绘制出来的效果是等比例缩放，没有变形。</p>
+<p>我们再来看看最为复杂，且最为灵活的第三种方式。使用这种方式，我们可以把Google这张图片中的红色的那个o部分绘制出来。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ctx.drawImage(img, <span class="number">143</span>, <span class="number">48</span>, <span class="number">90</span>, <span class="number">90</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">90</span>, <span class="number">90</span>);</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/drawImage4.png" alt="drawImage4"></p>
+<p>Google这张图中，红色字母o在原图片中的坐标是(143,48)，宽高是90*90，我们简单的把这个字母绘制在了canvas的(0,0)坐标处，宽高也是90*90。可以再来复杂点，把这个红色的字母o，让它的高度跟canvas的高度一样，且等比例放大宽度，且圆心正好在canvas中心，实现如下，</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> oWidth = <span class="number">90</span>; <span class="comment">//获取字母o的宽度</span></div><div class="line"><span class="keyword">let</span> oHeight = <span class="number">90</span>; <span class="comment">//获取字母o的高度</span></div><div class="line"><span class="keyword">let</span> targetHeight = canvas.height; <span class="comment">//指定目标canvas区域的高度</span></div><div class="line"><span class="keyword">let</span> targetWidth = (oWidth * targetHeight) / oHeight; <span class="comment">//计算出目标canvas区域的宽度</span></div><div class="line"><span class="keyword">let</span> targetX = (canvas.width - targetWidth) / <span class="number">2</span>; <span class="comment">//移动目标canvas坐标X</span></div><div class="line">ctx.drawImage(img, <span class="number">143</span>, <span class="number">48</span>, oWidth, oHeight, targetX, <span class="number">0</span>, targetWidth, targetHeight);</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/drawImage5.png" alt="drawImage5"></p>
+<p> <code>drawImage</code>返回的第一参数image，不仅可以是图片元素，实际上还可以是canavs元素，video元素。常见的离屏canvas的使用，依就是将离屏不可见的canvas绘制到当前显示屏幕canvas上。离屏幕canvas这一部分将会在后续游戏部分中说到，这里不详细说了。</p>
+<h4 id="图像像素"><a href="#图像像素" class="headerlink" title="图像像素"></a>图像像素</h4><p>跟图片绘制有关的函数还有3个，它们分别是<code>getImageData</code>，<code>putImageData</code>，<code>createImageData</code>。这些函数是直接可以改变图像中某一个具体的像素值，从而可以对图片做一些操作，比如滤镜。</p>
+<p>我们先来看看<code>getImageData</code>方法，它的调用方式是<code>let imgData = ctx.getImageData(sx,sy,sw,sh)</code>，接受四个参数，表示canvas区域的某一个矩形区域，这个矩形区域的左上角坐标是(sx,sy)，宽高是sw 和sh，它的返回值是一个<code>ImageData</code>类型的对象，包含的属性有<code>width</code>，<code>height</code>，<code>data</code>。</p>
+<ul>
+<li><p><code>ImageData.width</code>，无符号长整型，表示这个图像区域的像素的宽度。</p>
+</li>
+<li><p><code>ImageData.height</code>，无符号长整型，表示这个图像区域的像素的高度。</p>
+</li>
+<li><p><code>ImageData.data</code>，一个<code>Uint8ClampedArray</code>数组，数组里每4个单元，表示一个像素值。一个像数值用RGBA表示的，这4个单元分别表示R，G，B，A，表示意思是红，绿，蓝，透明度，取值范围是0～255。</p>
+</li>
+</ul>
+<p>需要注意的是，如果我们在调用<code>ctx.getImageData(sx,sy,sw,sh)</code>，参数表示的矩形区域超出了canvas的区域，那么超出的部分将是用黑色的透明度为0的RGBA值表示，也就是(0,0,0,0)。</p>
+  <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> imgWidth = img.width; <span class="comment">//获取图片的宽度</span></div><div class="line"><span class="keyword">let</span> imgHeight = img.height; <span class="comment">//获取图片的高度</span></div><div class="line"><span class="keyword">let</span> targetWidth = canvasWidth; <span class="comment">//指定目标canvas区域的宽度</span></div><div class="line"><span class="keyword">let</span> targetHeight = (imgHeight * targetWidth) / imgWidth; <span class="comment">//计算出目标canvas区域的高度</span></div><div class="line">ctx.drawImage(img, <span class="number">0</span>, <span class="number">0</span>, targetWidth, targetHeight);</div><div class="line"><span class="keyword">let</span> imgData = ctx.getImageData(<span class="number">0</span>, <span class="number">0</span>, canvasWidth, canvasHeight);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">`canvas.width = <span class="subst">$&#123;canvasWidth&#125;</span>`</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">`canvas.height = <span class="subst">$&#123;canvasHeight&#125;</span>`</span>);</div><div class="line"><span class="built_in">console</span>.log(imgData);</div></pre></td></tr></table></figure>
+<p>  <img src="/assert/img/canvas/getImageData1.png" alt="getImageData1"></p>
+<p>可以看到，我们的canvas默认宽高是300*150，通过<code>ctx.getImageData</code>获取整个canvas区域的像素数据值，得到的<code>ImageData</code>的设备像素的宽高也是300*150 ，<code>Imagedata.data</code> 的数组的长度是180000，这个是因为，这个imgData的像素数是300*150，而每个像素是由4个分量表示的，所以<code>300*150*4 = 180000</code>了。</p>
+<p>当我们通过<code>getImageData</code>得到canvas某一个矩形区域的像素数据之后，我们可以通过改变这个<code>imageData.data</code>数组里的颜色分量值，再将改变后的<code>ImageData</code>通过<code>putImageData</code>方法绘制到canvas上。<code>putImageData</code>的用法有2种调用形式，如下，</p>
+<ul>
+<li><code>ctx.putImageData(imgData,dx,dy)</code>，这种方式，将imgData绘制到canvas区域(dx,dy)坐标处，绘制到canvas的区域的矩形大小就是imgData的矩形的大小。</li>
+<li><p><code>ctx.putImageData(imgData,dx,dy,dirtyX,dirtyY,dirtyW,dirtyH)</code>，不仅指定了canvas区域(dx,dy)，也指定了imgData脏数据区域的(dirtyX,dirtyY)和宽高dirtyW，dirtyH。这种形式，可以只将imgData种某一块区域绘制到canvas上。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> canvasWidth = canvas.width;</div><div class="line"><span class="keyword">let</span> canvasHeight = canvas.height;</div><div class="line"><span class="keyword">let</span> img = <span class="built_in">document</span>.createElement(<span class="string">'img'</span>);</div><div class="line">img.src = <span class="string">'./learn9/google.png'</span>;</div><div class="line">img.addEventListener(</div><div class="line">  <span class="string">'load'</span>,</div><div class="line">  () =&gt; &#123;</div><div class="line">    <span class="keyword">let</span> imgWidth = img.width; <span class="comment">//获取图片的宽度</span></div><div class="line">    <span class="keyword">let</span> imgHeight = img.height; <span class="comment">//获取图片的高度</span></div><div class="line">    <span class="keyword">let</span> targetWidth = canvasWidth; <span class="comment">//指定目标canvas区域的宽度</span></div><div class="line">    <span class="keyword">let</span> targetHeight = (imgHeight * targetWidth) / imgWidth; <span class="comment">//计算出目标canvas区域的高度</span></div><div class="line">    ctx.drawImage(img, <span class="number">0</span>, <span class="number">0</span>, targetWidth, targetHeight);</div><div class="line">    <span class="comment">//操作ImageData像素数据</span></div><div class="line">    <span class="keyword">let</span> imgData = ctx.getImageData(<span class="number">0</span>, <span class="number">0</span>, canvasWidth, canvasHeight);</div><div class="line">    oprImageData(imgData, (r, g, b, a) =&gt; &#123;</div><div class="line">      <span class="keyword">if</span> (a === <span class="number">0</span>) &#123;</div><div class="line">        <span class="keyword">return</span> [r, g, b, <span class="number">255</span>]; <span class="comment">//将透明的黑色像素值改变为不透明</span></div><div class="line">      &#125;</div><div class="line">      <span class="keyword">return</span> [r, g, b, a];</div><div class="line">    &#125;);</div><div class="line">    <span class="comment">//将imgData绘制到canvas的中心。超出canvas区域将被自动忽略</span></div><div class="line">    ctx.putImageData(imgData, canvasWidth / <span class="number">2</span>, canvasHeight / <span class="number">2</span>);</div><div class="line">  &#125;,</div><div class="line">  <span class="literal">false</span>,</div><div class="line">);</div><div class="line"></div><div class="line"><span class="comment">// 遍历像素数据</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">oprImageData</span>(<span class="params">imgData, oprFunction</span>) </span>&#123;</div><div class="line">  <span class="keyword">let</span> data = imgData.data;</div><div class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>, l = data.length; i &lt; l; i = i + <span class="number">4</span>) &#123;</div><div class="line">    <span class="keyword">let</span> pixel = oprFunction(data[i], data[i + <span class="number">1</span>], data[i + <span class="number">2</span>], data[i + <span class="number">3</span>]);</div><div class="line">    data[i] = pixel[<span class="number">0</span>];</div><div class="line">    data[i + <span class="number">1</span>] = pixel[<span class="number">1</span>];</div><div class="line">    data[i + <span class="number">2</span>] = pixel[<span class="number">2</span>];</div><div class="line">    data[i + <span class="number">3</span>] = pixel[<span class="number">3</span>];</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><img src="/assert/img/canvas/putImageData1.png" alt="putImageData1"></p>
+<p>上面，我们遍历了<code>ImageData</code>中data数组，并将透明度为0的像素值的透明度变为1（255/255=1）。在遍历像素数组时，我们每便利一次，<code>i</code> 的值加4，这个是因为一个像素值是用4个数组单元值表示的，分别为R，G，B，A，我们可以只改变某一个像素值的某一个分量值，例如透明度。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ctx.putImageData(imgData, canvasWidth / <span class="number">2</span>, canvasHeight / <span class="number">2</span>, <span class="number">79</span>, <span class="number">27</span>, <span class="number">50</span>, <span class="number">50</span>);</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/putImageData2.png" alt="putImageData2"></p>
+<p>我们通过指定了<code>ImageData</code>中脏数据区域，只绘制了红色字母o，其他部分忽略。上面在调用<code>putImageData</code>之前，我们通过遍历像素数据改变了部分像素值的透明度，这种可以操作像素值的方式，在图像处理等领域是非常有用的，例如常见的图像灰度和反相颜色等。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//操作ImageData像素数据</span></div><div class="line"><span class="keyword">let</span> imgData = ctx.getImageData(<span class="number">0</span>, <span class="number">0</span>, canvasWidth, canvasHeight);</div><div class="line">ctx.clearRect(<span class="number">0</span>, <span class="number">0</span>, canvasWidth, canvasHeight); <span class="comment">//清除canvas</span></div><div class="line">oprImageData(imgData, (r, g, b, a) =&gt; &#123;</div><div class="line">    <span class="keyword">return</span> [<span class="number">255</span> - r, <span class="number">255</span> - g, <span class="number">255</span> - b, a]; <span class="comment">//反相颜色</span></div><div class="line">&#125;);</div><div class="line">ctx.putImageData(imgData, <span class="number">0</span>, <span class="number">0</span>);</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/putImageData3.png" alt="putImageData3"></p>
+<p>将颜色分量的RGB值都用255减去原颜色分量值，可以看到，Google每个字母的颜色都与原图片的颜色不一样了。这个在改变每个颜色分量的值，用不通的逻辑计算，就可以得到不同的处理后的图片。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//操作ImageData像素数据</span></div><div class="line"><span class="keyword">let</span> imgData = ctx.getImageData(<span class="number">0</span>, <span class="number">0</span>, canvasWidth, canvasHeight);</div><div class="line">ctx.clearRect(<span class="number">0</span>, <span class="number">0</span>, canvasWidth, canvasHeight); <span class="comment">//清除canvas</span></div><div class="line">oprImageData(imgData, (r, g, b, a) =&gt; &#123;</div><div class="line">    <span class="keyword">let</span> avg = (r + g + b) / <span class="number">3</span>;</div><div class="line">    <span class="keyword">return</span> [avg, avg, avg, a]; <span class="comment">//灰度</span></div><div class="line">&#125;);</div><div class="line">ctx.putImageData(imgData, <span class="number">0</span>, <span class="number">0</span>);</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/putImageData4.png" alt="putImageData4"></p>
+<p>通过取RGB的平均值，原图片的每个字母都是灰色的了，当然，在计算的时候，可以给每个分量加一个系数，例如公式<code>let avg = 0.299r + 0.587g + 0.114b</code>，具体应用可以查看<a href="https://en.wikipedia.org/wiki/Grayscale" target="_blank" rel="external">Grayscale</a>。</p>
+<p>最后来看看<code>createImageData</code>，这个很好理解了，就是创建一个<code>ImageData</code> 对象了，有两种形式，如下，</p>
+<ul>
+<li><code>ctx.createImageData(width,height)</code>，可以指定宽高，创建一个<code>ImageData</code>对象，<code>ImageData.data</code>中的像素值都是一个透明的黑色，也就是（0，0，0，0）。</li>
+<li><code>ctx.createImageData(imgData)</code>，可以指定一个已经存在的<code>ImageData</code> 对象来创建一个新的<code>ImageData</code>对象，新创建的<code>ImageData</code>对象的宽高与参数中的<code>ImageData</code> 的宽高一样，但是像素值就不一样了，新创建出来的<code>ImageData</code>的像素值都是透明的黑色，也就是（0，0，0，0）。</li>
+</ul>
+<h4 id="文本"><a href="#文本" class="headerlink" title="文本"></a>文本</h4><p>在canvas中，我们不仅可以绘制图形，图片，还可以绘制文本。绘制文本比较简单了，先设置当前ctx的画笔的文本样式，例如，字体大小，字体样式，对其方式等，跟css中比较相似。</p>
+<p>跟文本相关的方法有三个，如下，</p>
+<ul>
+<li><code>strokeText(text,x,y,maxWidth?)</code>，用描边的形式绘制指定的文本text，其中也指定了绘制的坐标（x，y）, 还有最后一个可选参数，最大的宽度，如果所绘制的文本超过了指定的<code>maxWidth</code>，则文本会按照最大的宽度来绘制，那么文字之间的间距就将减少，文字可能被压缩。</li>
+<li><code>fillText(text,x,y,maxWidth?)</code>，同<code>strokeText</code>一样，只不过，是用填充的形式绘制文本，其参数含义一样。</li>
+<li><code>measureText(text)</code>，在当前的文字样式下，测量绘制文本text会占据的宽度值，返回一个对象，这个对象有一个<code>width</code>属性。主要注意的是，必须先设置文本样式，再来测量才是准确的。</li>
+</ul>
+<p>跟文本直接相关的属性设置，如下，</p>
+<ul>
+<li><code>font</code>，同css中含义一样，可以指定文本的字体大小，字体集，字体样式等。但在canvas中，<code>line-height</code>被强制设置为<code>normal</code>，会忽略其他设置的值。</li>
+<li><code>textAlign</code>，设置文本的水平对其方式，可选值有：<code>left</code>，<code>right</code>，<code>center</code>，<code>start</code>，<code>end</code>。默认值是<code>start</code>。各个含义参见<a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textAlign" target="_blank" rel="external">textAlign取值</a>。</li>
+<li><code>textBaseline</code>，设置文本的垂直对齐方式，可选值有：<code>top</code>，<code>hanging</code>，<code>middle</code>，<code>alphabetic</code>，<code>ideographic</code>，<code>bottom</code>。默认值是<code>alphabetic</code>。各个含义参见<a href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/textBaseline" target="_blank" rel="external">textBaseline取值</a>。</li>
+</ul>
+<p>当然了，还有一些其他的属性也会影响到文本最终绘制出来的效果，比如给当前ctx添加阴影效果，或者设置<code>fillStyle</code>的样式可以是图片或者渐变等。这些算是全局的属性设置，会影响到canvas所有其他的绘制，而不仅仅是文本，所以在这里，就不详细讨论了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> textAligns = [<span class="string">'left'</span>, <span class="string">'right'</span>, <span class="string">'center'</span>, <span class="string">'start'</span>, <span class="string">'end'</span>]; <span class="comment">//textAlign的取值</span></div><div class="line"><span class="keyword">let</span> colors = [<span class="string">'red'</span>, <span class="string">'blue'</span>, <span class="string">'green'</span>, <span class="string">'orange'</span>, <span class="string">'blueviolet'</span>]; <span class="comment">//描边颜色</span></div><div class="line">ctx.font = <span class="string">'18px sans-serif'</span>; <span class="comment">//设置font</span></div><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> [index, textAlign] <span class="keyword">of</span> textAligns.entries()) &#123;</div><div class="line">  ctx.save();</div><div class="line">  ctx.textAlign = textAlign; <span class="comment">// 设置textAlign</span></div><div class="line">  ctx.strokeStyle = colors[index]; <span class="comment">//设置描边颜色</span></div><div class="line">  ctx.strokeText(textAlign, width / <span class="number">2</span>, <span class="number">20</span> + index * <span class="number">30</span>); <span class="comment">//使用描边绘制文本</span></div><div class="line">  ctx.restore();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/strokeText1.png" alt="strokeText1"></p>
+<p>我们把<code>textAlign</code>的各个属性全都设置了一遍，看到<code>start</code>与<code>left</code>的效果一样，<code>end</code>与<code>right</code>的效果一样，这个是因为<code>start</code>和<code>end</code>是与当前本地文字开始方向有关的，如果是左到右开始，那么<code>start</code>与<code>left</code>一样，而如果是右到左开始，那么<code>start</code>是与<code>right</code>效果一样了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> textBaselines = [<span class="string">'top'</span>, <span class="string">'hanging'</span>, <span class="string">'middle'</span>, <span class="string">'alphabetic'</span>, <span class="string">'ideographic'</span>, <span class="string">'bottom'</span>];</div><div class="line"><span class="keyword">let</span> colors = [<span class="string">'red'</span>, <span class="string">'blue'</span>, <span class="string">'green'</span>, <span class="string">'orange'</span>, <span class="string">'blueviolet'</span>, <span class="string">'cyan'</span>]; <span class="comment">//描边颜色</span></div><div class="line">ctx.font = <span class="string">'18px sans-serif'</span>; <span class="comment">//设置font</span></div><div class="line"><span class="keyword">for</span> (<span class="keyword">let</span> [index, textBaseline] <span class="keyword">of</span> textBaselines.entries()) &#123;</div><div class="line">  ctx.save();</div><div class="line">  ctx.textBaseline = textBaseline; <span class="comment">// 设置textBaseline</span></div><div class="line">  ctx.strokeStyle = colors[index]; <span class="comment">//设置描边颜色</span></div><div class="line">  ctx.strokeText(<span class="string">'abj'</span>, <span class="number">10</span> + index * <span class="number">50</span>, height / <span class="number">2</span>); <span class="comment">//使用描边绘制文本</span></div><div class="line">  ctx.restore();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><img src="/assert/img/canvas/strokeText2.png" alt="strokeText2"></p>
+<p>我们又把<code>textBaseline</code>的各个值全设置了一遍，看到的效果如上图。用到最多的应该是<code>top</code>， <code>middle</code>，<code>alphabetic</code>，<code>bottom</code>了，其中默认值是<code>alphabetic</code> 。</p>
+<p><code>measureText</code>在实际业务中也是用到比较多的一个方法了，这个方法可以测量出在当前设置的文本样式下，绘制指定的text会占据的宽度。特别是在绘制表格数据，或者一些分析图时，需要绘制说明提示性文本，但是又想根据当前鼠标位置来决定文本绘制的坐标，以免超出canvas可见区域。这个方法使用比较简单，会返回一个带有<code>width</code>属性的对象，这个<code>width</code>属性值就是测量出来的结果。在canvas没有测量文本高度的方法，然而，在实际时，常常会以<strong>W</strong>字母测量出来的宽度值加上一点点，就可以大致认为是当前文本的高度值了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">ctx.font = <span class="string">'18px sans-serif'</span>; <span class="comment">//设置font，一定得先设置font属性，才能测量准确</span></div><div class="line"><span class="keyword">let</span> textWidth = ctx.measureText(<span class="string">'W'</span>).width;</div><div class="line"><span class="keyword">let</span> textHeight = textWidth + textWidth / <span class="number">6</span>;</div><div class="line"><span class="built_in">console</span>.log(<span class="string">`当前文本W的宽度：<span class="subst">$&#123;textWidth&#125;</span>`</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">`当前文本W的高度：<span class="subst">$&#123;textHeight&#125;</span>`</span>);</div></pre></td></tr></table></figure>
+<h4 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h4><p>这篇文章主要是学习了canvas中如何使用<code>drawImage</code>来绘制图片，以及如何使用<code>getImageData</code>和<code>putImageData</code>来对图像像素值做处理，比如常见的图片灰度处理，或者反相颜色等。也回顾了在canvas中绘制文本的一些相关方法和属性，这些知识在css中比较类似，理解起来也比较容易和简单。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">canvas</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2018/07/18/canvas核心技术-如何绘制图形/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">canvas核心技术-如何绘制图形</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
+  
+
+  
+  <div id="SOHUCS" sid="canvas核心技术-如何绘制图片和文本" ></div>
+<script type="text/javascript">
+(function(){
+var appid = "cytGCMhYC";
+var conf = "prod_4115b792b4b45e18c214d4bbd947a0db";
+var width = window.innerWidth || document.documentElement.clientWidth;
+if (width < 960) {
+window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("//changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+
+  
+
+  
+
+
+          </div>
+        </div>
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2018 三洋
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    <script>
+	var yiliaConfig = {
+		mathjax: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false,
+		root: "/",
+		innerArchive: true,
+		showTags: false
+	}
+</script>
+
+<script>!function(e){function r(t){if(o[t])return o[t].exports;var n=o[t]={exports:{},id:t,loaded:!1};return e[t].call(n.exports,n,n.exports,r),n.loaded=!0,n.exports}var o={};r.m=e,r.c=o,r.p="./",r(0)}([function(t,n,e){"use strict";function r(t){return t&&t.__esModule?t:{default:t}}function o(t,n,e,r,o){var i=function(t){for(var n=t.offsetLeft,e=t.offsetParent;null!==e;)n+=e.offsetLeft,e=e.offsetParent;return n}(t),u=function(t){for(var n=t.offsetTop,e=t.offsetParent;null!==e;)n+=e.offsetTop,e=e.offsetParent;return n}(t)-n;if(u-e<=o){var c=t.$newDom;c||(c=t.cloneNode(!0),(0,a.default)(t,c),(t.$newDom=c).style.position="fixed",c.style.top=(e||u)+"px",c.style.left=i+"px",c.style.zIndex=r||2,c.style.width="100%",c.style.color="#fff"),c.style.visibility="visible",t.style.visibility="hidden"}else{t.style.visibility="visible";var f=t.$newDom;f&&(f.style.visibility="hidden")}}function i(){var t=document.querySelector(".js-overlay"),n=document.querySelector(".js-header-menu");o(t,document.body.scrollTop,-63,2,0),o(n,document.body.scrollTop,1,3,0)}var f=r(e(70)),a=r((r(e(71)),e(81))),u=r(e(68)),c=r(e(74)),s=e(69);u.default.versions.mobile&&window.screen.width<800&&(function(){for(var t=document.querySelectorAll(".js-header-menu li a"),n=window.location.pathname,e=0,r=t.length;e<r;e++){var o=t[e];i=n,u=o.getAttribute("href"),c=/\/|index.html/g,i.replace(c,"")===u.replace(c,"")&&(0,f.default)(o,"active")}var i,u,c}(),document.querySelector("#container").addEventListener("scroll",function(t){i()}),window.addEventListener("scroll",function(t){i()}),i()),(0,s.addLoadEvent)(function(){c.default.init()}),t.exports={}},function(t,n){var e=t.exports="undefined"!=typeof window&&window.Math==Math?window:"undefined"!=typeof self&&self.Math==Math?self:Function("return this")();"number"==typeof __g&&(__g=e)},function(t,n){var e={}.hasOwnProperty;t.exports=function(t,n){return e.call(t,n)}},function(t,n,e){t.exports=!e(10)(function(){return 7!=Object.defineProperty({},"a",{get:function(){return 7}}).a})},function(t,n,e){var r=e(5),o=e(13);t.exports=e(3)?function(t,n,e){return r.f(t,n,o(1,e))}:function(t,n,e){return t[n]=e,t}},function(t,n,e){var r=e(11),o=e(30),i=e(24),u=Object.defineProperty;n.f=e(3)?Object.defineProperty:function(t,n,e){if(r(t),n=i(n,!0),r(e),o)try{return u(t,n,e)}catch(t){}if("get"in e||"set"in e)throw TypeError("Accessors not supported!");return"value"in e&&(t[n]=e.value),t}},function(t,n,e){var r=e(49),o=e(16);t.exports=function(t){return r(o(t))}},function(t,n,e){var r=e(22)("wks"),o=e(14),i=e(1).Symbol,u="function"==typeof i;(t.exports=function(t){return r[t]||(r[t]=u&&i[t]||(u?i:o)("Symbol."+t))}).store=r},function(t,n){t.exports=function(t){return"object"==typeof t?null!==t:"function"==typeof t}},function(t,n){var e=t.exports={version:"2.5.7"};"number"==typeof __e&&(__e=e)},function(t,n){t.exports=function(t){try{return!!t()}catch(t){return!0}}},function(t,n,e){var r=e(8);t.exports=function(t){if(!r(t))throw TypeError(t+" is not an object!");return t}},function(t,n){t.exports=!0},function(t,n){t.exports=function(t,n){return{enumerable:!(1&t),configurable:!(2&t),writable:!(4&t),value:n}}},function(t,n){var e=0,r=Math.random();t.exports=function(t){return"Symbol(".concat(void 0===t?"":t,")_",(++e+r).toString(36))}},function(t,n,e){var r=e(35),o=e(17);t.exports=Object.keys||function(t){return r(t,o)}},function(t,n){t.exports=function(t){if(null==t)throw TypeError("Can't call method on  "+t);return t}},function(t,n){t.exports="constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf".split(",")},function(t,n){t.exports={}},function(t,n){n.f={}.propertyIsEnumerable},function(t,n,e){var r=e(5).f,o=e(2),i=e(7)("toStringTag");t.exports=function(t,n,e){t&&!o(t=e?t:t.prototype,i)&&r(t,i,{configurable:!0,value:n})}},function(t,n,e){var r=e(22)("keys"),o=e(14);t.exports=function(t){return r[t]||(r[t]=o(t))}},function(t,n,e){var r=e(9),o=e(1),i="__core-js_shared__",u=o[i]||(o[i]={});(t.exports=function(t,n){return u[t]||(u[t]=void 0!==n?n:{})})("versions",[]).push({version:r.version,mode:e(12)?"pure":"global",copyright:"© 2018 Denis Pushkarev (zloirock.ru)"})},function(t,n){var e=Math.ceil,r=Math.floor;t.exports=function(t){return isNaN(t=+t)?0:(0<t?r:e)(t)}},function(t,n,e){var o=e(8);t.exports=function(t,n){if(!o(t))return t;var e,r;if(n&&"function"==typeof(e=t.toString)&&!o(r=e.call(t)))return r;if("function"==typeof(e=t.valueOf)&&!o(r=e.call(t)))return r;if(!n&&"function"==typeof(e=t.toString)&&!o(r=e.call(t)))return r;throw TypeError("Can't convert object to primitive value")}},function(t,n,e){var r=e(1),o=e(9),i=e(12),u=e(26),c=e(5).f;t.exports=function(t){var n=o.Symbol||(o.Symbol=i?{}:r.Symbol||{});"_"==t.charAt(0)||t in n||c(n,t,{value:u.f(t)})}},function(t,n,e){n.f=e(7)},function(t,n,e){var y=e(1),h=e(9),b=e(46),g=e(4),m=e(2),x="prototype",S=function(t,n,e){var r,o,i,u=t&S.F,c=t&S.G,f=t&S.S,a=t&S.P,s=t&S.B,l=t&S.W,p=c?h:h[n]||(h[n]={}),d=p[x],v=c?y:f?y[n]:(y[n]||{})[x];for(r in c&&(e=n),e)(o=!u&&v&&void 0!==v[r])&&m(p,r)||(i=o?v[r]:e[r],p[r]=c&&"function"!=typeof v[r]?e[r]:s&&o?b(i,y):l&&v[r]==i?function(r){var t=function(t,n,e){if(this instanceof r){switch(arguments.length){case 0:return new r;case 1:return new r(t);case 2:return new r(t,n)}return new r(t,n,e)}return r.apply(this,arguments)};return t[x]=r[x],t}(i):a&&"function"==typeof i?b(Function.call,i):i,a&&((p.virtual||(p.virtual={}))[r]=i,t&S.R&&d&&!d[r]&&g(d,r,i)))};S.F=1,S.G=2,S.S=4,S.P=8,S.B=16,S.W=32,S.U=64,S.R=128,t.exports=S},function(t,n){var e={}.toString;t.exports=function(t){return e.call(t).slice(8,-1)}},function(t,n,e){var r=e(8),o=e(1).document,i=r(o)&&r(o.createElement);t.exports=function(t){return i?o.createElement(t):{}}},function(t,n,e){t.exports=!e(3)&&!e(10)(function(){return 7!=Object.defineProperty(e(29)("div"),"a",{get:function(){return 7}}).a})},function(t,n,e){"use strict";var m=e(12),x=e(27),S=e(36),w=e(4),O=e(18),_=e(51),j=e(20),L=e(57),P=e(7)("iterator"),M=!([].keys&&"next"in[].keys()),T="values",E=function(){return this};t.exports=function(t,n,e,r,o,i,u){_(e,n,r);var c,f,a,s=function(t){if(!M&&t in v)return v[t];switch(t){case"keys":case T:return function(){return new e(this,t)}}return function(){return new e(this,t)}},l=n+" Iterator",p=o==T,d=!1,v=t.prototype,y=v[P]||v["@@iterator"]||o&&v[o],h=y||s(o),b=o?p?s("entries"):h:void 0,g="Array"==n&&v.entries||y;if(g&&((a=L(g.call(new t)))!==Object.prototype&&a.next&&(j(a,l,!0),m||"function"==typeof a[P]||w(a,P,E))),p&&y&&y.name!==T&&(d=!0,h=function(){return y.call(this)}),m&&!u||!M&&!d&&v[P]||w(v,P,h),O[n]=h,O[l]=E,o)if(c={values:p?h:s(T),keys:i?h:s("keys"),entries:b},u)for(f in c)f in v||S(v,f,c[f]);else x(x.P+x.F*(M||d),n,c);return c}},function(t,n,r){var o=r(11),i=r(54),u=r(17),c=r(21)("IE_PROTO"),f=function(){},a="prototype",s=function(){var t,n=r(29)("iframe"),e=u.length;for(n.style.display="none",r(48).appendChild(n),n.src="javascript:",(t=n.contentWindow.document).open(),t.write("<script>document.F=Object<\/script>"),t.close(),s=t.F;e--;)delete s[a][u[e]];return s()};t.exports=Object.create||function(t,n){var e;return null!==t?(f[a]=o(t),e=new f,f[a]=null,e[c]=t):e=s(),void 0===n?e:i(e,n)}},function(t,n,e){var r=e(35),o=e(17).concat("length","prototype");n.f=Object.getOwnPropertyNames||function(t){return r(t,o)}},function(t,n){n.f=Object.getOwnPropertySymbols},function(t,n,e){var u=e(2),c=e(6),f=e(45)(!1),a=e(21)("IE_PROTO");t.exports=function(t,n){var e,r=c(t),o=0,i=[];for(e in r)e!=a&&u(r,e)&&i.push(e);for(;n.length>o;)u(r,e=n[o++])&&(~f(i,e)||i.push(e));return i}},function(t,n,e){t.exports=e(4)},function(t,n,e){var r=e(16);t.exports=function(t){return Object(r(t))}},function(t,n,e){t.exports={default:e(41),__esModule:!0}},function(t,n,e){t.exports={default:e(42),__esModule:!0}},function(t,n,e){"use strict";function r(t){return t&&t.__esModule?t:{default:t}}n.__esModule=!0;var o=r(e(39)),i=r(e(38)),u="function"==typeof i.default&&"symbol"==typeof o.default?function(t){return typeof t}:function(t){return t&&"function"==typeof i.default&&t.constructor===i.default&&t!==i.default.prototype?"symbol":typeof t};n.default="function"==typeof i.default&&"symbol"===u(o.default)?function(t){return void 0===t?"undefined":u(t)}:function(t){return t&&"function"==typeof i.default&&t.constructor===i.default&&t!==i.default.prototype?"symbol":void 0===t?"undefined":u(t)}},function(t,n,e){e(64),e(62),e(65),e(66),t.exports=e(9).Symbol},function(t,n,e){e(63),e(67),t.exports=e(26).f("iterator")},function(t,n){t.exports=function(t){if("function"!=typeof t)throw TypeError(t+" is not a function!");return t}},function(t,n){t.exports=function(){}},function(t,n,e){var f=e(6),a=e(60),s=e(59);t.exports=function(c){return function(t,n,e){var r,o=f(t),i=a(o.length),u=s(e,i);if(c&&n!=n){for(;u<i;)if((r=o[u++])!=r)return!0}else for(;u<i;u++)if((c||u in o)&&o[u]===n)return c||u||0;return!c&&-1}}},function(t,n,e){var i=e(43);t.exports=function(r,o,t){if(i(r),void 0===o)return r;switch(t){case 1:return function(t){return r.call(o,t)};case 2:return function(t,n){return r.call(o,t,n)};case 3:return function(t,n,e){return r.call(o,t,n,e)}}return function(){return r.apply(o,arguments)}}},function(t,n,e){var c=e(15),f=e(34),a=e(19);t.exports=function(t){var n=c(t),e=f.f;if(e)for(var r,o=e(t),i=a.f,u=0;o.length>u;)i.call(t,r=o[u++])&&n.push(r);return n}},function(t,n,e){var r=e(1).document;t.exports=r&&r.documentElement},function(t,n,e){var r=e(28);t.exports=Object("z").propertyIsEnumerable(0)?Object:function(t){return"String"==r(t)?t.split(""):Object(t)}},function(t,n,e){var r=e(28);t.exports=Array.isArray||function(t){return"Array"==r(t)}},function(t,n,e){"use strict";var r=e(32),o=e(13),i=e(20),u={};e(4)(u,e(7)("iterator"),function(){return this}),t.exports=function(t,n,e){t.prototype=r(u,{next:o(1,e)}),i(t,n+" Iterator")}},function(t,n){t.exports=function(t,n){return{value:n,done:!!t}}},function(t,n,e){var r=e(14)("meta"),o=e(8),i=e(2),u=e(5).f,c=0,f=Object.isExtensible||function(){return!0},a=!e(10)(function(){return f(Object.preventExtensions({}))}),s=function(t){u(t,r,{value:{i:"O"+ ++c,w:{}}})},l=t.exports={KEY:r,NEED:!1,fastKey:function(t,n){if(!o(t))return"symbol"==typeof t?t:("string"==typeof t?"S":"P")+t;if(!i(t,r)){if(!f(t))return"F";if(!n)return"E";s(t)}return t[r].i},getWeak:function(t,n){if(!i(t,r)){if(!f(t))return!0;if(!n)return!1;s(t)}return t[r].w},onFreeze:function(t){return a&&l.NEED&&f(t)&&!i(t,r)&&s(t),t}}},function(t,n,e){var u=e(5),c=e(11),f=e(15);t.exports=e(3)?Object.defineProperties:function(t,n){c(t);for(var e,r=f(n),o=r.length,i=0;i<o;)u.f(t,e=r[i++],n[e]);return t}},function(t,n,e){var r=e(19),o=e(13),i=e(6),u=e(24),c=e(2),f=e(30),a=Object.getOwnPropertyDescriptor;n.f=e(3)?a:function(t,n){if(t=i(t),n=u(n,!0),f)try{return a(t,n)}catch(t){}if(c(t,n))return o(!r.f.call(t,n),t[n])}},function(t,n,e){var r=e(6),o=e(33).f,i={}.toString,u="object"==typeof window&&window&&Object.getOwnPropertyNames?Object.getOwnPropertyNames(window):[];t.exports.f=function(t){return u&&"[object Window]"==i.call(t)?function(t){try{return o(t)}catch(t){return u.slice()}}(t):o(r(t))}},function(t,n,e){var r=e(2),o=e(37),i=e(21)("IE_PROTO"),u=Object.prototype;t.exports=Object.getPrototypeOf||function(t){return t=o(t),r(t,i)?t[i]:"function"==typeof t.constructor&&t instanceof t.constructor?t.constructor.prototype:t instanceof Object?u:null}},function(t,n,e){var f=e(23),a=e(16);t.exports=function(c){return function(t,n){var e,r,o=String(a(t)),i=f(n),u=o.length;return i<0||u<=i?c?"":void 0:(e=o.charCodeAt(i))<55296||56319<e||i+1===u||(r=o.charCodeAt(i+1))<56320||57343<r?c?o.charAt(i):e:c?o.slice(i,i+2):r-56320+(e-55296<<10)+65536}}},function(t,n,e){var r=e(23),o=Math.max,i=Math.min;t.exports=function(t,n){return(t=r(t))<0?o(t+n,0):i(t,n)}},function(t,n,e){var r=e(23),o=Math.min;t.exports=function(t){return 0<t?o(r(t),9007199254740991):0}},function(t,n,e){"use strict";var r=e(44),o=e(52),i=e(18),u=e(6);t.exports=e(31)(Array,"Array",function(t,n){this._t=u(t),this._i=0,this._k=n},function(){var t=this._t,n=this._k,e=this._i++;return!t||e>=t.length?(this._t=void 0,o(1)):o(0,"keys"==n?e:"values"==n?t[e]:[e,t[e]])},"values"),i.Arguments=i.Array,r("keys"),r("values"),r("entries")},function(t,n){},function(t,n,e){"use strict";var r=e(58)(!0);e(31)(String,"String",function(t){this._t=String(t),this._i=0},function(){var t,n=this._t,e=this._i;return e>=n.length?{value:void 0,done:!0}:(t=r(n,e),this._i+=t.length,{value:t,done:!1})})},function(t,n,e){"use strict";var r=e(1),u=e(2),o=e(3),i=e(27),c=e(36),f=e(53).KEY,a=e(10),s=e(22),l=e(20),p=e(14),d=e(7),v=e(26),y=e(25),h=e(47),b=e(50),g=e(11),m=e(8),x=e(6),S=e(24),w=e(13),O=e(32),_=e(56),j=e(55),L=e(5),P=e(15),M=j.f,T=L.f,E=_.f,A=r.Symbol,C=r.JSON,N=C&&C.stringify,k="prototype",F=d("_hidden"),q=d("toPrimitive"),I={}.propertyIsEnumerable,D=s("symbol-registry"),H=s("symbols"),G=s("op-symbols"),R=Object[k],B="function"==typeof A,W=r.QObject,K=!W||!W[k]||!W[k].findChild,V=o&&a(function(){return 7!=O(T({},"a",{get:function(){return T(this,"a",{value:7}).a}})).a})?function(t,n,e){var r=M(R,n);r&&delete R[n],T(t,n,e),r&&t!==R&&T(R,n,r)}:T,J=function(t){var n=H[t]=O(A[k]);return n._k=t,n},U=B&&"symbol"==typeof A.iterator?function(t){return"symbol"==typeof t}:function(t){return t instanceof A},z=function(t,n,e){return t===R&&z(G,n,e),g(t),n=S(n,!0),g(e),u(H,n)?(e.enumerable?(u(t,F)&&t[F][n]&&(t[F][n]=!1),e=O(e,{enumerable:w(0,!1)})):(u(t,F)||T(t,F,w(1,{})),t[F][n]=!0),V(t,n,e)):T(t,n,e)},$=function(t,n){g(t);for(var e,r=h(n=x(n)),o=0,i=r.length;o<i;)z(t,e=r[o++],n[e]);return t},Y=function(t){var n=I.call(this,t=S(t,!0));return!(this===R&&u(H,t)&&!u(G,t))&&(!(n||!u(this,t)||!u(H,t)||u(this,F)&&this[F][t])||n)},Q=function(t,n){if(t=x(t),n=S(n,!0),t!==R||!u(H,n)||u(G,n)){var e=M(t,n);return!e||!u(H,n)||u(t,F)&&t[F][n]||(e.enumerable=!0),e}},X=function(t){for(var n,e=E(x(t)),r=[],o=0;e.length>o;)u(H,n=e[o++])||n==F||n==f||r.push(n);return r},Z=function(t){for(var n,e=t===R,r=E(e?G:x(t)),o=[],i=0;r.length>i;)!u(H,n=r[i++])||e&&!u(R,n)||o.push(H[n]);return o};B||(c((A=function(){if(this instanceof A)throw TypeError("Symbol is not a constructor!");var n=p(0<arguments.length?arguments[0]:void 0),e=function(t){this===R&&e.call(G,t),u(this,F)&&u(this[F],n)&&(this[F][n]=!1),V(this,n,w(1,t))};return o&&K&&V(R,n,{configurable:!0,set:e}),J(n)})[k],"toString",function(){return this._k}),j.f=Q,L.f=z,e(33).f=_.f=X,e(19).f=Y,e(34).f=Z,o&&!e(12)&&c(R,"propertyIsEnumerable",Y,!0),v.f=function(t){return J(d(t))}),i(i.G+i.W+i.F*!B,{Symbol:A});for(var tt="hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables".split(","),nt=0;tt.length>nt;)d(tt[nt++]);for(var et=P(d.store),rt=0;et.length>rt;)y(et[rt++]);i(i.S+i.F*!B,"Symbol",{for:function(t){return u(D,t+="")?D[t]:D[t]=A(t)},keyFor:function(t){if(!U(t))throw TypeError(t+" is not a symbol!");for(var n in D)if(D[n]===t)return n},useSetter:function(){K=!0},useSimple:function(){K=!1}}),i(i.S+i.F*!B,"Object",{create:function(t,n){return void 0===n?O(t):$(O(t),n)},defineProperty:z,defineProperties:$,getOwnPropertyDescriptor:Q,getOwnPropertyNames:X,getOwnPropertySymbols:Z}),C&&i(i.S+i.F*(!B||a(function(){var t=A();return"[null]"!=N([t])||"{}"!=N({a:t})||"{}"!=N(Object(t))})),"JSON",{stringify:function(t){for(var n,e,r=[t],o=1;arguments.length>o;)r.push(arguments[o++]);if(e=n=r[1],(m(n)||void 0!==t)&&!U(t))return b(n)||(n=function(t,n){if("function"==typeof e&&(n=e.call(this,t,n)),!U(n))return n}),r[1]=n,N.apply(C,r)}}),A[k][q]||e(4)(A[k],q,A[k].valueOf),l(A,"Symbol"),l(Math,"Math",!0),l(r.JSON,"JSON",!0)},function(t,n,e){e(25)("asyncIterator")},function(t,n,e){e(25)("observable")},function(t,n,e){e(61);for(var r=e(1),o=e(4),i=e(18),u=e(7)("toStringTag"),c="CSSRuleList,CSSStyleDeclaration,CSSValueList,ClientRectList,DOMRectList,DOMStringList,DOMTokenList,DataTransferItemList,FileList,HTMLAllCollection,HTMLCollection,HTMLFormElement,HTMLSelectElement,MediaList,MimeTypeArray,NamedNodeMap,NodeList,PaintRequestList,Plugin,PluginArray,SVGLengthList,SVGNumberList,SVGPathSegList,SVGPointList,SVGStringList,SVGTransformList,SourceBufferList,StyleSheetList,TextTrackCueList,TextTrackList,TouchList".split(","),f=0;f<c.length;f++){var a=c[f],s=r[a],l=s&&s.prototype;l&&!l[u]&&o(l,u,a),i[a]=i.Array}},function(t,n){"use strict";var e,r={versions:(e=window.navigator.userAgent,{trident:-1<e.indexOf("Trident"),presto:-1<e.indexOf("Presto"),webKit:-1<e.indexOf("AppleWebKit"),gecko:-1<e.indexOf("Gecko")&&-1==e.indexOf("KHTML"),mobile:!!e.match(/AppleWebKit.*Mobile.*/),ios:!!e.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/),android:-1<e.indexOf("Android")||-1<e.indexOf("Linux"),iPhone:-1<e.indexOf("iPhone")||-1<e.indexOf("Mac"),iPad:-1<e.indexOf("iPad"),webApp:-1==e.indexOf("Safari"),weixin:-1==e.indexOf("MicroMessenger")})};t.exports=r},function(t,n,e){"use strict";var r,o=e(40),l=(r=o)&&r.__esModule?r:{default:r},p=function(){function n(t,n,e){return n||e?String.fromCharCode(n||e):i[t]||t}function e(t){return s[t]}var r=/&quot;|&lt;|&gt;|&amp;|&nbsp;|&apos;|&#(\d+);|&#(\d+)/g,o=/['<> "&]/g,i={"&quot;":'"',"&lt;":"<","&gt;":">","&amp;":"&","&nbsp;":" "},u=/\u00a0/g,c=/<br\s*\/?>/gi,f=/\r?\n/g,a=/\s/g,s={};for(var t in i)s[i[t]]=t;return i["&apos;"]="'",s["'"]="&#39;",{encode:function(t){return t?(""+t).replace(o,e).replace(f,"<br/>").replace(a,"&nbsp;"):""},decode:function(t){return t?(""+t).replace(c,"\n").replace(r,n).replace(u," "):""},encodeBase16:function(t){if(!t)return t;for(var n=[],e=0,r=(t+="").length;e<r;e++)n.push(t.charCodeAt(e).toString(16).toUpperCase());return n.join("")},encodeBase16forJSON:function(t){if(!t)return t;for(var n=[],e=0,r=(t=t.replace(/[\u4E00-\u9FBF]/gi,function(t){return escape(t).replace("%u","\\u")})).length;e<r;e++)n.push(t.charCodeAt(e).toString(16).toUpperCase());return n.join("")},decodeBase16:function(t){if(!t)return t;for(var n=[],e=0,r=(t+="").length;e<r;e+=2)n.push(String.fromCharCode("0x"+t.slice(e,e+2)));return n.join("")},encodeObject:function(t){if(t instanceof Array)for(var n=0,e=t.length;n<e;n++)t[n]=p.encodeObject(t[n]);else if("object"==(void 0===t?"undefined":(0,l.default)(t)))for(var r in t)t[r]=p.encodeObject(t[r]);else if("string"==typeof t)return p.encode(t);return t},loadScript:function(t){var n=document.createElement("script");document.getElementsByTagName("body")[0].appendChild(n),n.setAttribute("src",t)},addLoadEvent:function(t){var n=window.onload;"function"!=typeof window.onload?window.onload=t:window.onload=function(){n(),t()}}}}();t.exports=p},function(t,n){t.exports=function(t,n){t.classList?t.classList.add(n):t.className+=" "+n}},function(t,n){t.exports=function(t,n){if(t.classList)t.classList.remove(n);else{var e=new RegExp("(^|\\b)"+n.split(" ").join("|")+"(\\b|$)","gi");t.className=t.className.replace(e," ")}}},,,function(t,n){"use strict";t.exports={init:function(){var t=document.querySelector("#page-nav");t&&!document.querySelector("#page-nav .extend.prev")&&(t.innerHTML='<a class="extend prev disabled" rel="prev">&laquo; Prev</a>'+t.innerHTML),t&&!document.querySelector("#page-nav .extend.next")&&(t.innerHTML=t.innerHTML+'<a class="extend next disabled" rel="next">Next &raquo;</a>'),yiliaConfig&&yiliaConfig.open_in_new&&document.querySelectorAll(".article-entry a:not(.article-more-a)").forEach(function(t){var n=t.getAttribute("target");n&&""!==n||t.setAttribute("target","_blank")});var n=document.querySelector("#js-aboutme");n&&0!==n.length&&(n.innerHTML=n.innerText)}}},,,,,,,function(t,n){t.exports=function(t,n){if("string"==typeof n)return t.insertAdjacentHTML("afterend",n);var e=t.nextSibling;return e?t.parentNode.insertBefore(n,e):t.parentNode.appendChild(n)}}])</script><script src="/./main.080185.js"></script><script>!function(){var e,t;e="/slider.06f385.js",t=document.createElement("script"),document.getElementsByTagName("body")[0].appendChild(t),t.setAttribute("src",e)}()</script>
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+    
+<div class="tools-col" q-class="show:isShow,hide:isShow|isFalse" q-on="click:stop(e)">
+  <div class="tools-nav header-menu">
+    
+    
+      
+      
+      
+    
+      
+      
+      
+    
+    
+
+    <ul style="width: 70%">
+    
+    
+      
+      <li style="width: 50%" q-on="click: openSlider(e, 'innerArchive')"><a href="javascript:void(0)" q-class="active:innerArchive">所有文章</a></li>
+      
+        
+      
+      <li style="width: 50%" q-on="click: openSlider(e, 'aboutme')"><a href="javascript:void(0)" q-class="active:aboutme">关于我</a></li>
+      
+        
+    </ul>
+  </div>
+  <div class="tools-wrap">
+    
+    	<section class="tools-section tools-section-all" q-show="innerArchive">
+        <div class="search-wrap">
+          <input class="search-ipt" q-model="search" type="text" placeholder="find something…">
+          <i class="icon-search icon" q-show="search|isEmptyStr"></i>
+          <i class="icon-close icon" q-show="search|isNotEmptyStr" q-on="click:clearChose(e)"></i>
+        </div>
+        <div class="widget tagcloud search-tag">
+          <p class="search-tag-wording">tag:</p>
+          <label class="search-switch">
+            <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
+          </label>
+          <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">canvas</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2017</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">小结</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">resposive</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">mobile</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">h5</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">react</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">decorator</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
+              </li>
+            
+            <div class="clearfix"></div>
+          </ul>
+        </div>
+        <ul class="search-ul">
+          <p q-show="jsonFail" style="padding: 20px; font-size: 12px;">
+            缺失模块。<br/>1、请确保node版本大于6.2<br/>2、在博客根目录（注意不是yilia根目录）执行以下命令：<br/> npm i hexo-generator-json-content --save<br/><br/>
+            3、在根目录_config.yml里添加配置：
+<pre style="font-size: 12px;" q-show="jsonFail">
+  jsonContent:
+    meta: false
+    pages: false
+    posts:
+      title: true
+      date: true
+      path: true
+      text: false
+      raw: false
+      content: false
+      slug: false
+      updated: false
+      comments: false
+      link: false
+      permalink: false
+      excerpt: false
+      categories: false
+      tags: true
+</pre>
+          </p>
+          <li class="search-li" q-repeat="items" q-show="isShow">
+            <a q-attr="href:path|urlformat" class="search-title"><i class="icon-quo-left icon"></i><span q-text="title"></span></a>
+            <p class="search-time">
+              <i class="icon-calendar icon"></i>
+              <span q-text="date|dateformat"></span>
+            </p>
+            <p class="search-tag">
+              <i class="icon-price-tags icon"></i>
+              <span q-repeat="tags" q-on="click:choseTag(e, name)" q-text="name|tagformat"></span>
+            </p>
+          </li>
+        </ul>
+    	</section>
+    
+
+    
+
+    
+    	<section class="tools-section tools-section-me" q-show="aboutme">
+  	  	
+  	  		<div class="aboutme-wrap" id="js-aboutme">90后&lt;br&gt;&lt;br&gt;前端攻城狮&lt;br&gt;&lt;br&gt;十心十意，脚踏实地</div>
+  	  	
+    	</section>
+    
+  </div>
+  
+</div>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  </div>
+</body>
+</html>
