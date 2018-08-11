@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://snayan.github.io/"/>
-  <updated>2018-07-27T00:50:28.000Z</updated>
+  <updated>2018-08-11T03:10:25.000Z</updated>
   <id>https://snayan.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>canvas核心技术-如何实现简单的动画</title>
+    <link href="https://snayan.github.io/2018/08/11/canvas%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E5%8A%A8%E7%94%BB/"/>
+    <id>https://snayan.github.io/2018/08/11/canvas核心技术-如何实现简单动画/</id>
+    <published>2018-08-11T12:22:18.000Z</published>
+    <updated>2018-08-11T03:10:25.000Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;这篇是学习和回顾canvas系列笔记的第四篇，完整笔记详见：&lt;a href=&quot;https://snayan.github.io/2018/07/09/canvas-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF/&quot;&gt;canvas核心技术&lt;/a&gt;。&lt;
+      
+    
+    </summary>
+    
+    
+      <category term="canvas" scheme="https://snayan.github.io/tags/canvas/"/>
+    
+  </entry>
   
   <entry>
     <title>canvas核心技术-如何绘制图片和文本</title>
@@ -440,25 +461,6 @@
     
       &lt;p&gt;ReactMount为react-dom对象提供了&lt;code&gt;render&lt;/code&gt;和&lt;code&gt;unmountComponentAtNode&lt;/code&gt;这2个方法，其中第一个&lt;code&gt;render&lt;/code&gt;就是我们常用的输出react element到真实的dom里。&lt;/p&gt;
 &lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; ReactMount=&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  scrollMonitor:&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;container,renderCallback&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  renderSubtreeIntoContainer:&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;parentComponent,nextElement,container,callback&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  render:&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;nextElement,container,callback&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  unmountComponentAtNode:&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;container&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;//...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-    
-    </summary>
-    
-    
-      <category term="react" scheme="https://snayan.github.io/tags/react/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>阅读react源码--ReactElement部分</title>
-    <link href="https://snayan.github.io/2017/05/30/react-ReactElement-source/"/>
-    <id>https://snayan.github.io/2017/05/30/react-ReactElement-source/</id>
-    <published>2017-05-30T08:12:19.000Z</published>
-    <updated>2018-03-28T13:57:53.483Z</updated>
-    
-    <summary type="html">
-    
-      &lt;p&gt;ReactElement对象为React提供了&lt;code&gt;createElement&lt;/code&gt;，&lt;code&gt;createFactory&lt;/code&gt;，&lt;code&gt;cloneElement&lt;/code&gt;，&lt;code&gt;isValidElement&lt;/code&gt;四个方法。ReactElement是一个工厂方法，不是类模式，不要使用&lt;code&gt;new&lt;/code&gt;去调用。检查一个对象是否是react element对象，通过检查这个对象的&lt;code&gt;$$typeof&lt;/code&gt;是否等于&lt;code&gt;Symbol.for(&amp;#39;react.element&amp;#39;)&lt;/code&gt;&lt;/p&gt;
-&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; ReactElement=&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;type,key,ref,self,source,owner,props&lt;/span&gt;)&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; element=&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;	$$&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt;:REACT_ELEMENT_TYPE,&lt;span class=&quot;comment&quot;&gt;//Symbol[&#39;for&#39;](&#39;react.element&#39;)&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    type:type,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    key:key,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    ref:ref,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    props:props,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    _owner:owner&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(process.env.NODE_ENV!==&lt;span class=&quot;string&quot;&gt;&#39;production&#39;&lt;/span&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      .......&lt;span class=&quot;comment&quot;&gt;//增加一些其他的属性&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt;(&lt;span class=&quot;built_in&quot;&gt;Object&lt;/span&gt;.freeze)&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      &lt;span class=&quot;built_in&quot;&gt;Object&lt;/span&gt;.freeze(element.props);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      &lt;span class=&quot;built_in&quot;&gt;Object&lt;/span&gt;.freeze(element);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; element;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
     
     </summary>
     

@@ -161,6 +161,68 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-react-ReactElement-source" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/30/react-ReactElement-source/">阅读react源码--ReactElement部分</a>
+    </h1>
+  
+
+        
+        <a href="/2017/05/30/react-ReactElement-source/" class="archive-article-date">
+  	<time datetime="2017-05-30T08:12:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-30</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ReactElement对象为React提供了<code>createElement</code>，<code>createFactory</code>，<code>cloneElement</code>，<code>isValidElement</code>四个方法。ReactElement是一个工厂方法，不是类模式，不要使用<code>new</code>去调用。检查一个对象是否是react element对象，通过检查这个对象的<code>$$typeof</code>是否等于<code>Symbol.for(&#39;react.element&#39;)</code></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> ReactElement=<span class="function"><span class="keyword">function</span>(<span class="params">type,key,ref,self,source,owner,props</span>)</span>&#123;</div><div class="line">  <span class="keyword">var</span> element=&#123;</div><div class="line">	$$<span class="keyword">typeof</span>:REACT_ELEMENT_TYPE,<span class="comment">//Symbol['for']('react.element')</span></div><div class="line">    type:type,</div><div class="line">    key:key,</div><div class="line">    ref:ref,</div><div class="line">    props:props,</div><div class="line">    _owner:owner</div><div class="line">  &#125;;</div><div class="line">  <span class="keyword">if</span>(process.env.NODE_ENV!==<span class="string">'production'</span>&#123;</div><div class="line">      .......<span class="comment">//增加一些其他的属性</span></div><div class="line">      <span class="keyword">if</span>(<span class="built_in">Object</span>.freeze)&#123;</div><div class="line">      <span class="built_in">Object</span>.freeze(element.props);</div><div class="line">      <span class="built_in">Object</span>.freeze(element);</div><div class="line">    &#125;</div><div class="line">  &#125;)</div><div class="line">  <span class="keyword">return</span> element;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2017/05/30/react-ReactElement-source/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/05/30/react-ReactElement-source/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-react-ReactClass-source" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -563,7 +625,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -571,7 +633,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">vue</a>
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
               </li>
             
             <div class="clearfix"></div>
