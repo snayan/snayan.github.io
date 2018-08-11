@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://snayan.github.io/assert/img/canvas/transform5.png">
 <meta property="og:image" content="https://snayan.github.io/assert/img/canvas/5.png">
 <meta property="og:image" content="https://snayan.github.io/assert/img/canvas/6.png">
-<meta property="og:updated_time" content="2018-08-11T03:10:25.000Z">
+<meta property="og:updated_time" content="2018-08-11T03:16:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="canvas核心技术-如何实现简单的动画">
 <meta name="twitter:description" content="这篇是学习和回顾canvas系列笔记的第四篇，完整笔记详见：canvas核心技术。 在前面几篇中，我们回顾了在canvas中绘制线段，图形，图片等基本功能，当在制作2d游戏或者更为丰富的图表库时，必须提供强大的动画功能。canvas本身不提供像css中animation属性专门来实现动画，但是canvas提供了translate，scale，rotate等基本功能，我们可以通过组合使用这些功能来实">
@@ -205,6 +205,7 @@
 <p>在前面几篇中，我们回顾了在canvas中绘制线段，图形，图片等基本功能，当在制作2d游戏或者更为丰富的图表库时，必须提供强大的动画功能。canvas本身不提供像css中<code>animation</code>属性专门来实现动画，但是canvas提供了<code>translate</code>，<code>scale</code>，<code>rotate</code>等基本功能，我们可以通过组合使用这些功能来实现动画。</p>
 <p>跟动画有关的概念中，我们还要理解<strong>帧速率</strong>。我们通常说<strong>一帧</strong>，就是浏览器完整绘制一次所经过的时间。现代浏览器的帧速率一般是60fps，就是在1s内可以绘制60次。如果帧速率过低，就会觉得明显的卡顿了。一般是帧速率越高，动画越流畅。在JavaScript中，我们要在1s内绘制60次，以前的做法是使用<code>setTimeout</code>或者<code>setInterval</code>来定时执行。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">setInterval(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">   <span class="comment">// 执行绘制操作</span></div><div class="line">&#125;, <span class="number">1000</span> / <span class="number">60</span>);</div></pre></td></tr></table></figure>
+<a id="more"></a>
 <p>这种通过定时器的方式，虽然可以实现，但不是最好的方式，它只是以固定的时间间隔向执行队列中添加绘制代码，并不一定能跟浏览器的更新频率同步，并且严重依赖当前执行栈的情况，如果某一次执行栈里执行了复杂大量的运算，那么我们添加的绘制代码可能就不会在我们设置的时间间隔内执行了。在H5中，现代浏览器都提供了<a href="https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame" target="_blank" rel="external">requestAnimationFrame</a>这个方法来执行动画更新逻辑，它会在浏览器的下一次更新时执行传递给它的函数，我们完全不必考虑浏览器的<strong>帧速率</strong>了，可以更加专注于动画更新的逻辑上。</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> animate = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  <span class="comment">// 执行绘制操作</span></div><div class="line">  requestAnimationFrame(animate);</div><div class="line">&#125;;</div><div class="line">animate();</div></pre></td></tr></table></figure>
 <p>当然，如果要兼容以前的浏览器，我们一般需要结合<code>requestAnimationFrame</code>和 <code>setTimeout</code>或者<code>setInterval</code>来实现polyfill，简单的处理方式大致如下，更好的实现方式可以查看<a href="https://gist.github.com/paulirish/1579671" target="_blank" rel="external">rAF.js</a>。</p>
