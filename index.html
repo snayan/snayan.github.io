@@ -161,6 +161,70 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-canavs核心技术-如何实现复杂的动画" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/19/canavs核心技术-如何实现复杂的动画/">canavs核心技术-如何实现复杂的动画</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/19/canavs核心技术-如何实现复杂的动画/" class="archive-article-date">
+  	<time datetime="2018-08-19T10:20:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这篇是学习和回顾canvas系列笔记的第五篇，完整笔记详见：<a href="https://snayan.github.io/2018/07/09/canvas-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF/">canvas核心技术</a>。</p>
+<p>在上一篇<a href="https://snayan.github.io/2018/08/11/canvas%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%AE%80%E5%8D%95%E5%8A%A8%E7%94%BB/">canvas核心技术-如何实现简单的动画</a>笔记中，我们详细学习了如何进行canvas坐标系的平移，缩放，旋转等操作来实现一些比较简单和单一的动画。但是在实际动画中，影响一个动画的因素是很多的，比如一个小球自由落体运动，我们不仅要考虑小球的初始速度和初始方向，还要考虑重力加速度，空气阻力等外界因素。这一篇笔记，我们会详细学习复杂动画的相关知识。</p>
+<h4 id="核心逻辑"><a href="#核心逻辑" class="headerlink" title="核心逻辑"></a>核心逻辑</h4><p>我们理解的动画，应该是在一段时间内，物体的某些属性，比如颜色，大小，位置，透明度等，发生改变。判断动画流程度的单位是动画刷新的速率，在浏览器中一般是浏览器的帧速率。帧速率越大，动画就越流畅。在现代浏览器中，我们一般是使用<code>requestAnimationFrame</code>来执行动画。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> raf = <span class="literal">null</span>;</div><div class="line"><span class="keyword">let</span> lastFrame = <span class="number">0</span>;</div><div class="line"></div><div class="line"><span class="comment">//动画</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">animate</span>(<span class="params">frame</span>) </span>&#123;</div><div class="line">  <span class="comment">// todo:这里可以执行一些动画更新</span></div><div class="line">  <span class="built_in">console</span>.log(frame)</div><div class="line">  raf = requestAnimationFrame(animate);</div><div class="line">  lastFrame = frame;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">start</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="comment">// 一些初始化的操作</span></div><div class="line">  init();</div><div class="line"></div><div class="line">  <span class="comment">// 执行动画</span></div><div class="line">  animate(performance.now());</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">stop</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  cancelAnimationFrame(raf);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2018/08/19/canavs核心技术-如何实现复杂的动画/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">canvas</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/19/canavs核心技术-如何实现复杂的动画/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-canvas核心技术-如何实现简单动画" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -768,70 +832,6 @@
 
 
   
-    <article id="post-react16源码学习2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/03/02/react16源码学习2/">React 16学习(二)</a>
-    </h1>
-  
-
-        
-        <a href="/2018/03/02/react16源码学习2/" class="archive-article-date">
-  	<time datetime="2018-03-02T13:05:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>上篇大致说了react16的结构，今天来看看react16中新增的Fragment。</p>
-<p>react16中新增的可以渲染的类型：fragments和strings。</p>
-<h3 id="Fragments"><a href="#Fragments" class="headerlink" title="Fragments"></a>Fragments</h3><p>在react16中，component的render方法现在可以返回一个数组了，而在react16之前只能返回一个ReactElement，一般被<code>div</code>包裹着。在实际使用时，页面会输出一些很多没有用处的<code>div</code>，增加了dom结构的嵌套层数，不利于页面快速的渲染。</p>
-<h5 id="react16之前"><a href="#react16之前" class="headerlink" title="react16之前"></a>react16之前</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</div><div class="line">  render() &#123;</div><div class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;[1, 2, 3].map(v =&gt; <span class="tag">&lt;<span class="name">a</span> <span class="attr">key</span>=<span class="string">&#123;v&#125;</span>&gt;</span>&#123;`链接$&#123;v&#125;`&#125;<span class="tag">&lt;/<span class="name">a</span>&gt;</span>)&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-        
-          <a class="article-more-a" href="/2018/03/02/react16源码学习2/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/03/02/react16源码学习2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -962,11 +962,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">h5</a>
+                <a href="javascript:void(0)" class="js-tag color1">react</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">react</a>
+                <a href="javascript:void(0)" class="js-tag color3">h5</a>
               </li>
              
               <li class="article-tag-list-item">

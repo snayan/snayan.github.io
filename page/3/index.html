@@ -161,6 +161,68 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-react-dom-ReactMount-source" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/10/react-dom-ReactMount-source/">阅读react-dom源码--ReactMount部分</a>
+    </h1>
+  
+
+        
+        <a href="/2017/06/10/react-dom-ReactMount-source/" class="archive-article-date">
+  	<time datetime="2017-06-10T03:46:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ReactMount为react-dom对象提供了<code>render</code>和<code>unmountComponentAtNode</code>这2个方法，其中第一个<code>render</code>就是我们常用的输出react element到真实的dom里。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> ReactMount=&#123;</div><div class="line">  scrollMonitor:<span class="function"><span class="keyword">function</span>(<span class="params">container,renderCallback</span>)</span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">  &#125;,</div><div class="line">  renderSubtreeIntoContainer:<span class="function"><span class="keyword">function</span>(<span class="params">parentComponent,nextElement,container,callback</span>)</span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">  &#125;,</div><div class="line">  render:<span class="function"><span class="keyword">function</span>(<span class="params">nextElement,container,callback</span>)</span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">  &#125;,</div><div class="line">  unmountComponentAtNode:<span class="function"><span class="keyword">function</span>(<span class="params">container</span>)</span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2017/06/10/react-dom-ReactMount-source/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/06/10/react-dom-ReactMount-source/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-react-ReactElement-source" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -605,11 +667,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">h5</a>
+                <a href="javascript:void(0)" class="js-tag color1">react</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">react</a>
+                <a href="javascript:void(0)" class="js-tag color3">h5</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -161,6 +161,70 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-react16源码学习2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/02/react16源码学习2/">React 16学习(二)</a>
+    </h1>
+  
+
+        
+        <a href="/2018/03/02/react16源码学习2/" class="archive-article-date">
+  	<time datetime="2018-03-02T13:05:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上篇大致说了react16的结构，今天来看看react16中新增的Fragment。</p>
+<p>react16中新增的可以渲染的类型：fragments和strings。</p>
+<h3 id="Fragments"><a href="#Fragments" class="headerlink" title="Fragments"></a>Fragments</h3><p>在react16中，component的render方法现在可以返回一个数组了，而在react16之前只能返回一个ReactElement，一般被<code>div</code>包裹着。在实际使用时，页面会输出一些很多没有用处的<code>div</code>，增加了dom结构的嵌套层数，不利于页面快速的渲染。</p>
+<h5 id="react16之前"><a href="#react16之前" class="headerlink" title="react16之前"></a>react16之前</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</div><div class="line">  render() &#123;</div><div class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>&#123;[1, 2, 3].map(v =&gt; <span class="tag">&lt;<span class="name">a</span> <span class="attr">key</span>=<span class="string">&#123;v&#125;</span>&gt;</span>&#123;`链接$&#123;v&#125;`&#125;<span class="tag">&lt;/<span class="name">a</span>&gt;</span>)&#125;<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span>;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2018/03/02/react16源码学习2/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/03/02/react16源码学习2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-react16源码学习1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -767,68 +831,6 @@
 
 
   
-    <article id="post-react-dom-ReactMount-source" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/06/10/react-dom-ReactMount-source/">阅读react-dom源码--ReactMount部分</a>
-    </h1>
-  
-
-        
-        <a href="/2017/06/10/react-dom-ReactMount-source/" class="archive-article-date">
-  	<time datetime="2017-06-10T03:46:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-10</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>ReactMount为react-dom对象提供了<code>render</code>和<code>unmountComponentAtNode</code>这2个方法，其中第一个<code>render</code>就是我们常用的输出react element到真实的dom里。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> ReactMount=&#123;</div><div class="line">  scrollMonitor:<span class="function"><span class="keyword">function</span>(<span class="params">container,renderCallback</span>)</span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">  &#125;,</div><div class="line">  renderSubtreeIntoContainer:<span class="function"><span class="keyword">function</span>(<span class="params">parentComponent,nextElement,container,callback</span>)</span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">  &#125;,</div><div class="line">  render:<span class="function"><span class="keyword">function</span>(<span class="params">nextElement,container,callback</span>)</span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">  &#125;,</div><div class="line">  unmountComponentAtNode:<span class="function"><span class="keyword">function</span>(<span class="params">container</span>)</span>&#123;</div><div class="line">    <span class="comment">//...</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-        
-          <a class="article-more-a" href="/2017/06/10/react-dom-ReactMount-source/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/06/10/react-dom-ReactMount-source/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -959,11 +961,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">h5</a>
+                <a href="javascript:void(0)" class="js-tag color1">react</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">react</a>
+                <a href="javascript:void(0)" class="js-tag color3">h5</a>
               </li>
              
               <li class="article-tag-list-item">
