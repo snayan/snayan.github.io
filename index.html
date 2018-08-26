@@ -161,6 +161,70 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-canvas-核心技术-如何实现碰撞检测" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/26/canvas-核心技术-如何实现碰撞检测/">canvas-核心技术-如何实现碰撞检测</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/26/canvas-核心技术-如何实现碰撞检测/" class="archive-article-date">
+  	<time datetime="2018-08-26T11:22:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这篇是学习和回顾canvas系列笔记的第六篇，完整笔记详见：<a href="https://snayan.github.io/2018/07/09/canvas-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF/">canvas核心技术</a>。</p>
+<p>在上一篇<a href="https://snayan.github.io/2018/08/19/canavs%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%A4%8D%E6%9D%82%E7%9A%84%E5%8A%A8%E7%94%BB/">canvas核心技术-如何实现复杂的动画</a>笔记中，我们详细讨论了在制作复杂动画时，需要考虑时间因素，物理因素等，同时还回顾了如何使用缓动函数来扭曲时间轴实现非线性运动，比如常见的缓入，缓出，缓入缓出等。在游戏或者动画中，运动的物体在变化的过程中，它们是有可能碰撞在一起的，那么这一篇我们就来详细学习下如何进行碰撞检测。</p>
+<h4 id="边界值检测"><a href="#边界值检测" class="headerlink" title="边界值检测"></a>边界值检测</h4><p>最简单的检测手段就是边界值检测了，就是对一个运动的物体的某些属性进行条件判断，如果达到了这个条件，则说明发生了碰撞。例如在上一篇中的示例，小球自由下落，当在检测小球是否与地面发生碰撞时，我们是检测小球下落的高度fh是否达到了小球本身距离地面的高度dh，如果fh&gt;dh，则说明小球与地面发生了碰撞。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">let</span> distance = ball.currentSpeed * t; </div><div class="line"><span class="keyword">if</span> (ball.offset + distance &gt; ball.verticalHeight) &#123;</div><div class="line">  <span class="comment">//落到地面了，发生了碰撞</span></div><div class="line">  <span class="comment">// ...</span></div><div class="line">&#125; <span class="keyword">else</span> &#123;</div><div class="line">  <span class="comment">// 还没有落到地面，没有发生碰撞</span></div><div class="line">  ball.offset += distance;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+        
+          <a class="article-more-a" href="/2018/08/26/canvas-核心技术-如何实现碰撞检测/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">canvas</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/26/canvas-核心技术-如何实现碰撞检测/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-canavs核心技术-如何实现复杂的动画" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -769,69 +833,6 @@
 
 
   
-    <article id="post-react16源码学习3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/04/04/react16源码学习3/">react 16学习(三)</a>
-    </h1>
-  
-
-        
-        <a href="/2018/04/04/react16源码学习3/" class="archive-article-date">
-  	<time datetime="2018-04-04T01:11:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>ReactDom在16版本中也新增了一些新的功能，比如<strong>createPortal</strong>，<strong>hydrate</strong>。今天主要学习一下<strong>createPortal</strong>。<br>先看下ReactDom的大致包含的一些属性和方法。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> ReactDom = &#123;</div><div class="line">  createPortal,<span class="comment">//reacte16中新增的</span></div><div class="line">  hydrate,<span class="comment">//reacte16中新增的</span></div><div class="line">  findDomNode,</div><div class="line">  render,</div><div class="line">  unmountComponentAtNode,</div><div class="line">  flushSync,</div><div class="line">  unstable_renderSubtreeIntoContainer,</div><div class="line">  unstable_createPortal, <span class="comment">//这个实际就是现在的createPortal,将在React17版本中移除</span></div><div class="line">  unstable_batchedUpdates,</div><div class="line">  unstable_deferredUpdates,</div><div class="line">  unstable_flushControlled</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-<p>可以看到我们熟悉的<code>findDomNode</code>，<code>render</code>，<code>unmountComponentAtNode</code>。这里面新增了两个新的方法<code>createPortal</code>和<code>hydrate</code>。以unstable_开头的表示的是当前版本中存在的方法，但可能会在后续版本中改动或移除，所以不建议使用。<br>
-        
-          <a class="article-more-a" href="/2018/04/04/react16源码学习3/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/04/04/react16源码学习3/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -950,15 +951,15 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">resposive</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">mobile</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -982,11 +983,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">vue</a>
+                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
               </li>
              
               <li class="article-tag-list-item">

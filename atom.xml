@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://snayan.github.io/"/>
-  <updated>2018-08-19T10:39:14.000Z</updated>
+  <updated>2018-08-26T11:55:13.000Z</updated>
   <id>https://snayan.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>canvas-核心技术-如何实现碰撞检测</title>
+    <link href="https://snayan.github.io/2018/08/26/canvas-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%A2%B0%E6%92%9E%E6%A3%80%E6%B5%8B/"/>
+    <id>https://snayan.github.io/2018/08/26/canvas-核心技术-如何实现碰撞检测/</id>
+    <published>2018-08-26T11:22:17.000Z</published>
+    <updated>2018-08-26T11:55:13.000Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;这篇是学习和回顾canvas系列笔记的第六篇，完整笔记详见：&lt;a href=&quot;https://snayan.github.io/2018/07/09/canvas-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF/&quot;&gt;canvas核心技术&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;在上一篇&lt;a href=&quot;https://snayan.github.io/2018/08/19/canavs%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%A4%8D%E6%9D%82%E7%9A%84%E5%8A%A8%E7%94%BB/&quot;&gt;canvas核心技术-如何实现复杂的动画&lt;/a&gt;笔记中，我们详细讨论了在制作复杂动画时，需要考虑时间因素，物理因素等，同时还回顾了如何使用缓动函数来扭曲时间轴实现非线性运动，比如常见的缓入，缓出，缓入缓出等。在游戏或者动画中，运动的物体在变化的过程中，它们是有可能碰撞在一起的，那么这一篇我们就来详细学习下如何进行碰撞检测。&lt;/p&gt;
+&lt;h4 id=&quot;边界值检测&quot;&gt;&lt;a href=&quot;#边界值检测&quot; class=&quot;headerlink&quot; title=&quot;边界值检测&quot;&gt;&lt;/a&gt;边界值检测&lt;/h4&gt;&lt;p&gt;最简单的检测手段就是边界值检测了，就是对一个运动的物体的某些属性进行条件判断，如果达到了这个条件，则说明发生了碰撞。例如在上一篇中的示例，小球自由下落，当在检测小球是否与地面发生碰撞时，我们是检测小球下落的高度fh是否达到了小球本身距离地面的高度dh，如果fh&amp;gt;dh，则说明小球与地面发生了碰撞。&lt;/p&gt;
+&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;let&lt;/span&gt; distance = ball.currentSpeed * t; &lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (ball.offset + distance &amp;gt; ball.verticalHeight) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;//落到地面了，发生了碰撞&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;// ...&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;// 还没有落到地面，没有发生碰撞&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  ball.offset += distance;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+    
+    </summary>
+    
+    
+      <category term="canvas" scheme="https://snayan.github.io/tags/canvas/"/>
+    
+  </entry>
   
   <entry>
     <title>canavs核心技术-如何实现复杂的动画</title>
@@ -444,30 +465,6 @@
     
     
       <category term="javascript" scheme="https://snayan.github.io/tags/javascript/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>react组件生命周期浅谈</title>
-    <link href="https://snayan.github.io/2017/06/19/react-component-life-cycle/"/>
-    <id>https://snayan.github.io/2017/06/19/react-component-life-cycle/</id>
-    <published>2017-06-19T15:25:17.000Z</published>
-    <updated>2018-03-28T13:57:53.483Z</updated>
-    
-    <summary type="html">
-    
-      &lt;p&gt;众所周知，react的组件是有一个个的钩子函数，构建成的生命周期，在用es6的class与用createClass有所不同，其中createClass还包括了&lt;code&gt;getDefaultProps&lt;/code&gt;与&lt;code&gt;getInitialState&lt;/code&gt;。由于createClass 将在后续版本中移除，建议使用class形式。所以，下面讨论的都是class形式下的生命周期方式。&lt;/p&gt;
-&lt;h3 id=&quot;初始阶段&quot;&gt;&lt;a href=&quot;#初始阶段&quot; class=&quot;headerlink&quot; title=&quot;初始阶段&quot;&gt;&lt;/a&gt;初始阶段&lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;constructor ，构造函数，在初始化实例时首先触发&lt;/li&gt;
-&lt;li&gt;componentWillMount，组件将渲染出来之前触发，可以调用setState，简单的合并state，不会触发render重新渲染&lt;/li&gt;
-&lt;li&gt;render ，将组件渲染，不可以调用setState&lt;/li&gt;
-&lt;li&gt;componentDidMount，组件渲染之后触发，可以调用setState，会重新触发render&lt;/li&gt;
-&lt;/ul&gt;
-    
-    </summary>
-    
-    
-      <category term="react" scheme="https://snayan.github.io/tags/react/"/>
     
   </entry>
   
