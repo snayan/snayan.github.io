@@ -6,18 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://snayan.github.io">
-  <title>Tag: react | 三洋同学的笔记本</title>
+  <title>看vue源码解决组件style更新问题 | 三洋同学的笔记本</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="三洋同学的笔记本">
-<meta property="og:type" content="website">
-<meta property="og:title" content="三洋同学的笔记本">
-<meta property="og:url" content="https://snayan.github.io/tags/react/index.html">
+  <meta name="description" content="最近在项目碰到了一个vue组件更新导致style异常的问题。下面记录一下我自己的解决思路。 问题背景由于公司项目业务复杂，就不具体描述了。简单说一下问题，就是项目使用vue框架，在一个页面中根据a值来显示不同组件，当a = true时显示A组件，否则就显示B组件。示例代码如下 1234567891011121314151617181920212223242526&amp;lt;template&amp;gt;">
+<meta name="keywords" content="vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="看vue源码解决组件style更新问题">
+<meta property="og:url" content="https://snayan.github.io/2018/12/03/看vue源码解决组件style更新问题/index.html">
 <meta property="og:site_name" content="三洋同学的笔记本">
-<meta property="og:description" content="三洋同学的笔记本">
+<meta property="og:description" content="最近在项目碰到了一个vue组件更新导致style异常的问题。下面记录一下我自己的解决思路。 问题背景由于公司项目业务复杂，就不具体描述了。简单说一下问题，就是项目使用vue框架，在一个页面中根据a值来显示不同组件，当a = true时显示A组件，否则就显示B组件。示例代码如下 1234567891011121314151617181920212223242526&amp;lt;template&amp;gt;">
 <meta property="og:locale" content="zh">
+<meta property="og:updated_time" content="2018-12-03T11:19:33.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="三洋同学的笔记本">
-<meta name="twitter:description" content="三洋同学的笔记本">
+<meta name="twitter:title" content="看vue源码解决组件style更新问题">
+<meta name="twitter:description" content="最近在项目碰到了一个vue组件更新导致style异常的问题。下面记录一下我自己的解决思路。 问题背景由于公司项目业务复杂，就不具体描述了。简单说一下问题，就是项目使用vue框架，在一个页面中根据a值来显示不同组件，当a = true时显示A组件，否则就显示B组件。示例代码如下 1234567891011121314151617181920212223242526&amp;lt;template&amp;gt;">
   
     <link rel="alternative" href="/atom.xml" title="三洋同学的笔记本" type="application/atom+xml">
   
@@ -159,412 +161,167 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-看vue源码解决组件style更新问题" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      看vue源码解决组件style更新问题
+    </h1>
+  
+
+        
+        <a href="/2018/12/03/看vue源码解决组件style更新问题/" class="archive-article-date">
+  	<time datetime="2018-12-03T11:09:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-03</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在项目碰到了一个vue组件更新导致style异常的问题。下面记录一下我自己的解决思路。</p>
+<h4 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h4><p>由于公司项目业务复杂，就不具体描述了。简单说一下问题，就是项目使用vue框架，在一个页面中根据a值来显示不同组件，当<code>a = true</code>时显示A组件，否则就显示B组件。示例代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">&lt;template&gt;</div><div class="line">  &lt;div&gt;</div><div class="line">      &lt;div v-if=&quot;a&quot; :style=&quot;getBackground(&apos;a&apos;)&quot;&gt;a组件&lt;/div&gt;</div><div class="line">      &lt;div v-else :style=&quot;getBackground(&apos;b&apos;)&quot;&gt;b组件&lt;/div&gt;</div><div class="line">  &lt;/div&gt;</div><div class="line">&lt;/template&gt;</div><div class="line"></div><div class="line">&lt;script&gt;</div><div class="line">    export default &#123;</div><div class="line">        name:&apos;Example&apos;,</div><div class="line">        data: &#123;</div><div class="line">            a: false</div><div class="line">        &#125;,</div><div class="line">        computed: &#123;</div><div class="line">            getBackground: function(type) &#123;</div><div class="line">                return &#123;</div><div class="line">                    background: `url(https://$&#123;type&#125;.png) no-repeat`,</div><div class="line">                    backgroundSize: &apos;100% 100%&apos;,</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        mounted() &#123;</div><div class="line">            setTimeout(() =&gt; &#123; this.a = true &#125;, 1000)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&lt;/script&gt;</div></pre></td></tr></table></figure>
+<h4 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h4><p>如上代码，页面加载时，显示 <em>a组件</em>，且它的背景样式是设置了backgroundImage和backgroundSize为”100%  100%”，一秒之后，a 变为false了，这是显示 <em>b组件</em>，预期之中，它也是应该设置了backgroundImage和backgroundSize为”100% 100%”，但是呢，在显示 <em>b组件</em>，它的样式，backgroundSize并不是”100% 100%”，而是默认的”initial”，这样导致样式并非我们预期想要的。究竟为什么在显示 <em>b组件</em> 时，这个backgroundSize不是我们在<code>getBackground</code>中返回的100%呢？<br><a id="more"></a></p>
+<h4 id="分析问题"><a href="#分析问题" class="headerlink" title="分析问题"></a>分析问题</h4><p>为什么显示 <em>b 组件</em> 时样式不是我们预期的呢，这里，可以看到 <em>a组件</em> 和 <em>b组件</em> 都是 <code>div</code>标签，根据<a href="https://vuejs.org/v2/guide/conditional.html#Controlling-Reusable-Elements-with-key" target="_blank" rel="external">vue官方文档描述</a>，它们在更新时会被复用的，就是说只会创建 <em>a组件</em> 的div元素，在更新b组件时，会复用  <em>a组件</em> 创建出来的div元素的。并且翻看了<a href="https://github.com/vuejs/vue/blob/dev/src/core/vdom/patch.js#L411-L481" target="_blank" rel="external">vue更新组件部分源码</a>，也确实会先判断是否是相同的元素类型，如果是，就只是更新，而不会重新创建。但是，就算是复用，那也不应该把backgroundSize覆盖了”initial”呀？何况这2个组件都设置的backgroundSize是”100% 100%”。</p>
+<p>接着，我又翻看了<a href="https://github.com/vuejs/vue/blob/dev/src/platforms/web/runtime/modules/style.js#L74-L87" target="_blank" rel="external">更新style部分的源码</a>才发现了原因出在哪。下面贴出vue更新stye部分的源码如下</p>
+ <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 获取待更新vnode的style绑定值</span></div><div class="line"><span class="keyword">const</span> newStyle = getStyle(vnode, <span class="literal">true</span>)</div><div class="line"></div><div class="line"><span class="comment">// 如果在旧的vnode中且不在新的vnode的style中，则删除</span></div><div class="line"><span class="keyword">for</span> (name <span class="keyword">in</span> oldStyle) &#123;</div><div class="line">  <span class="keyword">if</span> (isUndef(newStyle[name])) &#123;</div><div class="line">    setProp(el, name, <span class="string">''</span>)</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="comment">// 如果在新的vnode中，且不等于旧的vnode中值，则更新为新的vnode中style值</span></div><div class="line"><span class="keyword">for</span> (name <span class="keyword">in</span> newStyle) &#123;</div><div class="line">  cur = newStyle[name]</div><div class="line">  <span class="keyword">if</span> (cur !== oldStyle[name]) &#123;</div><div class="line">    <span class="comment">// ie9 setting to null has no effect, must use empty string</span></div><div class="line">    setProp(el, name, cur == <span class="literal">null</span> ? <span class="string">''</span> : cur)</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>源码逻辑很简单，就是先删除了在旧的vnode中style而不在新的vnode中style的值，接着设置在新的vnode中且不等于旧的vnode中值的。结合上面我们问题代码，逻辑应该是，</p>
+<ol>
+<li>background存在 <em>a组件</em> 和 <em>b组件</em> 中，但是值不相等，应该被更新，</li>
+<li>backgroundSize存在 <em>a组件</em> 和 <em>b组件</em> 中，值相等，不更新</li>
+</ol>
+<p>这样一来，由于 <em>a 组件</em> 和  <em>b组件</em> 是复用的同一个div元素，我们再来具体看一下div元素style 被更新的过程，</p>
+<ul>
+<li><p>先是在 <em>a组件</em> 中，div被设置的应该是如下样式</p>
+ <figure class="highlight scss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">div</span> &#123;</div><div class="line">    <span class="attribute">background</span>: <span class="string">"url(https://a.png) no-repeat"</span>,</div><div class="line">    backgroundSize: <span class="string">'100% 100%'</span>,</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 我们知道，只设置background的话，它的backgroundSize默认值是”initial”，但是后面的backgroundSize会覆盖background 中默认值，所以这时没有毛病，显示正常</p>
+</li>
+<li><p>接着，更新为 <em>b组件</em> 了，div被设置的样式应该如下</p>
+ <figure class="highlight scss"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">div</span> &#123;</div><div class="line">    <span class="comment">//background: "url(https://a.png) no-repeat", //a组件中设置样式</span></div><div class="line">    backgroundSize: <span class="string">'100% 100%'</span>, //a组件中设置样式</div><div class="line">    background: <span class="string">"url(https://b.png) no-repeat"</span>, //b组件中设置样式    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> 这个时候，我们发现，实际上，设置的background会用默认值”initial”覆盖掉之前a组件中设置的backgroundSize的”100% 100%”，所以这个时候，在显示 <em>b组件</em> 时，backgroundSize变为了默认值”initial”。坑爹呀，😢。</p>
+</li>
+</ul>
+<h4 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h4><p>知道问题是出现在组件复用和background设置顺序问题上，那么解决的办法就非常简单了，</p>
+<ol>
+<li>方法一就是给 <em>a 组件</em> 和 <em>b 组件</em>  设置不同的key，这样就不会复用，也不会出现上面的问题了，但是呢，感觉跟vue遵循的复用原则相违背，性能也会有所损失（我们就是要追求极致😂）。</li>
+<li>方法二就是设置background时直接使用backgroundImage而不是background，因为设置background会附带设置了其他一些背景相关的css样式值，实际上background是一系列背景样式值的简写，</li>
+</ol>
+<blockquote>
+<p>The property is a <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties" target="_blank" rel="external">shorthand</a> that sets the following properties in a single declaration: <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip" target="_blank" rel="external"><code>background-clip</code></a>, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-color" target="_blank" rel="external"><code>background-color</code></a>, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-image" target="_blank" rel="external"><code>background-image</code></a>, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-origin" target="_blank" rel="external"><code>background-origin</code></a>, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-position" target="_blank" rel="external"><code>background-position</code></a>, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-repeat" target="_blank" rel="external"><code>background-repeat</code></a>, <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-size" target="_blank" rel="external"><code>background-size</code></a>, and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/background-attachment" target="_blank" rel="external"><code>background-attachment</code></a>.</p>
+</blockquote>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>就业务背景而言，业务上是不可能出现页面内a会变化的，也就是说，用户打开页面，那么页面根据a来选择显示哪个组件，之后是不会变的。但是就有某种特殊情况下，a在页面未刷新情况下，变化了，导致更新为显示另一个组件了。自己在做业务需求时，代码逻辑一定要多加严谨，同时要深入理解框架的底层实现原理，才能更好的避免未知bug。</p>
+<p>就这个bug而言，应该有三个基础知识点：</p>
+<ol>
+<li>css规则中，后面的会覆盖前面的</li>
+<li>background等实际上是一系列css规则的简写</li>
+<li>vue中组件复用以及高效更新style逻辑</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/04/11/react16源码学习4/" class="archive-article-date">
-  	<time datetime="2018-04-11T01:48:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-11</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/04/11/react16源码学习4/">react 16学习(四)</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/04/04/react16源码学习3/" class="archive-article-date">
-  	<time datetime="2018-04-04T01:11:45.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/04/04/react16源码学习3/">react 16学习(三)</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/03/02/react16源码学习2/" class="archive-article-date">
-  	<time datetime="2018-03-02T13:05:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/03/02/react16源码学习2/">React 16学习(二)</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/03/01/react16源码学习1/" class="archive-article-date">
-  	<time datetime="2018-03-01T12:11:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-01</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/03/01/react16源码学习1/">React 16学习(-)</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
       
-        </div></section>
+
       
+
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/19/react-component-life-cycle/" class="archive-article-date">
-  	<time datetime="2017-06-19T15:25:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-19</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/19/react-component-life-cycle/">react组件生命周期浅谈</a>
-    </h1>
-  
+      </div>
+    </span>
+  </div>
+</div>
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//img.fanhaobai.com/qrcode.php?url=https://snayan.github.io/2018/12/03/看vue源码解决组件style更新问题/" alt="微信分享二维码">
+    </div>
+</div>
 
-          
+<div class="mask js-mask"></div>
 
-        </div>
-        <div class="clearfix"></div>
-    </header>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/06/10/react-dom-ReactMount-source/" class="archive-article-date">
-  	<time datetime="2017-06-10T03:46:20.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-10</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/06/10/react-dom-ReactMount-source/">阅读react-dom源码--ReactMount部分</a>
-    </h1>
+  
+    <a href="/2018/08/26/canvas-核心技术-如何实现碰撞检测/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">canvas-核心技术-如何实现碰撞检测</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/05/30/react-ReactElement-source/" class="archive-article-date">
-  	<time datetime="2017-05-30T08:12:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-30</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/30/react-ReactElement-source/">阅读react源码--ReactElement部分</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/05/22/react-ReactClass-source/" class="archive-article-date">
-  	<time datetime="2017-05-22T14:16:40.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/22/react-ReactClass-source/">阅读react源码--createClass部分</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/05/09/react-Component-source/" class="archive-article-date">
-  	<time datetime="2017-05-09T13:28:39.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-09</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/09/react-Component-source/">阅读react源码--component部分</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/05/04/react-total-constructor/" class="archive-article-date">
-  	<time datetime="2017-05-04T15:11:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/05/04/react-total-constructor/">阅读react源码--react整体结构</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -587,9 +344,9 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		root: "/",

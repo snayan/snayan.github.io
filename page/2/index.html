@@ -161,6 +161,68 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-react16源码学习4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/04/11/react16源码学习4/">react 16学习(四)</a>
+    </h1>
+  
+
+        
+        <a href="/2018/04/11/react16源码学习4/" class="archive-article-date">
+  	<time datetime="2018-04-11T01:48:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>React中比较重要的就是”React elements”了，可以理解为页面中可看到的节点元素。</p>
+<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>一个”React element”的结构为下面这样，<br><img src="/assert/img/react_element.jpg" alt=""><br>
+        
+          <a class="article-more-a" href="/2018/04/11/react16源码学习4/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/04/11/react16源码学习4/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-react16源码学习3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -765,68 +827,6 @@
 
 
   
-    <article id="post-javascript中ToPrimitive详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/07/06/javascript中ToPrimitive详解/">javascript中ToPrimitive详解</a>
-    </h1>
-  
-
-        
-        <a href="/2017/07/06/javascript中ToPrimitive详解/" class="archive-article-date">
-  	<time datetime="2017-07-06T15:36:19.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>看了这么多框架方面的东西，但注意，基础很重要。今天就来说说javascipt中容易忽略的类型转换问题。<br>在javascript中有7种基本类型，它们为：string，number，boolean，undefined，null，symbol，object。判断类型的方式是<code>typeof</code>。我们把string，number，boolean，undefined，null，symbol这几类称为原始类型。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typeof</span> <span class="number">1</span> <span class="comment">//'number'</span></div><div class="line"><span class="keyword">typeof</span> <span class="string">'aa'</span> <span class="comment">//'string'</span></div><div class="line"><span class="keyword">typeof</span> <span class="literal">true</span> <span class="comment">//'boolean'</span></div><div class="line"><span class="keyword">typeof</span> <span class="built_in">Symbol</span>() <span class="comment">//'symbol'</span></div><div class="line"><span class="keyword">typeof</span> <span class="literal">undefined</span> <span class="comment">//'undefined'</span></div><div class="line"><span class="keyword">typeof</span> <span class="literal">null</span> <span class="comment">//'object'</span></div><div class="line"><span class="keyword">typeof</span> &#123;&#125; <span class="comment">//'object'</span></div><div class="line"><span class="keyword">typeof</span> <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125; <span class="comment">//'function'</span></div></pre></td></tr></table></figure></p>
-<p>注意两点，一是，对于函数，实际上也可以认为是object，但使用typeof得到的结果是’function’；二是，对于null，typeof得到的结果是’object’。<br>
-        
-          <a class="article-more-a" href="/2017/07/06/javascript中ToPrimitive详解/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">javascript</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/07/06/javascript中ToPrimitive详解/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -933,10 +933,6 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">canvas</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">2017</a>
               </li>
              
@@ -945,7 +941,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
+                <a href="javascript:void(0)" class="js-tag color2">canvas</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -957,7 +953,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">react</a>
+                <a href="javascript:void(0)" class="js-tag color1">javascript</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -965,11 +961,19 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">react</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -981,11 +985,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">vue</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
             
             <div class="clearfix"></div>

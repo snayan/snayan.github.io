@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://snayan.github.io/"/>
-  <updated>2018-08-26T11:55:13.000Z</updated>
+  <updated>2018-12-03T11:19:33.000Z</updated>
   <id>https://snayan.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>看vue源码解决组件style更新问题</title>
+    <link href="https://snayan.github.io/2018/12/03/%E7%9C%8Bvue%E6%BA%90%E7%A0%81%E8%A7%A3%E5%86%B3%E7%BB%84%E4%BB%B6style%E6%9B%B4%E6%96%B0%E9%97%AE%E9%A2%98/"/>
+    <id>https://snayan.github.io/2018/12/03/看vue源码解决组件style更新问题/</id>
+    <published>2018-12-03T11:09:22.000Z</published>
+    <updated>2018-12-03T11:19:33.000Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近在项目碰到了一个vue组件更新导致style异常的问题。下面记录一下我自己的解决思路。&lt;/p&gt;
+&lt;h4 id=&quot;问题背景&quot;&gt;&lt;a href=&quot;#问题背景&quot; class=&quot;headerlink&quot; title=&quot;问题背景&quot;&gt;&lt;/a&gt;问题背景&lt;/h4&gt;&lt;p&gt;由于公司项目业务复杂，就不具体描述了。简单说一下问题，就是项目使用vue框架，在一个页面中根据a值来显示不同组件，当&lt;code&gt;a = true&lt;/code&gt;时显示A组件，否则就显示B组件。示例代码如下&lt;/p&gt;
+&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;16&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;17&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;19&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;20&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;21&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;22&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;23&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;24&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;25&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;26&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&amp;lt;template&amp;gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;lt;div&amp;gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      &amp;lt;div v-if=&amp;quot;a&amp;quot; :style=&amp;quot;getBackground(&amp;apos;a&amp;apos;)&amp;quot;&amp;gt;a组件&amp;lt;/div&amp;gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;      &amp;lt;div v-else :style=&amp;quot;getBackground(&amp;apos;b&amp;apos;)&amp;quot;&amp;gt;b组件&amp;lt;/div&amp;gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;lt;/div&amp;gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;lt;/template&amp;gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;lt;script&amp;gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    export default &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        name:&amp;apos;Example&amp;apos;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        data: &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            a: false&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#125;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        computed: &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            getBackground: function(type) &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                return &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                    background: `url(https://$&amp;#123;type&amp;#125;.png) no-repeat`,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                    backgroundSize: &amp;apos;100% 100%&amp;apos;,&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;                &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        mounted() &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;            setTimeout(() =&amp;gt; &amp;#123; this.a = true &amp;#125;, 1000)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;lt;/script&amp;gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h4 id=&quot;问题描述&quot;&gt;&lt;a href=&quot;#问题描述&quot; class=&quot;headerlink&quot; title=&quot;问题描述&quot;&gt;&lt;/a&gt;问题描述&lt;/h4&gt;&lt;p&gt;如上代码，页面加载时，显示 &lt;em&gt;a组件&lt;/em&gt;，且它的背景样式是设置了backgroundImage和backgroundSize为”100%  100%”，一秒之后，a 变为false了，这是显示 &lt;em&gt;b组件&lt;/em&gt;，预期之中，它也是应该设置了backgroundImage和backgroundSize为”100% 100%”，但是呢，在显示 &lt;em&gt;b组件&lt;/em&gt;，它的样式，backgroundSize并不是”100% 100%”，而是默认的”initial”，这样导致样式并非我们预期想要的。究竟为什么在显示 &lt;em&gt;b组件&lt;/em&gt; 时，这个backgroundSize不是我们在&lt;code&gt;getBackground&lt;/code&gt;中返回的100%呢？&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="vue" scheme="https://snayan.github.io/tags/vue/"/>
+    
+  </entry>
   
   <entry>
     <title>canvas-核心技术-如何实现碰撞检测</title>
@@ -446,25 +467,6 @@
       <category term="resposive" scheme="https://snayan.github.io/tags/resposive/"/>
     
       <category term="mobile" scheme="https://snayan.github.io/tags/mobile/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>javascript中ToPrimitive详解</title>
-    <link href="https://snayan.github.io/2017/07/06/javascript%E4%B8%ADToPrimitive%E8%AF%A6%E8%A7%A3/"/>
-    <id>https://snayan.github.io/2017/07/06/javascript中ToPrimitive详解/</id>
-    <published>2017-07-06T15:36:19.000Z</published>
-    <updated>2018-03-28T13:57:53.482Z</updated>
-    
-    <summary type="html">
-    
-      &lt;p&gt;看了这么多框架方面的东西，但注意，基础很重要。今天就来说说javascipt中容易忽略的类型转换问题。&lt;br&gt;在javascript中有7种基本类型，它们为：string，number，boolean，undefined，null，symbol，object。判断类型的方式是&lt;code&gt;typeof&lt;/code&gt;。我们把string，number，boolean，undefined，null，symbol这几类称为原始类型。&lt;br&gt;&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//&#39;number&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&#39;aa&#39;&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//&#39;string&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//&#39;boolean&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;Symbol&lt;/span&gt;() &lt;span class=&quot;comment&quot;&gt;//&#39;symbol&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;undefined&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//&#39;undefined&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;//&#39;object&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &amp;#123;&amp;#125; &lt;span class=&quot;comment&quot;&gt;//&#39;object&#39;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;typeof&lt;/span&gt; &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;function&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;)&lt;/span&gt;&amp;#123;&amp;#125; &lt;span class=&quot;comment&quot;&gt;//&#39;function&#39;&lt;/span&gt;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-&lt;p&gt;注意两点，一是，对于函数，实际上也可以认为是object，但使用typeof得到的结果是’function’；二是，对于null，typeof得到的结果是’object’。&lt;br&gt;
-    
-    </summary>
-    
-    
-      <category term="javascript" scheme="https://snayan.github.io/tags/javascript/"/>
     
   </entry>
   
