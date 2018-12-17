@@ -161,6 +161,77 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-img_srcset_seizes" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/24/img_srcset_seizes/">响应式图片加载</a>
+    </h1>
+  
+
+        
+        <a href="/2017/07/24/img_srcset_seizes/" class="archive-article-date">
+  	<time datetime="2017-07-24T14:08:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在做响应式图片加载需要使用到的两个关键属性就是<code>srcset</code>和<code>sizes</code> ，这两个属性是H5中新加的，是给img标签提供多个不同尺寸的图片，在不同设备，不同分辨率的情况下加载不同的图片。</p>
+<ul>
+<li><p>根据屏幕分辨率选择<br>当只需要根据屏幕分辨率去选择不同的图片的时候，有2种情况。<br>第1种，语法形式为：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">srcset="[url] [dpr]x,[url] [dpr]x,....etc"</div></pre></td></tr></table></figure>
+<p>一般屏幕的分辨率会到3倍，例如iphone6plus，其dpr=3，这种是直接给出每种图片的分辨率规格，例子如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"./mm-width-128px.jpg"</span> <span class="attr">alt</span>=<span class="string">"示例图片"</span> <span class="attr">srcset</span>=<span class="string">"./mm-width-256px.jpg 2x,./mm-width-512px.jpg 3x"</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>上面的示例表示，在dpr=1的屏幕下加载128px这张图片；在1&lt;dpr&lt;=2时，加载256px这张图片；当dpr&gt;2时就加载512px这张图片了。<br>注意，srcset里的<strong>x</strong>一定要是小写，大写的话，chrome会无法识别。<br><a href="https://webkit.org/demos/srcset/" target="_blank" rel="external">查看demo</a></p>
+        
+          <a class="article-more-a" href="/2017/07/24/img_srcset_seizes/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">resposive</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">mobile</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/07/24/img_srcset_seizes/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-javascript中ToPrimitive详解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -772,6 +843,14 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">h5</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">audio</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">2017</a>
               </li>
              
@@ -796,10 +875,6 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">h5</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">react</a>
               </li>
              
@@ -808,15 +883,15 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">vue</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">decorator</a>
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -824,7 +899,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+                <a href="javascript:void(0)" class="js-tag color5">decorator</a>
               </li>
             
             <div class="clearfix"></div>

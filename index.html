@@ -161,6 +161,74 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-HTML5中Audio使用踩坑汇总" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/17/HTML5中Audio使用踩坑汇总/">HTML5中Audio使用踩坑汇总</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/17/HTML5中Audio使用踩坑汇总/" class="archive-article-date">
+  	<time datetime="2018-12-17T13:06:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li><h3 id="Cannot-read-property-‘catch’-of-undefined"><a href="#Cannot-read-property-‘catch’-of-undefined" class="headerlink" title="Cannot read property ‘catch’ of undefined"></a>Cannot read property ‘catch’ of undefined</h3><p>原因：在调用play()时，现代浏览器返回的是一个promise，对于执行失败的，会触发一个Unhandled Promise Rejection，但是对于低版本的浏览器，调用play()并不会返回一个promise。<br>解决：应该在调用play()时做如下处理，增加对playPromise的判断</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> playPromise = <span class="built_in">document</span>.querySelector(<span class="string">'video'</span>).play();</div><div class="line"></div><div class="line"><span class="comment">// In browsers that don’t yet support this functionality,</span></div><div class="line"><span class="comment">// playPromise won’t be defined.</span></div><div class="line"><span class="keyword">if</span> (playPromise !== <span class="literal">undefined</span>) &#123;</div><div class="line">  playPromise.then(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="comment">// Automatic playback started!</span></div><div class="line">  &#125;).catch(<span class="function"><span class="keyword">function</span>(<span class="params">error</span>) </span>&#123;</div><div class="line">    <span class="comment">// Automatic playback failed.</span></div><div class="line">    <span class="comment">// Show a UI element to let the user manually start playback.</span></div><div class="line">  &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>参考资料：<a href="https://developers.google.com/web/updates/2016/03/play-returns-promise" target="_blank" rel="external">HTMLMediaElement.play() Returns a Promise</a></p>
+        
+          <a class="article-more-a" href="/2018/12/17/HTML5中Audio使用踩坑汇总/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">h5</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">audio</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/17/HTML5中Audio使用踩坑汇总/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-看vue源码解决组件style更新问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -761,80 +829,6 @@
 
 
   
-    <article id="post-vue-全家桶初探" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/15/vue-全家桶初探/">vue 全家桶初探</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/15/vue-全家桶初探/" class="archive-article-date">
-  	<time datetime="2018-06-15T01:51:44.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h3><p>这个项目主要是用vue+vuex实现一个单页面应用，纯粹是熟悉vue全家桶相关开发模式，用于练手非常合适。<br>着手开发完了之后可以学的东西：</p>
-<ol>
-<li>熟悉vue单文件组件开发方式</li>
-<li>熟悉如何写一个vue插件</li>
-<li>熟悉如何使用vue-router以及挂载路由钩子函数</li>
-<li>熟悉vuex是如何运作的，模块化维护应用状态数据</li>
-<li>体验typescript的开发方式<br>如果想学vue的不妨进来看看。<br>项目源码地址：<a href="https://github.com/snayan/vue-task" target="_blank" rel="external">点击这里</a></li>
-</ol>
-<h3 id="技术栈"><a href="#技术栈" class="headerlink" title="技术栈"></a>技术栈</h3><ul>
-<li>vue</li>
-<li>vuex</li>
-<li>vue-router</li>
-<li>typescript</li>
-</ul>
-        
-          <a class="article-more-a" href="/2018/06/15/vue-全家桶初探/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/15/vue-全家桶初探/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -941,6 +935,14 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">h5</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">audio</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">2017</a>
               </li>
              
@@ -965,10 +967,6 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">h5</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">react</a>
               </li>
              
@@ -977,15 +975,15 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">vue</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">decorator</a>
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">webpack</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -993,7 +991,7 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+                <a href="javascript:void(0)" class="js-tag color5">decorator</a>
               </li>
             
             <div class="clearfix"></div>
