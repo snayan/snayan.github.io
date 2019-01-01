@@ -161,6 +161,81 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Explain-the-implementation-of-virtual-dom-snabbdom" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/">理解virtual dom的实现细节-snabbdom</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/" class="archive-article-date">
+  	<time datetime="2018-12-31T02:30:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近想了解一下React和Vue框架分别在virtual dom部分的实现，以及他们的不同之处。于是先翻开Vue的源码去找virtual dom 的实现，看到开头，它就提到了Vue的virtual dom更新算法是基于Snabbdom实现的。于是，又去克隆了Snabbdom的源码，发现它的源码并不是很复杂并且星星🌟还很多，所以就仔细看了一遍了，这里就将详细学习一下它是如何实现virtual dom的。</p>
+<p>在Snabbdom的GitHub上就解释了，它是一个实现virtual dom的库，简单化，模块化，以及强大的特性和性能。</p>
+<blockquote>
+<p>A virtual DOM library with focus on simplicity, modularity, powerful features and performance.</p>
+</blockquote>
+<p><a href="https://github.com/snabbdom/snabbdom" target="_blank" rel="external">这里是Snabbdom的仓库地址</a>。</p>
+<h4 id="init"><a href="#init" class="headerlink" title="init"></a>init</h4>
+        
+          <a class="article-more-a" href="/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">h5</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">vue</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">vdom</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-HTML5中Audio使用踩坑汇总" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -763,72 +838,6 @@
 
 
   
-    <article id="post-常见webpack构建项目流程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/27/常见webpack构建项目流程/">webpack构建常见流程</a>
-    </h1>
-  
-
-        
-        <a href="/2018/06/27/常见webpack构建项目流程/" class="archive-article-date">
-  	<time datetime="2018-06-27T08:03:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-06-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>现在前端项目的构建一般基本都是基于webpack的。项目的技术栈目前比较主流的是react全家桶和vue全家桶。<br>趁空闲，以公司一个项目整理了webpack构建常见的流程,这个项目是使用vue全家桶开发的。</p>
-<h5 id="技术栈："><a href="#技术栈：" class="headerlink" title="技术栈："></a>技术栈：</h5><ul>
-<li>vue</li>
-<li>typescript</li>
-</ul>
-<h4 id="浏览器支持："><a href="#浏览器支持：" class="headerlink" title="浏览器支持："></a>浏览器支持：</h4><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">"browserslist": [</div><div class="line">    "&gt; 1%",</div><div class="line">    "last 2 versions",</div><div class="line">    "not ie &lt;= 9",</div><div class="line">    <span class="string">"Android &gt;= 4.3"</span></div><div class="line">]</div></pre></td></tr></table></figure>
-        
-          <a class="article-more-a" href="/2018/06/27/常见webpack构建项目流程/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">webpack</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/06/27/常见webpack构建项目流程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -843,7 +852,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018 三洋
+    		&copy; 2019 三洋
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -943,15 +952,23 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">vdom</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">canvas</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">2017</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">小结</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">canvas</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -972,10 +989,6 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">设计模式</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">vue</a>
               </li>
              
               <li class="article-tag-list-item">

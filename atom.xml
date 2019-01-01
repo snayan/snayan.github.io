@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://snayan.github.io/"/>
-  <updated>2018-12-17T13:15:32.000Z</updated>
+  <updated>2019-01-01T02:52:53.806Z</updated>
   <id>https://snayan.github.io/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>理解virtual dom的实现细节-snabbdom</title>
+    <link href="https://snayan.github.io/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/"/>
+    <id>https://snayan.github.io/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/</id>
+    <published>2018-12-31T02:30:36.000Z</published>
+    <updated>2019-01-01T02:52:53.806Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近想了解一下React和Vue框架分别在virtual dom部分的实现，以及他们的不同之处。于是先翻开Vue的源码去找virtual dom 的实现，看到开头，它就提到了Vue的virtual dom更新算法是基于Snabbdom实现的。于是，又去克隆了Snabbdom的源码，发现它的源码并不是很复杂并且星星🌟还很多，所以就仔细看了一遍了，这里就将详细学习一下它是如何实现virtual dom的。&lt;/p&gt;
+&lt;p&gt;在Snabbdom的GitHub上就解释了，它是一个实现virtual dom的库，简单化，模块化，以及强大的特性和性能。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A virtual DOM library with focus on simplicity, modularity, powerful features and performance.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/snabbdom/snabbdom&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;这里是Snabbdom的仓库地址&lt;/a&gt;。&lt;/p&gt;
+&lt;h4 id=&quot;init&quot;&gt;&lt;a href=&quot;#init&quot; class=&quot;headerlink&quot; title=&quot;init&quot;&gt;&lt;/a&gt;init&lt;/h4&gt;
+    
+    </summary>
+    
+    
+      <category term="h5" scheme="https://snayan.github.io/tags/h5/"/>
+    
+      <category term="vue" scheme="https://snayan.github.io/tags/vue/"/>
+    
+      <category term="vdom" scheme="https://snayan.github.io/tags/vdom/"/>
+    
+  </entry>
   
   <entry>
     <title>HTML5中Audio使用踩坑汇总</title>
@@ -439,31 +467,6 @@
     
     
       <category term="小程序" scheme="https://snayan.github.io/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>移动端布局方案浅谈</title>
-    <link href="https://snayan.github.io/2017/07/31/mobile-layout/"/>
-    <id>https://snayan.github.io/2017/07/31/mobile-layout/</id>
-    <published>2017-07-31T14:23:19.000Z</published>
-    <updated>2018-03-28T13:57:53.482Z</updated>
-    
-    <summary type="html">
-    
-      &lt;p&gt;一直想抽时间总结一下现在业界可用的移动端布局方案。需求多，995模式，身心被掏空，一拖再拖，终于在周六的晚上，做着梦弄完成的，不足之道😪，请指教改正🤠。&lt;/p&gt;
-&lt;h3 id=&quot;media-百分比&quot;&gt;&lt;a href=&quot;#media-百分比&quot; class=&quot;headerlink&quot; title=&quot;media+百分比&quot;&gt;&lt;/a&gt;media+百分比&lt;/h3&gt;&lt;p&gt;直接采用媒体查询加百分比去布局。&lt;br&gt;核心思想：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;页面主体布局基本采用百分比去设置。&lt;/li&gt;
-&lt;li&gt;然后，其他块内布局,例如font-size等可通过设置媒体查询的断点来分设置，已达到兼容其他手机尺寸。&lt;/li&gt;
-&lt;/ul&gt;
-    
-    </summary>
-    
-    
-      <category term="h5" scheme="https://snayan.github.io/tags/h5/"/>
-    
-      <category term="mobile" scheme="https://snayan.github.io/tags/mobile/"/>
     
   </entry>
   
