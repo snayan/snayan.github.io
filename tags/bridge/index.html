@@ -6,23 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://snayan.github.io">
-  <title>react 16学习(四) | 三洋同学的笔记本</title>
+  <title>Tag: bridge | 三洋同学的笔记本</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="React中比较重要的就是”React elements”了，可以理解为页面中可看到的节点元素。 结构一个”React element”的结构为下面这样，">
-<meta name="keywords" content="react">
-<meta property="og:type" content="article">
-<meta property="og:title" content="react 16学习(四)">
-<meta property="og:url" content="https://snayan.github.io/2018/04/11/react16源码学习4/index.html">
+  <meta name="description" content="三洋同学的笔记本">
+<meta property="og:type" content="website">
+<meta property="og:title" content="三洋同学的笔记本">
+<meta property="og:url" content="https://snayan.github.io/tags/bridge/index.html">
 <meta property="og:site_name" content="三洋同学的笔记本">
-<meta property="og:description" content="React中比较重要的就是”React elements”了，可以理解为页面中可看到的节点元素。 结构一个”React element”的结构为下面这样，">
+<meta property="og:description" content="三洋同学的笔记本">
 <meta property="og:locale" content="zh">
-<meta property="og:image" content="https://snayan.github.io/assert/img/react_element.jpg">
-<meta property="og:image" content="https://snayan.github.io/assert/img/element_prop.jpg">
-<meta property="og:updated_time" content="2018-04-11T01:54:20.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="react 16学习(四)">
-<meta name="twitter:description" content="React中比较重要的就是”React elements”了，可以理解为页面中可看到的节点元素。 结构一个”React element”的结构为下面这样，">
-<meta name="twitter:image" content="https://snayan.github.io/assert/img/react_element.jpg">
+<meta name="twitter:title" content="三洋同学的笔记本">
+<meta name="twitter:description" content="三洋同学的笔记本">
   
     <link rel="alternative" href="/atom.xml" title="三洋同学的笔记本" type="application/atom+xml">
   
@@ -164,156 +159,64 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-react16源码学习4" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      react 16学习(四)
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/12/31/理解h5与native(ios)通信细节/" class="archive-article-date">
+  	<time datetime="2018-12-31T03:11:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-31</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/12/31/理解h5与native(ios)通信细节/">理解h5与native(ios)通信细节</a>
     </h1>
   
 
-        
-        <a href="/2018/04/11/react16源码学习4/" class="archive-article-date">
-  	<time datetime="2018-04-11T01:48:07.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-04-11</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>React中比较重要的就是”React elements”了，可以理解为页面中可看到的节点元素。</p>
-<h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>一个”React element”的结构为下面这样，<br><img src="/assert/img/react_element.jpg" alt=""><br><a id="more"></a><br>可以看到比较重要的几个属性：<strong>$$typeof</strong>，<strong>key</strong>，<strong>props</strong>，<strong>ref</strong>，<strong>type</strong>。</p>
-<ul>
-<li><p>$$typeof：固定为<code>Symbol(react.element)</code>，在验证React element时就是取的这个值。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">isValidElement</span>(<span class="params">object</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> (</div><div class="line">    <span class="keyword">typeof</span> object === <span class="string">'object'</span> &amp;&amp;</div><div class="line">    object !== <span class="literal">null</span> &amp;&amp;</div><div class="line">    object.$$<span class="keyword">typeof</span> === REACT_ELEMENT_TYPE</div><div class="line">  );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>key：在循环输出React elements时加上 key 属性，可以极大的优化性能，react在进行节点”diff”比较时，会取key值进行比较。</p>
-</li>
-<li>props：传递给element的属性对象，也包含了当前元素的子节点<code>children</code><br><img src="/assert/img/element_prop.jpg" alt=""></li>
-<li><p>ref：保存了对应真是dom的节点的访问的名称，</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> ref = <span class="function"><span class="keyword">function</span>(<span class="params">value</span>) </span>&#123;</div><div class="line">    <span class="keyword">const</span> refs = inst.refs === emptyObject ? (inst.refs = &#123;&#125;) : inst.refs;</div><div class="line">    <span class="keyword">if</span> (value === <span class="literal">null</span>) &#123;</div><div class="line">        <span class="keyword">delete</span> refs[stringRef];</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        refs[stringRef] = value;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
-</li>
-<li><p>type：当前元素的类型，取值为html元素，自定义组件，Fragment，StrictMode，AsyncMode。</p>
-<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">isValidElementType</span>(<span class="params">type: mixed</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> (</div><div class="line">    <span class="keyword">typeof</span> type === <span class="string">'string'</span> ||</div><div class="line">    <span class="keyword">typeof</span> type === <span class="string">'function'</span> ||</div><div class="line">    <span class="comment">// Note: its typeof might be other than 'symbol' or 'number' if it's a polyfill.</span></div><div class="line">    type === REACT_FRAGMENT_TYPE ||</div><div class="line">    type === REACT_ASYNC_MODE_TYPE ||</div><div class="line">    type === REACT_STRICT_MODE_TYPE ||</div><div class="line">    (<span class="keyword">typeof</span> type === <span class="string">'object'</span> &amp;&amp;</div><div class="line">      type !== <span class="literal">null</span> &amp;&amp;</div><div class="line">      (type.$$<span class="keyword">typeof</span> === REACT_PROVIDER_TYPE ||</div><div class="line">        type.$$<span class="keyword">typeof</span> === REACT_CONTEXT_TYPE ||</div><div class="line">        type.$$<span class="keyword">typeof</span> === REACT_FORWARD_REF_TYPE))</div><div class="line">  );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>“React elements”是通过<code>React.createElement</code>函数创建的，可以创建内部预定义的元素类型，这些预定义的就是对应html中的原始tagName（定义在validateDOMNesting.js文件中），也可以创建自定义组件的元素类型。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">createElement</span>(<span class="params">type, config, children</span>) </span>&#123;</div><div class="line">  <span class="keyword">let</span> propName;</div><div class="line"></div><div class="line">  <span class="comment">// Reserved names are extracted</span></div><div class="line">  <span class="keyword">const</span> props = &#123;&#125;;</div><div class="line"></div><div class="line">  <span class="keyword">let</span> key = <span class="literal">null</span>;</div><div class="line">  <span class="keyword">let</span> ref = <span class="literal">null</span>;</div><div class="line">  <span class="keyword">let</span> self = <span class="literal">null</span>;</div><div class="line">  <span class="keyword">let</span> source = <span class="literal">null</span>;</div><div class="line"></div><div class="line">  <span class="keyword">if</span> (config != <span class="literal">null</span>) &#123;</div><div class="line">    <span class="keyword">if</span> (hasValidRef(config)) &#123;</div><div class="line">      ref = config.ref;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (hasValidKey(config)) &#123;</div><div class="line">      key = <span class="string">''</span> + config.key;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    self = config.__self === <span class="literal">undefined</span> ? <span class="literal">null</span> : config.__self;</div><div class="line">    source = config.__source === <span class="literal">undefined</span> ? <span class="literal">null</span> : config.__source;</div><div class="line">    <span class="comment">// Remaining properties are added to a new props object</span></div><div class="line">    <span class="keyword">for</span> (propName <span class="keyword">in</span> config) &#123;</div><div class="line">      <span class="keyword">if</span> (</div><div class="line">        hasOwnProperty.call(config, propName) &amp;&amp;</div><div class="line">        !RESERVED_PROPS.hasOwnProperty(propName)</div><div class="line">      ) &#123;</div><div class="line">        props[propName] = config[propName];</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Children can be more than one argument, and those are transferred onto</span></div><div class="line">  <span class="comment">// the newly allocated props object.</span></div><div class="line">  <span class="keyword">const</span> childrenLength = <span class="built_in">arguments</span>.length - <span class="number">2</span>;</div><div class="line">  <span class="keyword">if</span> (childrenLength === <span class="number">1</span>) &#123;</div><div class="line">    props.children = children;</div><div class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (childrenLength &gt; <span class="number">1</span>) &#123;</div><div class="line">    <span class="keyword">const</span> childArray = <span class="built_in">Array</span>(childrenLength);</div><div class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; childrenLength; i++) &#123;</div><div class="line">      childArray[i] = <span class="built_in">arguments</span>[i + <span class="number">2</span>];</div><div class="line">    &#125;</div><div class="line">    props.children = childArray;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// Resolve default props</span></div><div class="line">  <span class="keyword">if</span> (type &amp;&amp; type.defaultProps) &#123;</div><div class="line">    <span class="keyword">const</span> defaultProps = type.defaultProps;</div><div class="line">    <span class="keyword">for</span> (propName <span class="keyword">in</span> defaultProps) &#123;</div><div class="line">      <span class="keyword">if</span> (props[propName] === <span class="literal">undefined</span>) &#123;</div><div class="line">        props[propName] = defaultProps[propName];</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">    <span class="keyword">return</span> &#123;</div><div class="line">        $$<span class="keyword">typeof</span>: REACT_ELEMENT_TYPE,</div><div class="line">        type,</div><div class="line">        key,</div><div class="line">        ref,</div><div class="line">        props,</div><div class="line">        _owner:owner</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h3 id="JSX"><a href="#JSX" class="headerlink" title="JSX"></a>JSX</h3><p>在创建“React elements”时，用<code>React.createElement</code>完全可以满足任何场景，并且javascript函数式编程的极大体现，极大的灵活。但是呢，在一些结构复杂，且嵌套层级多的结构中，我们使用<code>React.createElement</code>写会觉得比较繁琐，并且直观上不容易理解元素的结构。于是，<code>JSX</code>应运而生，用写html的方式写React elements的结构。实际背后是babel，会把<code>JSX</code>转换为<code>React.createElement</code>的方式。<br>详见：<a href="https://babeljs.io/docs/plugins/transform-react-jsx" target="_blank" rel="external">transform-react-jsx</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">h5</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">bridge</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//img.fanhaobai.com/qrcode.php?url=https://snayan.github.io/2018/04/11/react16源码学习4/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2018/06/15/vue-全家桶初探/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          vue 全家桶初探
-        
-      </div>
-    </a>
   
   
-    <a href="/2018/04/04/react16源码学习3/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">react 16学习(三)</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
+    
 
 
           </div>
@@ -336,9 +239,9 @@
 	var yiliaConfig = {
 		mathjax: true,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		root: "/",

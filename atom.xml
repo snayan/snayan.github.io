@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://snayan.github.io/"/>
-  <updated>2019-01-01T02:52:53.806Z</updated>
+  <updated>2019-01-01T03:17:21.000Z</updated>
   <id>https://snayan.github.io/</id>
   
   <author>
@@ -17,11 +17,32 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>理解h5与native(ios)通信细节</title>
+    <link href="https://snayan.github.io/2018/12/31/%E7%90%86%E8%A7%A3h5%E4%B8%8Enative(ios)%E9%80%9A%E4%BF%A1%E7%BB%86%E8%8A%82/"/>
+    <id>https://snayan.github.io/2018/12/31/理解h5与native(ios)通信细节/</id>
+    <published>2018-12-31T03:11:00.000Z</published>
+    <updated>2019-01-01T03:17:21.000Z</updated>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在跨平台客户端开发中，H5是使用最为广泛的方式，它既可以运行在iOS中，也可以运行在Android中，还可以运行在web浏览器中，可以说是”write once, run anywhere”。但是，H5最为人诟病的就是用户体验不如native流畅，特别是对于低端机型和较差的网络环境，在页面加载时通常有较长一段时间的白屏等待时间。H5开发者想尽办法缩短首屏时间，用户可交互时间，为此使用了一系列的优化手段，比如ssr，code split，compress，lazy load，preload等等，其实主要是围绕&lt;strong&gt;尽量少&lt;/strong&gt;这一核心原则。为了平衡跨终端能力和用户体验，现在流行的又有RN和Flutter解决方案等。咦，感觉跑题了，还是回到标题说的，具体来看看在IOS中，H5是怎么与native通信的。文字略长，但是我相信你看完了，会有所收获。&lt;/p&gt;
+&lt;p&gt;说到通信，无非就是两种方式，native调用h5，h5调用native。H5在iOS中的宿主是UIWebView或者WKWebView，在IOS8中，Apple引入了WKWebView，将UIWebView标记为Deprecated。现在来说，大部分app应该都是使用的WKWebView，除非那些需要兼容IOS8以下系统的才会兼容使用UIWebView，本文也主要是说说使用WKWebView的场景。在实现H5与native之间的通信，比较流行的库就是&lt;a href=&quot;https://github.com/marcuswestin/WebViewJavascriptBridge&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;WebViewJavascriptBridge&lt;/a&gt;，为了真正弄明白原理，我也是通读了它的源码，然后根据它的实现思路，自己用swift也实现了一遍。下面就结合一个小例子，谈谈它的实现原理。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="h5" scheme="https://snayan.github.io/tags/h5/"/>
+    
+      <category term="bridge" scheme="https://snayan.github.io/tags/bridge/"/>
+    
+  </entry>
+  
+  <entry>
     <title>理解virtual dom的实现细节-snabbdom</title>
-    <link href="https://snayan.github.io/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/"/>
-    <id>https://snayan.github.io/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/</id>
+    <link href="https://snayan.github.io/2018/12/31/%E7%90%86%E8%A7%A3virtual%20dom%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82-snabbdom/"/>
+    <id>https://snayan.github.io/2018/12/31/理解virtual dom的实现细节-snabbdom/</id>
     <published>2018-12-31T02:30:36.000Z</published>
-    <updated>2019-01-01T02:52:53.806Z</updated>
+    <updated>2019-01-01T03:15:28.413Z</updated>
     
     <summary type="html">
     
@@ -447,26 +468,6 @@
       <category term="javascript" scheme="https://snayan.github.io/tags/javascript/"/>
     
       <category term="decorator" scheme="https://snayan.github.io/tags/decorator/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>小程序组件化编程</title>
-    <link href="https://snayan.github.io/2017/09/17/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%BB%84%E4%BB%B6%E5%8C%96%E7%BC%96%E7%A8%8B/"/>
-    <id>https://snayan.github.io/2017/09/17/小程序组件化编程/</id>
-    <published>2017-09-17T14:24:28.000Z</published>
-    <updated>2018-03-28T13:57:53.484Z</updated>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在开发微信小程序时，发现缺少了组件化开发体验，在网上找了一波资源，发现都不是很好。其中，有用开发Vue的方式去开发小程序，比如，WePY，最后将源代码编译成小程序的官方文件模式。这种方式，开发感觉爽，但是如果小程序版本升级变了之后，不在支持这种方式，那么就得重新开发一套小程序官方支持的代码了，成本代价很大。并且，这次项目时间非常紧，团队成员不熟悉vue的情况下，不敢用WePY。但是，小程序官方又对组件化支持不是很友好。于是，决定自己弄一套，既有组件化开发体验，又是最大限度的接近小程序官方的开发模式。&lt;/p&gt;
-&lt;p&gt;目前项目已经成功上线，小程序：会过精选&lt;br&gt;&lt;a href=&quot;https://github.com/snayan/weChart-component&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;源码地址以及实例地址&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&quot;第一步，改写Page&quot;&gt;&lt;a href=&quot;#第一步，改写Page&quot; class=&quot;headerlink&quot; title=&quot;第一步，改写Page&quot;&gt;&lt;/a&gt;第一步，改写Page&lt;/h3&gt;&lt;p&gt;由于小程序的页面定义是通过&lt;code&gt;Page&lt;/code&gt;方法去定义的，那么，&lt;code&gt;Page&lt;/code&gt;一定在小程序内可以认为是一个全局变量，我只需要改写&lt;code&gt;Page&lt;/code&gt;这个方法，去可以引用组件，调用组件，触发组件的生命周期方法，维持组件内部的数据状态，那么，是不是就可以接近了组件化的编程体验了，并且可以抽离常用组件，达到复用的目的。&lt;br&gt;&lt;figure class=&quot;highlight javascript&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//先保存原Page&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;const&lt;/span&gt; nativePage = Page;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;/* 自定义Page */&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;Page = &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;params&quot;&gt;data&lt;/span&gt; =&amp;gt;&lt;/span&gt; &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;//...改写Page逻辑，增加自己的功能&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;//最后一定得调用原Page方法，不然，小程序页面无法生成&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  nativePage(c);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="小程序" scheme="https://snayan.github.io/tags/%E5%B0%8F%E7%A8%8B%E5%BA%8F/"/>
     
   </entry>
   

@@ -161,19 +161,85 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-Explain-the-implementation-of-virtual-dom-snabbdom" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-理解h5与native(ios)通信细节" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/">理解virtual dom的实现细节-snabbdom</a>
+      <a class="article-title" href="/2018/12/31/理解h5与native(ios)通信细节/">理解h5与native(ios)通信细节</a>
     </h1>
   
 
         
-        <a href="/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/" class="archive-article-date">
+        <a href="/2018/12/31/理解h5与native(ios)通信细节/" class="archive-article-date">
+  	<time datetime="2018-12-31T03:11:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在跨平台客户端开发中，H5是使用最为广泛的方式，它既可以运行在iOS中，也可以运行在Android中，还可以运行在web浏览器中，可以说是”write once, run anywhere”。但是，H5最为人诟病的就是用户体验不如native流畅，特别是对于低端机型和较差的网络环境，在页面加载时通常有较长一段时间的白屏等待时间。H5开发者想尽办法缩短首屏时间，用户可交互时间，为此使用了一系列的优化手段，比如ssr，code split，compress，lazy load，preload等等，其实主要是围绕<strong>尽量少</strong>这一核心原则。为了平衡跨终端能力和用户体验，现在流行的又有RN和Flutter解决方案等。咦，感觉跑题了，还是回到标题说的，具体来看看在IOS中，H5是怎么与native通信的。文字略长，但是我相信你看完了，会有所收获。</p>
+<p>说到通信，无非就是两种方式，native调用h5，h5调用native。H5在iOS中的宿主是UIWebView或者WKWebView，在IOS8中，Apple引入了WKWebView，将UIWebView标记为Deprecated。现在来说，大部分app应该都是使用的WKWebView，除非那些需要兼容IOS8以下系统的才会兼容使用UIWebView，本文也主要是说说使用WKWebView的场景。在实现H5与native之间的通信，比较流行的库就是<a href="https://github.com/marcuswestin/WebViewJavascriptBridge" target="_blank" rel="external">WebViewJavascriptBridge</a>，为了真正弄明白原理，我也是通读了它的源码，然后根据它的实现思路，自己用swift也实现了一遍。下面就结合一个小例子，谈谈它的实现原理。<br>
+        
+          <a class="article-more-a" href="/2018/12/31/理解h5与native(ios)通信细节/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">h5</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">bridge</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/31/理解h5与native(ios)通信细节/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-理解virtual dom的实现细节-snabbdom" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/31/理解virtual dom的实现细节-snabbdom/">理解virtual dom的实现细节-snabbdom</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/31/理解virtual dom的实现细节-snabbdom/" class="archive-article-date">
   	<time datetime="2018-12-31T02:30:36.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-31</time>
 </a>
         
@@ -189,7 +255,7 @@
 <p><a href="https://github.com/snabbdom/snabbdom" target="_blank" rel="external">这里是Snabbdom的仓库地址</a>。</p>
 <h4 id="init"><a href="#init" class="headerlink" title="init"></a>init</h4>
         
-          <a class="article-more-a" href="/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/#more">more >></a>
+          <a class="article-more-a" href="/2018/12/31/理解virtual dom的实现细节-snabbdom/#more">more >></a>
         
       
 
@@ -221,7 +287,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/31/Explain-the-implementation-of-virtual-dom-snabbdom/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/31/理解virtual dom的实现细节-snabbdom/">展开全文 >></a>
         </p>
       
 
@@ -758,89 +824,9 @@
 
 
   
-    <article id="post-canvas-核心技术" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/09/canvas-核心技术/">canvas核心技术</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/09/canvas-核心技术/" class="archive-article-date">
-  	<time datetime="2018-07-09T11:53:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近项目需求中要写较多H5小游戏，游戏本身体量不是很复杂，主要是承载较多业务逻辑，所以决定用canvas来完成游戏部分。之前只是知道H5中有canvas这个东西，也知道它大概是画图的，但具体怎么用，还是一无所知的。在<a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial" target="_blank" rel="external">MDN</a>在看了一些相关资料，一口气也看了<a href="https://book.douban.com/subject/24533314/" target="_blank" rel="external">HTML 5 Canvas 核心技术</a>和<a href="https://book.douban.com/subject/27088021/" target="_blank" rel="external">HTML5 2D 游戏编程核心技术</a>，对canvas H5 游戏编程有了大致的了解，发现canvas游戏编程其实挺有趣的。目前也在学习webgl相关知识，打算把前端可视化这一块也深入学习。现在先记录一些自己认为canvas比较重要的知识，回顾和再学习。后续在记录webgl相关知识。</p>
-<h4 id="主要知识点"><a href="#主要知识点" class="headerlink" title="主要知识点"></a>主要知识点</h4><p>本系列主要深入学习canvas 2d编程中相关比较重要和基础的知识，算是对<strong>HTML 5 Canvas 核心技术</strong>这本书的读后感，大致知识点如下：</p>
-<ol>
-<li>基础知识，学习如何绘制线段，图形，图片，文本等。</li>
-<li>动画知识，学习如何用canvas实现简单的动画以及相关影响因素</li>
-<li>碰撞检测，学习如何检测两个物体在运动过程中是否发生碰撞</li>
-<li>2D游戏开发，学习用canvas开发2D游戏</li>
-<li>canvas相关小知识点</li>
-</ol>
-<p>在学习过程中，最好是自己能动手实现，我就专门建了一个canvas demo的项目，里面都是自己在学习canvas时动手写的一些例子，感兴趣的可以去看看。<br>项目仓库地址：<a href="https://github.com/snayan/canvas-demo" target="_blank" rel="external">https://github.com/snayan/canvas-demo</a><br>demo预览地址：<a href="https://snayan.github.io/canvas-demo/">https://snayan.github.io/canvas-demo/</a></p>
-<p>我会按照上面的主要知识点，分篇幅来学习和回顾canvas 相关的核心技术。主要如下：</p>
-<ul>
-<li>canvas核心技术-如何绘制线段</li>
-<li>canvas核心技术-如何绘制图形</li>
-<li>canvas核心技术-如何图片和文本</li>
-<li>canvas核心技术-如何实现简单动画</li>
-<li>canvas核心技术-如何实现复杂动画</li>
-<li>canvas核心技术-如何实现碰撞检测</li>
-<li>canvas核心技术-如何实现一个简单的2D游戏引擎</li>
-<li>canvas核心技术-宽高，渐变，绘制真正1px线段</li>
-<li>canvas核心技术-向量，三角函数</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">canvas</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/09/canvas-核心技术/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 
@@ -944,11 +930,15 @@ MathJax.Hub.Queue(function() {
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">h5</a>
+                <a href="javascript:void(0)" class="js-tag color5">2017</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">audio</a>
+                <a href="javascript:void(0)" class="js-tag color3">小结</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">h5</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -960,15 +950,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">audio</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">canvas</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">2017</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">小结</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1000,11 +986,15 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
+                <a href="javascript:void(0)" class="js-tag color2">bridge</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">decorator</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">五子棋</a>
               </li>
             
             <div class="clearfix"></div>
