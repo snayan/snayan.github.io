@@ -161,6 +161,69 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-react-total-constructor" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/04/react-total-constructor/">阅读react源码--react整体结构</a>
+    </h1>
+  
+
+        
+        <a href="/2017/05/04/react-total-constructor/" class="archive-article-date">
+  	<time datetime="2017-05-04T15:11:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-05-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近打算学习react与redux的源码，以此记录在学习过程中做的笔记吧。<br>先来整体看看react的结构吧，实际上react就是一个对象，在实际使用的时候是这样的方式</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</div><div class="line"><span class="comment">//或则</span></div><div class="line"><span class="keyword">import</span> &#123;Component,createElement&#125; <span class="keyword">from</span> <span class="string">'react'</span>;</div></pre></td></tr></table></figure>
+<p>查看源码发现，react对象就是一些包含一些属性的常见对象。常见的属性包括<code>Component</code>，<code>createElement</code>，<code>cloneElement</code>，<code>createClass</code>，<code>DOM</code>等。<br>
+        
+          <a class="article-more-a" href="/2017/05/04/react-total-constructor/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">react</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/05/04/react-total-constructor/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-singleton" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -342,15 +405,11 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2018</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">h5</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">vue</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">vdom</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -382,6 +441,10 @@ MathJax.Hub.Queue(function() {
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">vue</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
@@ -395,6 +458,10 @@ MathJax.Hub.Queue(function() {
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">decorator</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">vdom</a>
               </li>
              
               <li class="article-tag-list-item">
