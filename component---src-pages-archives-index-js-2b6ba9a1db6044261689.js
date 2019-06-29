@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[7],{159:function(n,t,e){"use strict";e.r(t);var o=e(7),r=e.n(o),i=e(0),a=e.n(i),p=(e(166),e(172)),c=(e(160),function(n){function t(){return n.apply(this,arguments)||this}return r()(t,n),t.prototype.render=function(){return a.a.createElement(p.a,{location:this.props.location,title:"首页"},a.a.createElement("p",null,"Archives"))},t}(a.a.Component));t.default=c}}]);
+//# sourceMappingURL=component---src-pages-archives-index-js-2b6ba9a1db6044261689.js.map

@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[6],{155:function(n,t,e){"use strict";e.r(t);var o=e(7),r=e.n(o),a=e(0),i=e.n(a),p=(e(166),e(172)),u=function(n){function t(){return n.apply(this,arguments)||this}return r()(t,n),t.prototype.render=function(){return i.a.createElement(p.a,{location:this.props.location,title:"首页"},i.a.createElement("p",null,"About"))},t}(i.a.Component);t.default=u}}]);
+//# sourceMappingURL=component---src-pages-about-index-js-7e6d0c1f864c8419a5fc.js.map
