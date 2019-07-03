@@ -1,4 +1,430 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Tue, 02 Jul 2019 13:07:43 GMT</lastBuildDate><item><title><![CDATA[2018年小结]]></title><description><![CDATA[好快，2018 没了。2018 年初计划是：去腾讯或者阿里 【没有完成】阅读 12 本书 【基本完成】写 12 篇笔记 【完成】学习 canvas 相关 【完成】学习 vue 相关 【完成】弄清楚 vue-cli 实现细节 【完成】弄清楚 Snabbdom…]]></description><link>https://snayan.github.io//post/summary_of_2018/</link><guid isPermaLink="false">https://snayan.github.io//post/summary_of_2018/</guid><pubDate>Wed, 02 Jan 2019 21:31:44 GMT</pubDate><content:encoded>&lt;p&gt;好快，2018 没了。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Wed, 03 Jul 2019 01:34:05 GMT</lastBuildDate><item><title><![CDATA[性能优化篇-地图页面]]></title><description><![CDATA[背景最近老板来了一个新需求，地理位置组团。其中一个功能点，就是用户可以进入地图页面，查看当前自身位置，且扫描圈内和圈外其他玩家，将玩家头像显示在地图页面上，标明玩家在哪个位置。老板说，在地图上要可以同时显示 200 个玩家头像，且保证页面流畅；Android…]]></description><link>https://snayan.github.io//post/optimize_map_page/</link><guid isPermaLink="false">https://snayan.github.io//post/optimize_map_page/</guid><pubDate>Sat, 13 Apr 2019 16:17:00 GMT</pubDate><content:encoded>&lt;h2&gt;背景&lt;/h2&gt;
+&lt;p&gt;最近老板来了一个新需求，地理位置组团。其中一个功能点，就是用户可以进入地图页面，查看当前自身位置，且扫描圈内和圈外其他玩家，将玩家头像显示在地图页面上，标明玩家在哪个位置。老板说，在地图上要可以同时显示 200 个玩家头像，且保证页面流畅；Android6 的手机上，在拖拽，缩小放大时，不能出现明显的卡顿，必须保证用户体验。在拖拽，缩小或者放大等改变地图可视范围时，或则停留时间超过 60s，需要更新当前地图上的用户头像。&lt;/p&gt;
+&lt;h2&gt;思路&lt;/h2&gt;
+&lt;p&gt;需求其实不复杂，但是要做到老板的要求，就没那么简单了。android 6 的机型，这个应该是几年前的千元机了。这种机型的硬件本来就很差，不用想，在地图上一次性绘制 200 个头像，肯定会很卡。并且拖拽地图之后，又清空之前已经绘制的 200 个头像，重新绘制新的 200 个，这个肯定会使页面出现明显的卡顿。要达到老板的要求，必须仔细的思考一下该怎么做了。&lt;/p&gt;
+&lt;h3&gt;分批绘制&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.stevesouders.com/blog/2008/03/20/roundup-on-parallel-connections/&quot;&gt;浏览器对同一个域名的并发请求数量是有上限的&lt;/a&gt;，一般不会超过 8 个，就算一次发送 200 个图片请求，也是分批返回的。结合这一点，我也可以分批绘制，200 个头像，我可以分成 40 次绘制，每次只绘制 5 个，上一次的 5 个绘制完成了，才开始绘制下一批的 5 个。带着这种想法，就去找 PM 商量，跟他说明浏览器请求限制和性能上的考虑，能不能不要一次性全部显示，可以慢慢显示出来。PM 接受了这种方式，但是要优先显示圈内的头像。&lt;/p&gt;
+&lt;p&gt;为了达到可以分批绘制，且圈内的要优先绘制，容易就想到了，&lt;a href=&quot;https://en.wikipedia.org/wiki/Priority_queue&quot;&gt;&lt;strong&gt;优先级队列&lt;/strong&gt;&lt;/a&gt;，优先级高的先出队列。这里，圈内头像就比圈外的优先级高。每一次从队列里取出 5 个头像来绘制，直到队列为空。如果同步的循环调用每一批绘制，直到队列为空，那么肯定会使得当前帧执行时间超过 16ms，且会超过很长时间，浏览器一直会被阻塞，使得其他用户事件都不得到响应，表现出来就是页面卡死了，这样肯定不行的。利用&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop&quot;&gt;javascript 的 event loop&lt;/a&gt;，可以将每次绘制 5 个头像，这样一个功能包装在一个任务里，将 200 个头像就可以分成 40 个这样的任务，然后将每个任务分别加入到 javascript 的执行队列里。这样，可以异步的方式，将头像分批绘制出来，页面也不会出现卡死。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/b438555ca1ecc8afc91a8e4c508a3dcd/2a28c/per_draw.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 44.96402877697842%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAJABQDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMEBf/EABYBAQEBAAAAAAAAAAAAAAAAAAEAAv/aAAwDAQACEAMQAAAB7Fs9oJnP/8QAFxABAAMAAAAAAAAAAAAAAAAAARASIP/aAAgBAQABBQJixj//xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAwEBPwFX/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAgEBPwE//8QAFhAAAwAAAAAAAAAAAAAAAAAAARAg/9oACAEBAAY/AoC//8QAGxAAAgIDAQAAAAAAAAAAAAAAAAEh4RARMUH/2gAIAQEAAT8habNpJE/S8PWf/9oADAMBAAIAAwAAABAnH//EABcRAAMBAAAAAAAAAAAAAAAAAAABESH/2gAIAQMBAT8QT0o//8QAFxEAAwEAAAAAAAAAAAAAAAAAAAERIf/aAAgBAgEBPxBPIQ//xAAdEAEAAgICAwAAAAAAAAAAAAABACERMUGBobHw/9oACAEBAAE/ELGGsQEV2VE0Nxw1HXXtDX3iPkZ//9k=&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;per_draw&quot;
+        title=&quot;&quot;
+        src=&quot;/static/b438555ca1ecc8afc91a8e4c508a3dcd/c739e/per_draw.jpg&quot;
+        srcset=&quot;/static/b438555ca1ecc8afc91a8e4c508a3dcd/8ee9c/per_draw.jpg 148w,
+/static/b438555ca1ecc8afc91a8e4c508a3dcd/ebbe7/per_draw.jpg 295w,
+/static/b438555ca1ecc8afc91a8e4c508a3dcd/c739e/per_draw.jpg 590w,
+/static/b438555ca1ecc8afc91a8e4c508a3dcd/5413e/per_draw.jpg 885w,
+/static/b438555ca1ecc8afc91a8e4c508a3dcd/2a28c/per_draw.jpg 1112w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;typescript&quot;&gt;&lt;pre class=&quot;language-typescript&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 伪代码，&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// 将一次绘制5个头像包装成一个任务，放到event loop 里&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;PER_COUNT&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;paintMarker&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 优先获取圈内数据&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; userData &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;getUserData&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;userData&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;length&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;nearbyMarker&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// 圈内绘制完了，继续绘制圈外的&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;engine&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;pushDraw&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;paintMarker&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;externalMarker&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;// 一次绘制5个&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; start &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; notAvailable &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;start &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;PER_COUNT&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; start &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; userData&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;length&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; user &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; userData&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;start&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 从实例池取出一个&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; marker &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;pools&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;take&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;marker&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      notAvailable &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;break&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 开始绘制头像&lt;/span&gt;
+    marker&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;draw&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;user&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    start &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; start &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;// 将下一次绘制任务加入到event loop里&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;notAvailable&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;engine&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;pushDraw&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;paintMarker&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;重复利用&lt;/h3&gt;
+&lt;p&gt;对于地图页面，绘制的上限是 200 个头像。每次改变了地图的范围，比如移动，缩小，放大地图等操作，需要重新请求接口数据，获得当前新的地图可视范围内的玩家头像数据，然后将新的玩家头像绘制出来。由于 google map 在绘制自定义图形时，需要生成一个 google map 的 OverlayView 对象，实现它的 onAdd 和 onDraw 方法。如果，我们每次绘制新的头像都新建一个 OverlayView 对象，势必会增加浏览器的内存使用，且新建 OverlayView 对象也是需要花费一定时间的。为了高效绘制，且花费尽量少的内存，可以事先创建一个容量为 200 的 OverlayView 对象池，在每次改变地图范围操作之后，可以先回收那些不在可视范围内的 OverlayView 对象，放入池中；然后在绘制新的头像时，直接从池中取一个 OverlayView 对象使用就可以了，这样，即减少了内存的使用，也减去了每次新建 OverlayView 对象花费的时间。当池中没有可用 OverlayView 对象时，说明当前页面已经绘制了 200 个头像，达到了上限，不需要在绘制其他头像了。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/e58ffab9c300745d46ddfa41d3d92337/c7123/detail_draw.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 124.4186046511628%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAZABQDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAIBBf/EABUBAQEAAAAAAAAAAAAAAAAAAAAB/9oADAMBAAIQAxAAAAHuiLSrJqUtRf/EABsQAAICAwEAAAAAAAAAAAAAAAABAjEQETIh/9oACAEBAAEFAmRxsVIa8VKpcw5P/8QAFBEBAAAAAAAAAAAAAAAAAAAAIP/aAAgBAwEBPwEf/8QAFBEBAAAAAAAAAAAAAAAAAAAAIP/aAAgBAgEBPwEf/8QAGRAAAwADAAAAAAAAAAAAAAAAAAEQESAh/9oACAEBAAY/AjGrnR3/xAAcEAEBAQEAAgMAAAAAAAAAAAABEQAhEDFxgaH/2gAIAQEAAT8hZJeuXOinhXQH5ye33lSyYqTFmM+sE6V35N6/H//aAAwDAQACAAMAAAAQnMXw/8QAFhEBAQEAAAAAAAAAAAAAAAAAEBEh/9oACAEDAQE/EC7D/8QAFxEBAQEBAAAAAAAAAAAAAAAAEQEQIf/aAAgBAgEBPxDi5JBz/8QAHBABAQEBAAIDAAAAAAAAAAAAAREhABAxQVGh/9oACAEBAAE/EDVBiXgKoWzwyDQyM6ACxZJeQ039PYQqbS3vjUMDHFAA9od+p5n/2Q==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;detail_draw&quot;
+        title=&quot;&quot;
+        src=&quot;/static/e58ffab9c300745d46ddfa41d3d92337/c739e/detail_draw.jpg&quot;
+        srcset=&quot;/static/e58ffab9c300745d46ddfa41d3d92337/8ee9c/detail_draw.jpg 148w,
+/static/e58ffab9c300745d46ddfa41d3d92337/ebbe7/detail_draw.jpg 295w,
+/static/e58ffab9c300745d46ddfa41d3d92337/c739e/detail_draw.jpg 590w,
+/static/e58ffab9c300745d46ddfa41d3d92337/5413e/detail_draw.jpg 885w,
+/static/e58ffab9c300745d46ddfa41d3d92337/4efde/detail_draw.jpg 1180w,
+/static/e58ffab9c300745d46ddfa41d3d92337/c7123/detail_draw.jpg 1204w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;typescript&quot;&gt;&lt;pre class=&quot;language-typescript&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 伪代码&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// 初始化pools&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;MAX_COUNT&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 初始marker实例池&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;pools &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;MarkerPool&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;MAX_COUNT&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;// 监听idle事件&lt;/span&gt;
+  google&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;maps&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;event&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;addListener&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;map&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;idle&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;isIdle &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 回收可视区域外的marker&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;reclaimMarker&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 设置定时刷新数据&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;initRefreshTimer&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 请求用户数据&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;fetchUserData&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nearbyMarker&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; users&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3&gt;idle 时机执行&lt;/h3&gt;
+&lt;p&gt;为了保证在操作地图的时候有最好的流畅度，比图拖拽，缩小，放大等，我们不做任何事情，即不绘制头像，也不请求数据，就仅仅让 google map 自己改变地图。当 google map 状态是 idle 时，我们再去做绘制头像或者更新数据等。google map 提供了 idle 事件，我们只需要监听这个事件就可以了。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/c0a013342c6a0c005ea773bfda91ae29/31693/idle.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 91.64420485175204%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAASABQDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAQDBf/EABUBAQEAAAAAAAAAAAAAAAAAAAEA/9oADAMBAAIQAxAAAAHu57TxQJSCVgf/xAAZEAADAAMAAAAAAAAAAAAAAAAAEBEhQkP/2gAIAQEAAQUCpuuimT//xAAUEQEAAAAAAAAAAAAAAAAAAAAg/9oACAEDAQE/AR//xAAVEQEBAAAAAAAAAAAAAAAAAAAQAf/aAAgBAgEBPwEh/8QAGRAAAQUAAAAAAAAAAAAAAAAAMQABECDh/9oACAEBAAY/Agg87X//xAAbEAEAAQUBAAAAAAAAAAAAAAAREAABITFRgf/aAAgBAQABPyFI683WTaYzLLH/2gAMAwEAAgADAAAAED/IPP/EABYRAQEBAAAAAAAAAAAAAAAAABABcf/aAAgBAwEBPxDSn//EABURAQEAAAAAAAAAAAAAAAAAADEg/9oACAECAQE/EEh//8QAHRAAAgEEAwAAAAAAAAAAAAAAARExABAhkUFRgf/aAAgBAQABPxAzwO3SKjOD4tXSAy3DVz6kLM2//9k=&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;idle&quot;
+        title=&quot;&quot;
+        src=&quot;/static/c0a013342c6a0c005ea773bfda91ae29/c739e/idle.jpg&quot;
+        srcset=&quot;/static/c0a013342c6a0c005ea773bfda91ae29/8ee9c/idle.jpg 148w,
+/static/c0a013342c6a0c005ea773bfda91ae29/ebbe7/idle.jpg 295w,
+/static/c0a013342c6a0c005ea773bfda91ae29/c739e/idle.jpg 590w,
+/static/c0a013342c6a0c005ea773bfda91ae29/31693/idle.jpg 742w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;更新数据，就是把接口请求来的数据，先做一些清洗工作，然后把合格的数据更新到待绘制头像队列里；可以把它的优先级降到最低，只有当前绘制头像队列为空时，才去执行更新数据任务。它的执行时间基本是固定可预估的，不会特别延误到当前帧的绘制，可以把它放在&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback&quot;&gt;requestIdleCallback&lt;/a&gt;队列里去，通过增加一个超时执行时间内，只有当浏览器是 idle 时或者超过了某一个时间，才会去执行。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/ad25cc38f9c9b946ffd2dd5ecb2f030f/751b3/detail_update.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 145.89743589743588%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAdABQDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAwACBf/EABYBAQEBAAAAAAAAAAAAAAAAAAABAv/aAAwDAQACEAMQAAAB74qcLZqjYcmq0//EABoQAAIDAQEAAAAAAAAAAAAAAAABEBESQiH/2gAIAQEAAQUCOxq4So0r7j3R/8QAFBEBAAAAAAAAAAAAAAAAAAAAIP/aAAgBAwEBPwEf/8QAFREBAQAAAAAAAAAAAAAAAAAAERD/2gAIAQIBAT8BIk//xAAaEAACAgMAAAAAAAAAAAAAAAAQMQABAhIh/9oACAEBAAY/AorOvS8ix//EAB8QAAEDAwUAAAAAAAAAAAAAABEAAVEQIUExcYGRwf/aAAgBAQABPyFF4u9qAAvwi3oggXWgv0g0yMVOIIFP/9oADAMBAAIAAwAAABDH0/z/xAAWEQEBAQAAAAAAAAAAAAAAAAABEBH/2gAIAQMBAT8QHIGz/8QAFxEBAQEBAAAAAAAAAAAAAAAAARARMf/aAAgBAgEBPxB1FdT/xAAfEAEBAAEEAgMAAAAAAAAAAAABEQAQITFhUXGRscH/2gAIAQEAAT8QWFcZDgW/hgiCcOFcHamTfP2+8CJPbcER3HafOXLvC7nUnfInTfen/9k=&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;detail_update&quot;
+        title=&quot;&quot;
+        src=&quot;/static/ad25cc38f9c9b946ffd2dd5ecb2f030f/c739e/detail_update.jpg&quot;
+        srcset=&quot;/static/ad25cc38f9c9b946ffd2dd5ecb2f030f/8ee9c/detail_update.jpg 148w,
+/static/ad25cc38f9c9b946ffd2dd5ecb2f030f/ebbe7/detail_update.jpg 295w,
+/static/ad25cc38f9c9b946ffd2dd5ecb2f030f/c739e/detail_update.jpg 590w,
+/static/ad25cc38f9c9b946ffd2dd5ecb2f030f/751b3/detail_update.jpg 780w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;typescript&quot;&gt;&lt;pre class=&quot;language-typescript&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 伪代码&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// 将更新数据操作放入到requestIdleCallback&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;fetchUserData&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; userData&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; fromStart &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 加入到待绘制数组中&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;users&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;length&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;patchUserData&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;users&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; nextType
+  &lt;span class=&quot;token comment&quot;&gt;// ... //&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;fetchUserDataApi&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;myLocation&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;mapBounds&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    fromStart&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    nextType
+  &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;engine&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;pushRequest&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;fetchUserData&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextType&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; data&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;优化&lt;/h2&gt;
+&lt;p&gt;浏览器的理想帧率是 60fps，如果一直稳定在 60fps 左右，那么将是非常流畅的。对于 Android 6 这样的机型，肯定是达不到 60fps 的，只能尽可能提高它的帧率，让它能稳定在 30fps 左右，基本上就可以达到要求了。对于一些细节的优化，特别是要避免 layout reflow 的情况，同样严重影响页面流畅度。下面的 performance 分析，我都是将 CPU 降低 6 倍，且绘制了 200 个头像，拖动地图页面得到的。&lt;/p&gt;
+&lt;h3&gt;避免设置 zIndex&lt;/h3&gt;
+&lt;p&gt;刚开始，给每个 OverlayView 都设置了&lt;code class=&quot;language-text&quot;&gt;zIndex = &amp;#39;50&amp;#39;&lt;/code&gt;，当前用户的 OverlayView 设置了&lt;code class=&quot;language-text&quot;&gt;zIndex = &amp;#39;80&amp;#39;&lt;/code&gt;，这样当前用户总是显示在最上层。这样更改头像样式能达到设计稿的视觉效果，但是这将造成页面非常卡顿，具体我们通过 chrome performance 调试得到结果。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/caedc5a5861a39089cee2a4aa3c68cee/b44bf/1.1.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 52.51215559157212%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALCAYAAAB/Ca1DAAAACXBIWXMAABYlAAAWJQFJUiTwAAACR0lEQVQoz52SS2/aUBBG/f+33aZSpUqR2kUX3bSKkqoNIbEJGEOCMQYb29i8wQ/AGENyOkmzybZXOtKnuZ9m7twZxXGGuK5LEATMZjMWiyVZlv0jToSYTZKQrFaMRyG+eBfTqcRikiQVkncofk/HcfvYvS6dToter8PANrGsDk7tmp6hYrc0+sYtnqli6XfYEusLgXiiaEw4GhGGIZ7noTx0Khhmjfu2imrcoYmxJlSbKvfqb7S7K2raL1TtkpvGBdqLVq9QJa43KrSsNkbXoGk2JY+B0ugOUB9swaLWkZdKleHIwwt9QbQvX/KGNw4ZBqI9l6Hn4Ih2fPeVgWANeijao0XVdGg4IffDCctc/u50IC73zDcZaRmzO2VsTzvypz2bpwOZsOXEushJjyXb54KCHctkKS0P2/TCHmr3knV4S+RUceufcBuf8fRzHvUAO5wRzFx09440uiYbV5jZ35mY35haXxh3NFrmFH14j5LmB5L8yESmG5gDabGGVv9Ae3BO3/8qRTxSmWw2nTBfr+nX63hdnXrzDP3hjI79kTCqss4g2+9RihPshc0WllMI84KbfkS9bWJqKrtwSL4rpW3Y5jDyIZo9Y4wWVKyQmh/jrjKKIxQlKJFUH/sBnuxgNIkIG1Wii58Efyr4ZkC83ROnG2LZuRfWspurVcJ8smYSrBj118xEJ2n2eq8EgwETmdrWrLO9/UFhGxzzDVKM41NJeSiEA2X5nqMM43gqOYnnRb96BCWdT0nHI/C7kuElzdt5fuZ/zl+BjiZcSs9QugAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;image-20190414171827226&quot;
+        title=&quot;&quot;
+        src=&quot;/static/caedc5a5861a39089cee2a4aa3c68cee/b9e4f/1.1.png&quot;
+        srcset=&quot;/static/caedc5a5861a39089cee2a4aa3c68cee/cf440/1.1.png 148w,
+/static/caedc5a5861a39089cee2a4aa3c68cee/d2d38/1.1.png 295w,
+/static/caedc5a5861a39089cee2a4aa3c68cee/b9e4f/1.1.png 590w,
+/static/caedc5a5861a39089cee2a4aa3c68cee/f9b6a/1.1.png 885w,
+/static/caedc5a5861a39089cee2a4aa3c68cee/2d849/1.1.png 1180w,
+/static/caedc5a5861a39089cee2a4aa3c68cee/b44bf/1.1.png 2468w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;页面的帧率平均是 8fps，也就是绘制一帧需要花费平均 122ms 左右。先不看其他影响帧率的地方，就看看 Composite Layers 步骤，它就花费了 17.56ms。理想 60fps 的情况下，一帧的绘制总共才花费 16.67ms 左右。显然，我们的 Composite Layers 步骤严重影响性能。Composite Layers 是浏览器一帧绘制工作中的最后一个步骤，合成层。每当设置新的 zIndex 值，都将会创建新的 layer，同一个 zIndex 的值的元素，最后会被绘制在同一个 layer 中，具体可以查看&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/Adding_z-index&quot;&gt;使用 zIndex&lt;/a&gt;。去掉 zIndex，我们再来看看结果。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/a0ffe763d768a65a97bff83d46197f9e/8559b/1.2.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 50.526315789473685%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAABYlAAAWJQFJUiTwAAACIElEQVQoz6WSW2/TQBCF/f+feOSFJ1DLA68ICi0S0Ca4aZKmtuvY8S22Y8fOzbfYSUD6mEbiF7DS0czZnV3tnDNKvFjgeb7AI44X5HnOZrulqiqqUlCUVHVDLchWa6I4IV1mlHJeVjVFWQoKiqIQXqIkoTzkW6TJEt+bMbWeJdq4jo1vS27quMYITxuQeE+knobzNCKQvcS1SaKINF3K/ZQwDFE0Q2Wi36FbOoPJL26HPUZPKoPHe4GK+jjkofeFwd0VffWKXv8z6u0193fXaA8/0I0xmmWc74/1McoscPDiuSBgNncwnSnmy099B8uX6FkSHWzBLJkzjXxmgYslNZZ0YnrOufalzrANlGCREWUhzWlPVpcEmfBVxGIdk+w2hHlGWqTUvxuKw55NI/oeRa9Tx6aTvW5LeSxZ70u2hwOKdX+BbQfo/oBQe48/eI2j6zjxjLn+Dnd4iWsF+KFBNv9JbGvMlyX54obU+ESU1mxLMWnRJzfeovQmH6i6Tlw9YT3f0Ju8YVnl1B1o/Usm319RyyTE8Zqe8Y2JO2Jb/RHTxkzMj9QtFE1HaFsMtQuUvhudx2CZFJhpTj/wiETHYjjAVvuYom/VndhuWuxlSrBbs2+PJKsaW0asalp2ZUu+2mOtViiuaTCfmtKOS+WZNOpXWl2l265oj0cOokvX7um6lqPkB+mmFX544ee8PZ/940opzuViRFPskOGCWuJ/rL/jl9vY+k2vswAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;image-20190414180429504&quot;
+        title=&quot;&quot;
+        src=&quot;/static/a0ffe763d768a65a97bff83d46197f9e/b9e4f/1.2.png&quot;
+        srcset=&quot;/static/a0ffe763d768a65a97bff83d46197f9e/cf440/1.2.png 148w,
+/static/a0ffe763d768a65a97bff83d46197f9e/d2d38/1.2.png 295w,
+/static/a0ffe763d768a65a97bff83d46197f9e/b9e4f/1.2.png 590w,
+/static/a0ffe763d768a65a97bff83d46197f9e/f9b6a/1.2.png 885w,
+/static/a0ffe763d768a65a97bff83d46197f9e/2d849/1.2.png 1180w,
+/static/a0ffe763d768a65a97bff83d46197f9e/8559b/1.2.png 2470w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;去掉了 zIndex 之后，现在页面的帧率平均是 10fps，绘制一帧需要花费的平均时间是 100ms 了。在 Composite Layers 阶段花费的时间基本是 9ms 左右了。显然是有所提升的。&lt;/p&gt;
+&lt;h4&gt;避免在 onDraw 里访问 offsetWidth 等触发 reflow&lt;/h4&gt;
+&lt;p&gt;由于在拖拽地图时，google map 会不停的调用我们实现的 onDraw 方法。在 onDraw 方法里，可以随意设置当前 OverlayView 对象的样式和位置。未优化之前，是根据当前容器 div 的宽高和当前经纬度换算出来的坐标计算得到当前 OverlayView 对象的 left 和 top。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;typescript&quot;&gt;&lt;pre class=&quot;language-typescript&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 部分代码如下&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;/* 继承 google.maps.OverlayView，实现draw */&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;draw&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; overlayProjection &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;overlayView&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getProjection&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; posPixel &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; overlayProjection&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;fromLatLngToDivPixel&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;latLng&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; scale &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;computeScale&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;// Resize the image&apos;s div to fit the indicated dimensions.&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; div &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;el
+  &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; x &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; posPixel&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;x &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; div&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;offsetWidth &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; y &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; posPixel&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;y &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;div&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;offsetHeight &lt;span class=&quot;token operator&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;scale &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;
+  div&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;style&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;transform &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token string&quot;&gt;`scale(&lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;scale&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;)`&lt;/span&gt;&lt;/span&gt;
+  div&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;style&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;left &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; x &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;px&quot;&lt;/span&gt;
+  div&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;style&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;top &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; y &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;px&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/fef55180a0216429d58d11ea272b130b/fc43f/2.2.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 63.31168831168832%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAANCAYAAACpUE5eAAAACXBIWXMAABYlAAAWJQFJUiTwAAACYklEQVQ4y62SWW/bVhCF+f8fiiJO89Zf0ae0aJHUi2zLosVFC1dR3CmSEkVRi5NYX4dKG6TPLYEP58y5M8DF5Si+H+D5HmEYkucFdVXTtju2bSvast1s2InW9Vp6IqIoYi3ZdrsVGhqh9732/UocWKRJSppmBMECx7FYLBzBxfccAlPDt6a4rmBPhKnkFnGckPRzSXaZjaKYYBGgaNoHtMkYfaahGo98fPjI/dM1Q/WWgejD8Imbxzvunvr8lj/l/G54w8gY8WyqaFOdZ5lXzWce1HuUeZgSFCVeWmCJD8sNTlzgpiuWqw2zMMHPK+xkxTzKJKuxoxQ/zVnkki0jmV9hy3MYroOS29esvAHrYECzvGUX31+0DQcXdvEDX9Y6X2qNT9VYvCGq8bnWv/pSu2hfn/Ipynj4A/roR2zzDYvZ1Xe8uRDM37K0fiK03xHZbwmtK9Grb/qPD6XH0n5GMZIZZmYJNnpsXTAS0cxlnDgYqS1ILdljFjGqctSq+BejUrJyiV4sUZr1mqYuMd0b1Pl7xu4HpsmAuf0r02eDIo8pUlmXuc5YHWI7utDrE443whLv+mOqcsW+61COL2eO+0+YusVInaAPhpjvfyE3B+x3smtNRyO08vBtd8Dz1ky0gtlkhWPVF+97G46f4SQo2cKXPcqJ5Q/l138Iv5NPXdIwp5JF31YVTVnSyMJvmh27/Z7ucBD9Su/bbi9nLZvNFiXNCjpjQDf8jS7x2e47ji8vHA57jqcTJ/Hf6OvjkePfnL7Ty5mglFVDvQh5kev+H5+SVTva0yuvZzi/vnI+n/8TfwGYCbl0caqEFwAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;image-20190414183610229&quot;
+        title=&quot;&quot;
+        src=&quot;/static/fef55180a0216429d58d11ea272b130b/b9e4f/2.2.png&quot;
+        srcset=&quot;/static/fef55180a0216429d58d11ea272b130b/cf440/2.2.png 148w,
+/static/fef55180a0216429d58d11ea272b130b/d2d38/2.2.png 295w,
+/static/fef55180a0216429d58d11ea272b130b/b9e4f/2.2.png 590w,
+/static/fef55180a0216429d58d11ea272b130b/f9b6a/2.2.png 885w,
+/static/fef55180a0216429d58d11ea272b130b/2d849/2.2.png 1180w,
+/static/fef55180a0216429d58d11ea272b130b/fc43f/2.2.png 2464w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;draw 方法中，访问&lt;code class=&quot;language-text&quot;&gt;div.offsetWidth&lt;/code&gt;和 &lt;code class=&quot;language-text&quot;&gt;div.offsetHeight&lt;/code&gt;，强制触发 reflow，这将非常影响性能。我们可以优化成，头像显示成固定宽高。例如，&lt;code class=&quot;language-text&quot;&gt;let x = posPixel.x - 32 / 2;&lt;/code&gt;和&lt;code class=&quot;language-text&quot;&gt;let y = posPixel.y - 32 * (scale + 1) / 2;&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/19f20940a52192690f04622b0b7cc0c6/be39f/2.3.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 48.41849148418491%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAABYlAAAWJQFJUiTwAAAB70lEQVQoz2WSaW/aQBCG/esrtalUqVL7vf+krZKCzeEzBEgA27Be22uvTwhHy9vxEpCqfnj0zOzOXqPVgiBAB+cceZ6jrmtFmqY3hBAoyxJxHKu4qio0TfMf1XoNzQ9CrCkIwzUY26iNU5EiyzLkUkIqCrVRV7febBAniTo8pbGurnOXJ1kOLZj1wDYMi+UcrmfDckd4dMdwHROON4LlDGF7fZiE5RlUQ/OPYwRh97IVXSRQl/GXU0wnNrSh08eQNjGcAXqmgYexjr49gG4PL6ZxwzXIOnoWYeowbAMDWnNhrOjGDJrTmMiQyBxxd+VCKsdXE5xg1Ef+lkf0RK4sFIns1ndOwOIIWshWSPIIccYgZISsoB7KSyzI17hsBYomRdl0Fjdz6h9LM0Qih79m0Lyf7zC5fw9/eAdm3iGyPioYsTE/IHY/oZh/hZx9+ZfpZxTP3/DyJPHk1Ji6NWYTDs1a6hjPe7AXOly/D2fVe6N/y63FL9hk+zrn67BevsPzf2B3Al4J5eNvaLt6B8cZwTPvURaloqI/x/wYz24IETNqh0DINxApB2cMPIqQx/TV+ADN4Q/a1zMaYn86Q9vLknoUIJML7LZH4oQtuW0PaOoDtu0OTdugqDI6aItC1iiKFm1RY1tXoDK0+7NifzzjL4u113zAj4A8AAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;image-20190414184005195&quot;
+        title=&quot;&quot;
+        src=&quot;/static/19f20940a52192690f04622b0b7cc0c6/b9e4f/2.3.png&quot;
+        srcset=&quot;/static/19f20940a52192690f04622b0b7cc0c6/cf440/2.3.png 148w,
+/static/19f20940a52192690f04622b0b7cc0c6/d2d38/2.3.png 295w,
+/static/19f20940a52192690f04622b0b7cc0c6/b9e4f/2.3.png 590w,
+/static/19f20940a52192690f04622b0b7cc0c6/f9b6a/2.3.png 885w,
+/static/19f20940a52192690f04622b0b7cc0c6/2d849/2.3.png 1180w,
+/static/19f20940a52192690f04622b0b7cc0c6/be39f/2.3.png 2466w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;可以看到，在 draw 方法里，现在就没有 Layout 和 Recalculate Style 的操作了。现在帧率平均基本是 12fps 了，绘制一帧需要花费的平均时间是 84ms 了。又有所提高了。&lt;/p&gt;
+&lt;h3&gt;必要降级，去掉不必要的元素&lt;/h3&gt;
+&lt;p&gt;对于 Android 6 等机型，完全没有必要还为每个头像都绘制出一个底部三角形。底部三角形，会额外创建一个 div 元素，如果是 200 个头像，页面就会多出了 200 个元素。并且在拖拽等操作，频繁的调用 onDraw，会重新绘制每个头像，也会重新绘制每个底部三角形，这样也增加了绘制所需要的时间。对于 android 6 以下等低端机型，可以去掉底部三角形。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/60152d56ad9c76122b6a1c4c1d81f5d0/10c6a/2.4.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 45.96122778675283%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAABYlAAAWJQFJUiTwAAAB8klEQVQozy2SWXPTUAyF/f9/DgzMMMMDbSltoW0Sx07seI33LV5jZynlQwk8aHR0dHRGunOVJE3wPA9/GxDHCUVRUtc1wzDSD3v6fhB8if21F4YReV7Qdf2Vb7tWNL3k7pqVPMtJ4pjEN4i2Dp7virnDrk7p2pwyjwhCD8ezCAIb192IxpYlLKIoIE1SsjQlTTPxSVA0Q0czlqjzryy0R57VZ25eb3lQb1DX97wId/96x8PsO79mtzwKfpzd8fPlTrRP6Bud5VpFN3UW+hzFjnx0x8SS2JiaxBLbM1k6Kzaxi+YZUm+uvGOvse0V1kZj65uYxgLX0TFd0YQOhswpYZgQRluqJCArYrI8Ji8SOSOiEJylMWWVU+3k/CqTpygoyv9Z+KFrqOTNu8PIfhpRvi1+sAoszMVnEtkwMp4IV8+E6yciS7/mwp3RhGt2/pLK12kCjd1WZxdsKIwPVOsvzJ05r6JTsnZiPENWOzT7hrJL2PWyUZ/STgP1IPjKZZRtIjiTkK3bSHo7ltZHDOcT1dBLPaHUwzsHMayno6x9ph4PNNNJzM70UreHo9TSO74JFv7CTRfNgeH4jpqomJWDyDm9gVL1Z8bjH3oR7GVgmCa6i/iCZXgQw3YcKdqKrCxpevmbh3/98Qh2quOX1hWPp9/8BYjalmdEstRJAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;image-20190414190054000&quot;
+        title=&quot;&quot;
+        src=&quot;/static/60152d56ad9c76122b6a1c4c1d81f5d0/b9e4f/2.4.png&quot;
+        srcset=&quot;/static/60152d56ad9c76122b6a1c4c1d81f5d0/cf440/2.4.png 148w,
+/static/60152d56ad9c76122b6a1c4c1d81f5d0/d2d38/2.4.png 295w,
+/static/60152d56ad9c76122b6a1c4c1d81f5d0/b9e4f/2.4.png 590w,
+/static/60152d56ad9c76122b6a1c4c1d81f5d0/f9b6a/2.4.png 885w,
+/static/60152d56ad9c76122b6a1c4c1d81f5d0/2d849/2.4.png 1180w,
+/static/60152d56ad9c76122b6a1c4c1d81f5d0/10c6a/2.4.png 2476w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;现在页面的帧率平均可以达到了 15fps，绘制一帧需要花费的平均时间是 68ms 了。&lt;/p&gt;
+&lt;p&gt;在优化这些小细节之后，在 CPU 降低到 6 倍慢，且页面绘制 200 个头像时，帧率从之前的 8fps 提高了 15fps，足足提升了一倍的性能。对于 Android 6 等极端机型，其实还可以再降级，从 200 个头像减少到 100 个。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/d5fface1aa7812cf410f556664551183/d7b06/2.5.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 45.809601301871446%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAABYlAAAWJQFJUiTwAAAB+klEQVQozz2SSXPTQBSE9f//CnCDCxVSLghUSLzEjizZWsaSLFnbWLuXmFAfzz5w6Oqu6Z7qN1PPSJKYzSZAbULiOKEoCqqq5nA40vcH2q4X7hn6QbyS7TYmTTPatqPrOpq2Fd3e9JWNLM3JkpAksEnikDAMpMChaXY01ZYwcAgCn03gSulKfBffv7KiyAvSXUqWpuRZxjbaYiwdG9N+wny9Z2GPmZgTHl++M7dHLJ0Rk8VPHqe/GC8eRT/wPP/B0+yB8fw3lmv/h+1aLNdLjJW0KX+J59koZaE8k03k4CQ+61jhqDWehG++f82s8D1LprRx1q/imdj2jKU9YfbygKE8l8h3Kfby9ELGLzLyK/KEsiwodYGuNFWj2VdXlOh9yb4WXZd0hwOZLgkSh5VyMSw7Il58IXz9QbQYEc6/sTVFWzMi8w41/or2RpTelFJN0ZsFe/WM9sfowKK0PhJPP1HEOYP6jFE0J5LihaIOyfc+u9IRHdEMFWFqEqWWTL+mqEKyeoNuM9EBeaWoOi3//wHPv6M7vRPs7jF0f2EnK1AOZ8r+fOP94Y1GAnHVsquPcnaiOr6h+476eLn5euhpRLu1Yjc0HC9/2bYao+wuYtTScBacBLJ7wv35D93xyCCsZQ+704X+IDspfM01kutObyRDLPcHyb9LacU/cUCUC4qnJEoAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+        alt=&quot;image-20190414192024307&quot;
+        title=&quot;&quot;
+        src=&quot;/static/d5fface1aa7812cf410f556664551183/b9e4f/2.5.png&quot;
+        srcset=&quot;/static/d5fface1aa7812cf410f556664551183/cf440/2.5.png 148w,
+/static/d5fface1aa7812cf410f556664551183/d2d38/2.5.png 295w,
+/static/d5fface1aa7812cf410f556664551183/b9e4f/2.5.png 590w,
+/static/d5fface1aa7812cf410f556664551183/f9b6a/2.5.png 885w,
+/static/d5fface1aa7812cf410f556664551183/2d849/2.5.png 1180w,
+/static/d5fface1aa7812cf410f556664551183/d7b06/2.5.png 2458w&quot;
+        sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+      /&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;头像降到 100 个之后，可以看到现在页面的帧率平均可以达到了 27fps，绘制一帧需要花费的平均时间是 36ms 了。帧率从之前的 8fps 提高了 27fps，足足提升了三倍多的性能。&lt;/p&gt;
+&lt;h2&gt;小结&lt;/h2&gt;
+&lt;p&gt;前端也可以使用一些基础的数据结构和算法，结合前端的一些知识，可以有比较好的实践。在开始动手编码之前，可以先思考一下，大致的实现思路，是否可以有更优方案。当在低端机型上无法满足性能要求时，要学会与 PM 沟通，是否可以降级处理。在遇到性能瓶颈时，学会使用工具分析和定位问题。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[2018年小结]]></title><description><![CDATA[好快，2018 没了。2018 年初计划是：去腾讯或者阿里 【没有完成】阅读 12 本书 【基本完成】写 12 篇笔记 【完成】学习 canvas 相关 【完成】学习 vue 相关 【完成】弄清楚 vue-cli 实现细节 【完成】弄清楚 Snabbdom…]]></description><link>https://snayan.github.io//post/summary_of_2018/</link><guid isPermaLink="false">https://snayan.github.io//post/summary_of_2018/</guid><pubDate>Wed, 02 Jan 2019 21:31:44 GMT</pubDate><content:encoded>&lt;p&gt;好快，2018 没了。&lt;/p&gt;
 &lt;p&gt;2018 年初计划是：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;去腾讯或者阿里 【没有完成】&lt;/li&gt;
