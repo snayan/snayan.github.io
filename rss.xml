@@ -1,4 +1,1048 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Tue, 06 Aug 2019 11:56:49 GMT</lastBuildDate><item><title><![CDATA[DIY 一个 Babel 插件]]></title><description><![CDATA[Babel，是一个 JavaScript 的编译工具，它可以将 es6+语法的代码，转换为浏览器兼容的低版本的代码。它简直就是一个神兵利器，前端工程师拥有了它，就可以在项目中使用一些较新的 es 语法。笔者决定弄懂它，并实现一个自己的 Babel 插件。Babel…]]></description><link>https://snayan.github.io//post/2019/diy_a_babel_plugin/</link><guid isPermaLink="false">https://snayan.github.io//post/2019/diy_a_babel_plugin/</guid><pubDate>Tue, 06 Aug 2019 19:45:00 GMT</pubDate><content:encoded>&lt;p&gt;Babel，是一个 JavaScript 的编译工具，它可以将 es6+语法的代码，转换为浏览器兼容的低版本的代码。它简直就是一个神兵利器，前端工程师拥有了它，就可以在项目中使用一些较新的 es 语法。笔者决定弄懂它，并实现一个自己的 Babel 插件。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Sun, 01 Dec 2019 03:30:04 GMT</lastBuildDate><item><title><![CDATA[flutter 学习小结（三）]]></title><description><![CDATA[上一篇文章中，我们学习了 flutter 中三个主要的 widget，分别是 StatelessWidget，StatefulWidget，和 RenderObjectWidget；也简单介绍了 Widget，Element 和 RenderObject…]]></description><link>https://snayan.github.io//post/2019/flutter-learn-3/</link><guid isPermaLink="false">https://snayan.github.io//post/2019/flutter-learn-3/</guid><pubDate>Sat, 30 Nov 2019 17:22:00 GMT</pubDate><content:encoded>&lt;p&gt;&lt;a href=&quot;/post/2019/flutter-learn-2&quot;&gt;上一篇文章&lt;/a&gt;中，我们学习了 flutter 中三个主要的 widget，分别是 StatelessWidget，StatefulWidget，和 RenderObjectWidget；也简单介绍了 Widget，Element 和 RenderObject 之间的关系。这一篇，将介绍如何在 flutter 应用中进行状态管理以及其基本的原理。&lt;/p&gt;
+&lt;p&gt;状态管理，实际上就是对数据的管理，这些数据可以是与用户交互的数据，网络请求的数据，或者当前动画的状态数据。在进行状态管理时，需要根据当前状态的影响范围来决定其管理方式。一般是「就近原则」，就是把状态放在距离使用它最近的地方维护。对于组件内部状态（local state），放在组件内部维护就好了；对于多个组件需要共同使用的状态（shared state），就将它放在最近公共祖先中来维护；对于全局状态（global state），一般放在 app 全局状态中维护。现在很多 react 开发者，提到状态管理，就是使用 redux 放在全局管理，也不管这些数据的使用场景。这样做，通常会导致全局状态混乱且不好维护，而且也会造成一些渲染方面的性能问题，是非常不建议的。在 flutter 应用中，基本原则跟 react 是一样的，只不过具体实现方式略有差异而已。&lt;/p&gt;
+&lt;h2&gt;状态管理&lt;/h2&gt;
+&lt;h3&gt;local state&lt;/h3&gt;
+&lt;p&gt;对于组件内部的状态，其他地方根本不关心它，也不使用它时，直接将它们放在组件内部维护就好了。这样不仅可以很方便地使用它，也保证了它不被外部污染或者改变。从设计模式上来说，减少了组件的外部依赖，增加组件的内聚性。&lt;/p&gt;
+&lt;p&gt;在 flutter 中，使用 StatefulWidget 来创建和维护状态。在上一篇「&lt;a href=&quot;/post/2019/flutter-learn-2&quot;&gt;flutter 学习小结（二）&lt;/a&gt;」中，详细介绍了 StatefulWidget 和 State，以及其生命周期方法，这里我们通过一个简单的例子来说明如何使用。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;StateDemo&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;StatefulWidget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  StateDemoState &lt;span class=&quot;token function&quot;&gt;createState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;StateDemoState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;StateDemoState&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;State&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;StateDemo&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// state&lt;/span&gt;
+  int _count &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;_increment&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// setState会对当前组件执行rebuild&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;setState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      _count&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  Widget &lt;span class=&quot;token function&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;Column&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+      mainAxisAlignment&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; MainAxisAlignment&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;center&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      children&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Widget&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+        &lt;span class=&quot;token function&quot;&gt;Text&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;$_count&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token function&quot;&gt;RaisedButton&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+          onPressed&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; _increment&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          child&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;Icon&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Icons&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;add&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在 State 内部有一个&lt;code class=&quot;language-text&quot;&gt;_count&lt;/code&gt;数据，每次点击按钮，都会将它加 1。&lt;/p&gt;
+&lt;h3&gt;shared state&lt;/h3&gt;
+&lt;p&gt;如果有多个组件需要共享某些状态，那么我们可以将需要共享的状态提升到它们的最近的上层组件中去。&lt;/p&gt;
+&lt;p&gt;当组件与上层组件是直接父子关系，那么父组件可以将这些状态以及改变状态的方法传递到子组件中。例如，我们可以将上述例子中&lt;code class=&quot;language-text&quot;&gt;_count&lt;/code&gt;以及&lt;code class=&quot;language-text&quot;&gt;_increment&lt;/code&gt;直接传递给两个子组件。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;/// 上述StateDemoState&lt;/span&gt;
+&lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+Widget &lt;span class=&quot;token function&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;Column&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+    mainAxisAlignment&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; MainAxisAlignment&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;center&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    children&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Widget&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+      &lt;span class=&quot;token function&quot;&gt;Child1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;_count&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; _increment&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token function&quot;&gt;Child2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;_count&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;当组件与上层组件中间有多层组件，它们是祖先与子孙关系时，如果还是通过上面这样层层传递，就会显得十分繁琐，那我们能不能使得子孙组件可以直接获取祖先的数据，并且祖先数据改变了，自动更新子孙组件呢？&lt;/p&gt;
+&lt;p&gt;react 中是提供了 Context 的方式，将共享数据放在 Context 组件中，它的所有子级组件都可以通过&lt;code class=&quot;language-text&quot;&gt;contextType&lt;/code&gt;或者&lt;code class=&quot;language-text&quot;&gt;Consumer&lt;/code&gt;来获得共享数据，具体细节可以查看&lt;a href=&quot;https://reactjs.org/docs/context.html&quot;&gt;官方文档&lt;/a&gt;。在 flutter 中，可以有如下方案可以选择，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;flutter 提供的基础 Widget，包括 InheritedWidget，InheritedModel&lt;/li&gt;
+&lt;li&gt;flutter 官方提供的库，Provide，&lt;/li&gt;
+&lt;li&gt;社区实现的库，包括 Bloc，Redux，Mobx，Scoped Model 等&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我们会在下面详细讨论 InheritedWidget，InheritedModel，Provider 的实现，至于社区提供的方案，感兴趣的可以自己去了解。&lt;/p&gt;
+&lt;h3&gt;global state&lt;/h3&gt;
+&lt;p&gt;全局状态是一种特殊的共享状态，它将状态放在 app 根组件中去维护，使得整个 app 的所有子组件都可以获取到，所以它的处理方案跟 share state 中一样。一般的全局状态有 app 主题，语言，或其他用户自定义设置等。下面我们聊聊 flutter 中状态管理的实现原理。&lt;/p&gt;
+&lt;h2&gt;InheritedWidget&lt;/h2&gt;
+&lt;p&gt;我们前面只聊了 flutter 中 StatelessWidget，StatefulWidget，和 RenderObjectWidget。这里，我们来详细聊聊 flutter 另一个比较重要的 Widget，InheritedWidget。&lt;/p&gt;
+&lt;p&gt;InheritedWidget 的主要作用就是可以直接将数据传递给子树下面的任意子组件，并且当数据变了时，子组件会自动更新。当在一棵 Widget tree 中，子组件可以通过 BuildContext.dependOnInheritedWidgetOfExactType 来获取最近的 InheritedWidget 数据（在 flutter1.12.1 之前是使用 BuildContext.inheritFromWidgetOfExactType）。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;/// InheritedWidget源码&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InheritedWidget&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ProxyWidget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;InheritedWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; Key key&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Widget child &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;key&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; key&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  InheritedElement &lt;span class=&quot;token function&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;InheritedElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  bool &lt;span class=&quot;token function&quot;&gt;updateShouldNotify&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;covariant InheritedWidget oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;InheritedWidget 与其他 Widget 不同之处是，多出了一个&lt;code class=&quot;language-text&quot;&gt;updateShouldNotify&lt;/code&gt;方法，这个方法需要子类去实现。每当 rebuild 时，则会根据&lt;code class=&quot;language-text&quot;&gt;updateShouldNotify&lt;/code&gt;返回的值去决定是否需要对依赖它的子组件做更新。下面我们使用 InheritedWidget 来实现上面 count 的例子。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;/// 因为Widget是immutable的，所以需要使用StatefulWidget来存储数据&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;CountProvider&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;StatefulWidget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  Widget child&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token function&quot;&gt;CountProvider&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  State&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;CountProvider&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;createState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;CountProviderState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;/// 通过CountProvider.of(context)就可以获取InheritedWidget上的数据了&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;static&lt;/span&gt; ShareDataWidget &lt;span class=&quot;token function&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; context&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;dependOnInheritedWidgetOfExactType&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;ShareDataWidget&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;/// State用于保存数据，并且更新&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;CountProviderState&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;State&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;CountProvider&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  int _count &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;_incrementCounter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;setState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      _count&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  Widget &lt;span class=&quot;token function&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 需要将数据和更新方法传递给InheritedWidget，&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 因为子孙组件只能获取到InheritedWidget，而非StatefulWidget和State&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;ShareDataWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+      child&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;widget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      count&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; _count&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      add&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; _incrementCounter&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;/// 实现InheritedWidget&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ShareDataWidget&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InheritedWidget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; int count&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; VoidCallback add&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 通过构造函数接受需要共享的数据和方法&lt;/span&gt;
+  &lt;span class=&quot;token function&quot;&gt;ShareDataWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    Key key&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token metadata symbol&quot;&gt;@required&lt;/span&gt; Widget child&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;count&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;add&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; key&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; key&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  bool &lt;span class=&quot;token function&quot;&gt;updateShouldNotify&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ShareDataWidget oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 当count不想等时，需要通知子孙组件更新，&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 如果count相等，则子孙组件不需要更新&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; oldWidget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;count &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;count&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;如果进一步深究原理，我们需要回答如下 2 个问题，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;dependOnInheritedWidgetOfExactType 是如何找到 InheritedWidget 的？&lt;/li&gt;
+&lt;li&gt;updateShouldNotify 是如何控制子孙组件更新的？&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;下面，我们来通过分析源码一步一步回答上面的问题。我们知道 context 实际上就是 element，在 element 上调用 dependOnInheritedWidgetOfExactType 就可以取出指定的 InheritedWidget，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;  &lt;span class=&quot;token comment&quot;&gt;/// Element类&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Element&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;DiagnosticableTree&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;BuildContext&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 省略其他&lt;/span&gt;
+
+  Map&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Type&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; InheritedElement&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; _inheritedWidgets&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  Set&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;InheritedElement&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; _dependencies&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  InheritedWidget &lt;span class=&quot;token function&quot;&gt;dependOnInheritedElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;InheritedElement ancestor&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; Object aspect &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ancestor &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 先实例化一个Set&lt;/span&gt;
+    _dependencies &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; HashSet&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;InheritedElement&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 将祖先InheritedElement加入到_dependencies中&lt;/span&gt;
+    _dependencies&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ancestor&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 调用组先updateDependencies，将当前element加入到祖先的_dependencies中&lt;/span&gt;
+    ancestor&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;updateDependencies&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; aspect&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 返回祖先InheritedElement关联的widget&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; ancestor&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;widget&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  T dependOnInheritedWidgetOfExactType&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InheritedWidget&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;Object aspect&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 先找到祖先InheritedElement&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; InheritedElement ancestor &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; _inheritedWidgets &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; _inheritedWidgets&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;T&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ancestor &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;/// 注册依赖项，并返回对应的InheritedWidget&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;dependOnInheritedElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ancestor&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; aspect&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; aspect&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    _hadUnsatisfiedDependencies &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;它会通过&lt;code class=&quot;language-text&quot;&gt;_inheritedWidgets&lt;/code&gt;取出对应类型的祖先 InheritedElement，接着会执行如下步骤，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;生成一个 Set 实例，存放依赖项&lt;/li&gt;
+&lt;li&gt;将组先 InheritedElement 加入到当前的_dependencies 中&lt;/li&gt;
+&lt;li&gt;将当前 element 加入到组先 InheritedElement 的_dependencies 中&lt;/li&gt;
+&lt;li&gt;返回祖先 InheritedElement 关联的 Widget&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;祖先 InheritedElement 和子孙 Element 相互把对方加入到自己的_dependencies 中。那么子孙 Element 是何时将祖先 InheritedElement 加入到自己的&lt;code class=&quot;language-text&quot;&gt;_inheritedWidgets&lt;/code&gt;的呢？&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;  &lt;span class=&quot;token comment&quot;&gt;/// Element类&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Element&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;DiagnosticableTree&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;BuildContext&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 省略其他&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;mount&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;_updateInheritance&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;activate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;_updateInheritance&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;/// 一般element，只是使用parent element的_inheritedWidgets&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 但是，InheritedElement会重写_updateInheritance方法&lt;/span&gt;
+   &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;_updateInheritance&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    _inheritedWidgets &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; _parent&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;_inheritedWidgets&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;/// InheritedElement会重写_updateInheritance方法&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InheritedElement&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ProxyElement&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 忽略其他&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;_updateInheritance&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 先取父级element的_inheritedWidgets&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; Map&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Type&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; InheritedElement&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; incomingWidgets &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; _parent&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;_inheritedWidgets&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;incomingWidgets &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      _inheritedWidgets &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; HashMap&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Type&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; InheritedElement&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;incomingWidgets&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;else&lt;/span&gt;
+      _inheritedWidgets &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; HashMap&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Type&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; InheritedElement&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;token comment&quot;&gt;/// 最后，将自己加进去&lt;/span&gt;
+    _inheritedWidgets&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;widget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;runtimeType&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;看上面代码，逻辑就很简单了，每次 element 在&lt;code class=&quot;language-text&quot;&gt;mount&lt;/code&gt;和&lt;code class=&quot;language-text&quot;&gt;activate&lt;/code&gt;会更新&lt;code class=&quot;language-text&quot;&gt;_inheritedWidgets&lt;/code&gt;。对于普通的 element，&lt;code class=&quot;language-text&quot;&gt;_inheritedWidgets&lt;/code&gt;就是取的 parent element 的&lt;code class=&quot;language-text&quot;&gt;_inheritedWidgets&lt;/code&gt;。一直这样迭代，直到碰到&lt;code class=&quot;language-text&quot;&gt;InheritedElement&lt;/code&gt;，它会将自己加入进去。如果有相同类型的 InheritedElement 的嵌套关系，则会直接覆盖，这也是为什么子孙 element 只能取得离它最近的一个特定类型的 InheritedElement，如下图所示。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/ee960590297f3d3c06a9db6786a5b8cd/b70fd/inherited.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 471px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 51.167728237791934%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAAAsSAAALEgHS3X78AAABm0lEQVQoz41SDU+jQBDt//895tpqoybnxcRcNFFDoTV3UGDB8rELWAr7wbvdNXD1colOMjvskH3z3szMoC0hCbabLaBgbRgGGxlj2HgbMMo+5Akh8DwPjuPY2Pf99H9WdwzVkYIeSlQdhVACo6lBoWop5GlOqQn4tMgEeH4/x/nPJRZ3c8zvvsH115BCQnCBosnxY/sdCSU2Z5js93skSYIwDLHb7eD7vr2PLGcxjRAWIYIsQFSGeDs2UzUuuc0deTvlzEPjQgjrnHMbR6Yzc8i+xaGm+J+Z/ik14CtmJRfrFdLnS5DHFTLnElnk6p5pdkb2IQf1VugqAiEHzYSjLEtQSlEUBfI8t15VFaSU7wwzZ4lsfYXcvUb6tARLX2AIGVDZlmj9G/AmhcaD0o/quraABtiAZllmt8HIniQPuld9e/hXgD3fmubDJD+VTFiM36+/4O5cEC1tHIrt7SDghS7a/m8xMwTjRuI4EPM9DeXiYYGL+6VenYVemzNsNPDp2ty+3CBlybQ2RmKapojjGFEUIQgCe++6zgL+ASFt/fVAX+0xAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/ee960590297f3d3c06a9db6786a5b8cd/cc182/inherited.webp 148w,
+/static/ee960590297f3d3c06a9db6786a5b8cd/f7e40/inherited.webp 295w,
+/static/ee960590297f3d3c06a9db6786a5b8cd/0c9df/inherited.webp 471w&quot;
+          sizes=&quot;(max-width: 471px) 100vw, 471px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/ee960590297f3d3c06a9db6786a5b8cd/cf440/inherited.png 148w,
+/static/ee960590297f3d3c06a9db6786a5b8cd/d2d38/inherited.png 295w,
+/static/ee960590297f3d3c06a9db6786a5b8cd/b70fd/inherited.png 471w&quot;
+          sizes=&quot;(max-width: 471px) 100vw, 471px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/ee960590297f3d3c06a9db6786a5b8cd/b70fd/inherited.png&quot;
+          alt=&quot;inherited&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;到这里，我们实际上已经回答了第一个问题了。我们再来看看第二个问题，updateShouldNotify 是如何控制子孙组件更新的。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ProxyElement&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ComponentElement&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 忽略其他的&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;update&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ProxyWidget newWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; ProxyWidget oldWidget &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; widget&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 会调用InheritedElement的updated&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;updated&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;updated&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;covariant ProxyWidget oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;notifyClients&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;notifyClients&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;covariant ProxyWidget oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;/// InheritedElement&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InheritedElement&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ProxyElement&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 忽略其他的&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;notifyDependent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;covariant InheritedWidget oldWidget&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Element dependent&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 对于StatefulElement，didChangeDependencies方法中会调用State.didChangeDependencies,&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 对于其他element，会调用markNeedsBuild，实现rebuild&lt;/span&gt;
+    dependent&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;didChangeDependencies&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;/// 重写了Element中updated方法&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;updated&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;InheritedWidget oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 通过updateShouldNotify判断，是否需要更新子孙element&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;widget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;updateShouldNotify&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;/// 再调用ProxyElement的updated，ProxyElement的updated会调用notifyClients&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;/// InheritedElement又重写了notifyClients&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;updated&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;/// 重写了Element中notifyClients方法&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;notifyClients&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;InheritedWidget oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 我们上面说了InheritedElement和子孙element会相互将自己加入到对方的_dependents中&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 这里就是循环所有的子孙element，然后调用其didChangeDependencies&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Element dependent &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; _dependents&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;keys&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token function&quot;&gt;notifyDependent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;oldWidget&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; dependent&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Element 每次 rebuild，更新其 Widget 之后，都会调用&lt;code class=&quot;language-text&quot;&gt;update&lt;/code&gt;方法。对于 ProxyElement 而言，它会在&lt;code class=&quot;language-text&quot;&gt;update&lt;/code&gt;方法里通过调用 InheritedElement 的&lt;code class=&quot;language-text&quot;&gt;updated&lt;/code&gt;，从而调用 InheritedWidget 的&lt;code class=&quot;language-text&quot;&gt;updateShouldNotify&lt;/code&gt;来判断是否需要更新子孙 Widget。至此，第二个问题也已尽回答完毕。&lt;/p&gt;
+&lt;h2&gt;InheritedModel&lt;/h2&gt;
+&lt;p&gt;InheritedModel 是 InheritedWidget 的子类，它对 InheritedWidget 做了进一步的封装。当&lt;code class=&quot;language-text&quot;&gt;updateShouldNotify&lt;/code&gt;返回&lt;code class=&quot;language-text&quot;&gt;true&lt;/code&gt;时，InheritedWidget 会无条件的对所有依赖它的子组件执行 rebuild。如果我们想当共享的某一部分数据变了，才更新我们的子组件，那么就需要使用 InheritedModel 了。例如，我们共享的数据有 a 和 b，只有当 a 变了，我们才更新子组件 Childa，只有当 b 变了，我们才更新子组件 Childb。如果是用 InheritedWidget 来实现，则不管 a 和 b 哪个变了，Childa 和 Childb 都会更新。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;ABModel&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InheritedModel&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;String&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token function&quot;&gt;ABModel&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;a&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;b&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Widget child&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; int a&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; int b&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;/// 跟InheritedWidget中updateShouldNotify一样&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 当返回true，然后再根据updateShouldNotifyDependent的返回值，去决定是否需要对子组件执行rebuild&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  bool &lt;span class=&quot;token function&quot;&gt;updateShouldNotify&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ABModel old&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; old&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;a &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt; b &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; old&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;b&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;/// 比InheritedWidget多了一个判断步骤，&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 这个就是根据指定条件去判断，是否需要对子组件执行rebuild&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  bool &lt;span class=&quot;token function&quot;&gt;updateShouldNotifyDependent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ABModel old&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Set&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;String&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; aspects&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;a &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; old&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;a &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; aspects&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;a&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;b &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; old&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;b &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; aspects&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;b&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;CountProvider&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;StatefulWidget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 增加aspect参数，&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;static&lt;/span&gt; ABModel &lt;span class=&quot;token function&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;String aspect&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; InheritedModel&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;inheritFrom&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;ABModel&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;context&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; aspect&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; aspect&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Childa&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;StatelessWidget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  Widget &lt;span class=&quot;token function&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 只有当a变了，才会对Childa执行rebuild&lt;/span&gt;
+    ABModel state &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; CountProvider&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;context&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; aspect&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;a&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Childb&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;StatelessWidget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  Widget &lt;span class=&quot;token function&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 只有当b变了，才会对Childb执行rebuild&lt;/span&gt;
+    ABModel state &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; CountProvider&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;of&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;context&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; aspect&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;b&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;接下来，我们从源码实现看看 InheritedModel 是如何做到指定数据变了，才会更新子组件的。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;/// InheritedModel继承InheritedWidget&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InheritedModel&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InheritedWidget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;InheritedModel&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; Key key&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Widget child &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;key&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; key&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 忽略其他的&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  InheritedModelElement&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; InheritedModelElement&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;/// Return true if the changes between this model and [oldWidget] match any&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// of the [dependencies].&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  bool &lt;span class=&quot;token function&quot;&gt;updateShouldNotifyDependent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;covariant InheritedModel&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; oldWidget&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Set&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; dependencies&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;InheritedModel 继承至 InheritedWidget，并提供了&lt;code class=&quot;language-text&quot;&gt;updateShouldNotifyDependent&lt;/code&gt;方法。它会在&lt;code class=&quot;language-text&quot;&gt;widget.updateShouldNotifyDependent&lt;/code&gt;返回&lt;code class=&quot;language-text&quot;&gt;true&lt;/code&gt;时被调用，然后根据其结果，决定是否需要对子组件执行 rebuild。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;/// InheritedModelElement也继承InheritedElement&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InheritedModelElement&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InheritedElement&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;/// ...忽略其他的&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;/// notifyDependent在updateShouldNotify返回true时才执行&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;notifyDependent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;InheritedModel&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; oldWidget&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Element dependent&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; Set&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; dependencies &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;getDependencies&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;dependent&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;dependencies &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 根据updateShouldNotifyDependent决定是否需要对子组件执行rebuild&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;dependencies&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;isEmpty &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt; widget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;updateShouldNotifyDependent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;oldWidget&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; dependencies&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      dependent&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;didChangeDependencies&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;InheritedWidget 是较底层的能力，InheritedModel 是在它之上做了一些功能增强。如果我们需要自己去实现一些共享状态逻辑处理，建议优先使用 InheritedModel，而非 InheritedWidget。一般情况下，我们可以直接使用 flutter 提供的状态管理库，Provider。&lt;/p&gt;
+&lt;h2&gt;Provider&lt;/h2&gt;
+&lt;p&gt;Provider 的底层实现实际上就是使用的 InheritedWidget，只不过它提供了多种形式的使用方式，比如 Provider，MultiProvider，ProxyProvider，详细使用可以参考&lt;a href=&quot;https://pub.dev/packages/provider&quot;&gt;官方文档&lt;/a&gt;，这里我们说一下它的基本实现。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Provider&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;/// 忽略其他的&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;/// 同样提供了of方法，增加了listen参数，用于控制是否自动更新子组件&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;static&lt;/span&gt; T of&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;bool listen &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// this is required to get generic Type&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; type &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; _typeOf&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;InheritedProvider&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 如果listen为true，则调用inheritFromWidgetOfExactType，它会注册当前InheritedWidget和子孙组件互为依赖项&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 否则，使用ancestorInheritedElementForWidgetOfExactType，它只是简单的获取InheritedWidget的数据，而不会注册依赖项&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; provider &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; listen
+      &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; context&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;inheritFromWidgetOfExactType&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;type&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;as&lt;/span&gt; InheritedProvider&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; context&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;ancestorInheritedElementForWidgetOfExactType&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;type&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;widget
+        &lt;span class=&quot;token operator&quot;&gt;as&lt;/span&gt; InheritedProvider&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;provider &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;ProviderNotFoundError&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;T&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; context&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;widget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;runtimeType&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; provider&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;_value&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  Widget &lt;span class=&quot;token function&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// InheritedProvider就是InheritedWidget的子类&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 可以传递自定义的updateShouldNotify&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; InheritedProvider&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+      value&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; delegate&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      updateShouldNotify&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; updateShouldNotify&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      child&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;小结&lt;/h2&gt;
+&lt;p&gt;flutter 中的状态管理，大部分都是依赖 InheritedWidget 来实现的。我们详细列举了 flutter 中常见的几种状态管理场景，以及在跨层共享数据时的具体实现细节，希望本文对你有所帮助，谢谢。&lt;/p&gt;
+&lt;h2&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://fireship.io/lessons/flutter-state-management-guide/&quot;&gt;Flutter State Management Guide&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://blog.geekyants.com/state-management-in-flutter-7df833e6f3bd&quot;&gt;State Management in Flutter&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[flutter 学习小结（二）]]></title><description><![CDATA[上一篇文章中，学习了 flutter 跨平台的特性，以及 dart 的包管理器 pub。这一篇，我们将详细了解 flutter 很重要的一个概念，widget。组件flutter 是响应式的，它通过编程方式去写 UI 页面，而不是像 html 或者 android 中的 xml…]]></description><link>https://snayan.github.io//post/2019/flutter-learn-2/</link><guid isPermaLink="false">https://snayan.github.io//post/2019/flutter-learn-2/</guid><pubDate>Tue, 26 Nov 2019 20:31:00 GMT</pubDate><content:encoded>&lt;p&gt;&lt;a href=&quot;/post/2019/flutter-learn-1&quot;&gt;上一篇文章&lt;/a&gt;中，学习了 flutter 跨平台的特性，以及 dart 的包管理器 pub。这一篇，我们将详细了解 flutter 很重要的一个概念，widget。&lt;/p&gt;
+&lt;h2&gt;组件&lt;/h2&gt;
+&lt;p&gt;flutter 是响应式的，它通过编程方式去写 UI 页面，而不是像 html 或者 android 中的 xml 等模版语言去定义 UI。它借鉴了 React，也是以组件的方式去定义一个一个 UI 部件。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Flutter widgets are built using a modern framework that takes inspiration from &lt;a href=&quot;https://reactjs.org/&quot;&gt;React&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3&gt;分类&lt;/h3&gt;
+&lt;p&gt;在 flutter 中一切皆是 widget。按照状态划分，可以分为 StatelessWidget 和 StatefulWidget，与 React 中的 Stateful Class Component 和 Stateless Function Component 比较类似；按照功能划分，又有 layout widget，style widget，content widget；按照 child 接受单个 widget，或者多个 widget，又有 SingleChildRenderObjectWidget 和 MultiChildRenderObjectWidget。常见 widget 如下，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;layout widget，例如&lt;code class=&quot;language-text&quot;&gt;Scaffold&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;Row&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;Column&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;Container&lt;/code&gt;等；&lt;/li&gt;
+&lt;li&gt;style widget，例如&lt;code class=&quot;language-text&quot;&gt;Container&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;Padding&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;Center&lt;/code&gt;等；&lt;/li&gt;
+&lt;li&gt;content widget，例如&lt;code class=&quot;language-text&quot;&gt;Text&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;Image&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;RaisedButton&lt;/code&gt;等；&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;在开发 flutter 页面时，可以通过组合多个 widget，实现一个复杂或者独立功能的自定义 widget。对于描述一个 widget 的样式时，需要使用样式 widget 进行包装，或者更改 widget 提供的某些样式属性，比如&lt;code class=&quot;language-text&quot;&gt;Container&lt;/code&gt;的&lt;code class=&quot;language-text&quot;&gt;padding&lt;/code&gt;属性等。&lt;/p&gt;
+&lt;h3&gt;实现&lt;/h3&gt;
+&lt;p&gt;在开发自定义 widget 时，一般都是继承自 StatelessWidget，或者 StatefulWidget。StatelessWidget 和 StatefulWidget 又都是继承自 Widget。下面我们通过源码来看看它们的实现。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;/// 列出主要实现，去掉了其他不重要的属性或者方法&lt;/span&gt;
+&lt;span class=&quot;token metadata symbol&quot;&gt;@immutable&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Widget&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;DiagnosticableTree&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;Widget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;key &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; Key key&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  Element &lt;span class=&quot;token function&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;static&lt;/span&gt; bool &lt;span class=&quot;token function&quot;&gt;canUpdate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Widget oldWidget&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Widget newWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; oldWidget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;runtimeType &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; newWidget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;runtimeType
+      &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; oldWidget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;key &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; newWidget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;key&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Widget 是一个抽象类，主要有一个&lt;code class=&quot;language-text&quot;&gt;createElement&lt;/code&gt;的抽象方法和&lt;code class=&quot;language-text&quot;&gt;canUpdate&lt;/code&gt;的静态方法。&lt;code class=&quot;language-text&quot;&gt;createElement&lt;/code&gt;需要由继承它的子类来实现，必须返回一个 Element 对象，每一个 widget 都会有一个关联的 element 对象；在 Widget 上面有&lt;code class=&quot;language-text&quot;&gt;@immutable&lt;/code&gt;声明，描述 widget 对象是不可变的，它的属性都应该使用&lt;code class=&quot;language-text&quot;&gt;final&lt;/code&gt;标记，每次做 rebuild 时，都只会重新创建新的 widget 对象。widget 是不可变的，但是 element 是可变的，可以把 widget 看成是 element 的静态配置信息，最终是用 element 信息来完成渲染的。为了尽可能复用 element 对象，每次更新时都会先调用&lt;code class=&quot;language-text&quot;&gt;canUpdate&lt;/code&gt;，通过&lt;code class=&quot;language-text&quot;&gt;runtimeType&lt;/code&gt;和&lt;code class=&quot;language-text&quot;&gt;key&lt;/code&gt;来比较新旧 widget，如果返回 true，则复用旧的 element，并更新 element 的 widget 为新的 widget，否则调用新的 widget 的&lt;code class=&quot;language-text&quot;&gt;createElement&lt;/code&gt;来生成新的 element。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;StatelessWidget&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Widget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;StatelessWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; Key key &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;key&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; key&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  StatelessElement &lt;span class=&quot;token function&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;StatelessElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  Widget &lt;span class=&quot;token function&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;对于 StatelessWidget 的实现，它继承 Widget，重写了&lt;code class=&quot;language-text&quot;&gt;createElement&lt;/code&gt;用于生成一个&lt;code class=&quot;language-text&quot;&gt;StatelessElement&lt;/code&gt;。它还声明了一个&lt;code class=&quot;language-text&quot;&gt;build&lt;/code&gt;方法，接受一个&lt;code class=&quot;language-text&quot;&gt;BuildContext&lt;/code&gt;参数，并返回一个 Widget。实际上，这个&lt;code class=&quot;language-text&quot;&gt;BuildContext&lt;/code&gt;就是上面通过&lt;code class=&quot;language-text&quot;&gt;createElement&lt;/code&gt;创建的 Element 对象，下面将会解释到。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;StatefulWidget&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Widget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;StatefulWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; Key key &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;key&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; key&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  StatefulElement &lt;span class=&quot;token function&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;StatefulElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  State &lt;span class=&quot;token function&quot;&gt;createState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;对于 StatefulWidget，就复杂一些了。它跟 StatelessWidget 一样，继承 Widget，提供一个&lt;code class=&quot;language-text&quot;&gt;createElement&lt;/code&gt;方法，但是返回是&lt;code class=&quot;language-text&quot;&gt;StatefulElement&lt;/code&gt;对象；跟 StatelessWidget 不一样的是，它没有声明&lt;code class=&quot;language-text&quot;&gt;build&lt;/code&gt;方法，而是有一个&lt;code class=&quot;language-text&quot;&gt;createState&lt;/code&gt;方法，生成一个 State 对象。前面说过，Widget 是不可变的，每次 rebuild 都会销毁和重建，所以状态不能直接放在 widget 中，而是需要独立出来，关联到 element 上，这样状态才不会丢失。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;RenderObjectWidget&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Widget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;RenderObjectWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; Key key &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;key&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; key&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  RenderObjectElement &lt;span class=&quot;token function&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  RenderObject &lt;span class=&quot;token function&quot;&gt;createRenderObject&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;updateRenderObject&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; covariant RenderObject renderObject&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;didUnmountRenderObject&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;covariant RenderObject renderObject&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;RenderObjectWidget，是比较特殊的一类 widget。它声明了&lt;code class=&quot;language-text&quot;&gt;createRenderObject&lt;/code&gt;去创建一个 RenderObject，而在 flutter 中真正被渲染的对象就是 RenderObject。上面提到的 StatelessWidget，StatefulWidget，它们都没有直接提供 RenderObject 的实现，而是通过组合其他 RenderObjectWidget，从而实现渲染出某一个部分组合 UI。根据接受的参数个数，它有两个子类，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;SingleChildRenderObjectWidget，仅接受一个 child，比如 Padding；&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;MultiChildRenderObjectWidget，可以接受多个 child，比如 Row；&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;State&lt;/h2&gt;
+&lt;p&gt;StatefulWidget 会通过&lt;code class=&quot;language-text&quot;&gt;createState&lt;/code&gt;生成一个 State 对象，它会被关联到对应的 StatefulElement 上。State 不会随着 widget 的销毁而销毁，而是会保持其生命期跟随着 element。一个 State 对象，在整个生命周期内，会有不同的阶段，为了方便开发者针对不同阶段处理一些事情，它会暴露出相应的钩子函数，类似生命周期方法。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token metadata symbol&quot;&gt;@optionalTypeArgs&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;State&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;StatefulWidget&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Diagnosticable&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  T &lt;span class=&quot;token keyword&quot;&gt;get&lt;/span&gt; widget &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; _widget&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  T _widget&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  _StateLifecycle _debugLifecycleState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; _StateLifecycle&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;created&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  BuildContext &lt;span class=&quot;token keyword&quot;&gt;get&lt;/span&gt; context &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; _element&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  StatefulElement _element&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  bool &lt;span class=&quot;token keyword&quot;&gt;get&lt;/span&gt; mounted &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; _element &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@mustCallSuper&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;initState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@mustCallSuper&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;didUpdateWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;covariant T oldWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;setState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;VoidCallback fn&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;dynamic&lt;/span&gt; result &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;fn&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;dynamic&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    _element&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;markNeedsBuild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@mustCallSuper&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;deactivate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@mustCallSuper&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;dispose&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  Widget &lt;span class=&quot;token function&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildContext context&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@protected&lt;/span&gt;
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@mustCallSuper&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;didChangeDependencies&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;State 对象会持有 StatefulWidget 的引用_widget，还有一个_StateLifecycle 状态。在不同的阶段，会调用不同的方法，然后_StateLifecycle 的值也会不一样，类似 react 中的生命周期方法。这里主要有如下生命周期方法，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;initState&lt;/code&gt;，初始化时执行，一般用于执行申请资源等操作，不可以执行&lt;code class=&quot;language-text&quot;&gt;setState&lt;/code&gt;，在 state 的生命里只会调用一次。&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;didChangeDependencies&lt;/code&gt;，如果在&lt;code class=&quot;language-text&quot;&gt;build&lt;/code&gt;中有调用&lt;code class=&quot;language-text&quot;&gt;BuildContext.inheritFromWidgetOfExactType&lt;/code&gt;，而且 inherited widgets 有变化，则会触发此方法。可以根据变化，调用&lt;code class=&quot;language-text&quot;&gt;setState&lt;/code&gt;来更新当前 children widgets。&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;didUpdateWidget&lt;/code&gt;，当 element 上调用的&lt;code class=&quot;language-text&quot;&gt;canUpdate&lt;/code&gt;返回 true 时，也就是复用 element，更新 element 关联的 widget 时会触发此方法。state 需要根据新的 widget 来作出改变。在执行完&lt;code class=&quot;language-text&quot;&gt;didUpdateWidget&lt;/code&gt;时，框架紧接着会执行 statet 的&lt;code class=&quot;language-text&quot;&gt;build&lt;/code&gt;方法来更新 UI，所以不应该在此方法中执行&lt;code class=&quot;language-text&quot;&gt;setState&lt;/code&gt; 。&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;deactivate&lt;/code&gt;，当 element 上调用的&lt;code class=&quot;language-text&quot;&gt;canUpdate&lt;/code&gt;返回 false 时，会卸载当前的 element，随即也会卸载当前的 element 关联的 state，则会触发此方法。State 会被从树中移除，应该在此方法里解除它与其他 element 的引用关系。&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;dispose&lt;/code&gt;，销毁时执行，一般用于释放在&lt;code class=&quot;language-text&quot;&gt;initState&lt;/code&gt;中申请的资源，不可以执行&lt;code class=&quot;language-text&quot;&gt;setState&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;State 会有一个 context 的属性，它实际就是 widget 的 element 对象。State 有一个比较重要的方法&lt;code class=&quot;language-text&quot;&gt;setState&lt;/code&gt;，每次调用它，都会触发当前 widget 的更新。在上面的实现中，可以看到它调用了&lt;code class=&quot;language-text&quot;&gt;_element.markNeedsBuild()&lt;/code&gt;，将当前 element 标记为 dirty，然后在下一个 frame 中会重新执行 rebuild。如果直接更改 state 中的值，是不会触发 widget 的更新的。&lt;/p&gt;
+&lt;h2&gt;Element Tree&lt;/h2&gt;
+&lt;p&gt;通过上面的部分源码分析，真正负责渲染的 widget 对象是 RenderObjectWidget，它会生成 Element 和 RenderObject，关系如下&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/7f0a5f9d8b3da015b39376e14523d299/4f3bc/internals_element.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 42.58720930232558%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAYAAAAywQxIAAAACXBIWXMAAAsSAAALEgHS3X78AAAA6UlEQVQoz3WS2wqEMAxE+/9fqA+K6JOI9/s1yylkyXZ3B4YUEyfJtO55HlECjYr7vmVZFtm2zcc8z6UsS/9d6y2d/dmKIgCnaZJxHOU4DlnX1eeu65J9338O4OhEgU0gdJ7nR2fq4DzPXpi83ULpKGAVIlMgzhnwE+JMowJ938swDL5Oa9lC6bqu8weKiIiyIqjrWqIokjiOvW8AARrQiEmbppG2baWqKh8dAiSJui5FoTcKRCyYnAba5ONS1HioXmEH1O+c7e2GcGHCmm2bqPnh8/p6NlYsyzIpikKSJJE0Td9Gh03+2QFeqH7B9I8Y60wAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/7f0a5f9d8b3da015b39376e14523d299/cc182/internals_element.webp 148w,
+/static/7f0a5f9d8b3da015b39376e14523d299/f7e40/internals_element.webp 295w,
+/static/7f0a5f9d8b3da015b39376e14523d299/1a2f4/internals_element.webp 590w,
+/static/7f0a5f9d8b3da015b39376e14523d299/99208/internals_element.webp 688w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/7f0a5f9d8b3da015b39376e14523d299/cf440/internals_element.png 148w,
+/static/7f0a5f9d8b3da015b39376e14523d299/d2d38/internals_element.png 295w,
+/static/7f0a5f9d8b3da015b39376e14523d299/b9e4f/internals_element.png 590w,
+/static/7f0a5f9d8b3da015b39376e14523d299/4f3bc/internals_element.png 688w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/7f0a5f9d8b3da015b39376e14523d299/b9e4f/internals_element.png&quot;
+          alt=&quot;internals_element&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;把它们与 React 中元素来做类似关联，应该就比较明白它们的作用了，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;widget，类似于 React 中 JSX，用于定义 UI 应该展示什么样子，在最上层。&lt;/li&gt;
+&lt;li&gt;element，类似于 React 中 Component 生成的 vdom 对象，这里会做一些复用逻辑和渲染优化，用于为真正渲染对象提供数据，位于中间层。&lt;/li&gt;
+&lt;li&gt;renderObject，类似于真正的 DOM 了，真正的渲染对象，在最底层了。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;react 会形成一颗虚拟的 dom 树，flutter 中也在 element 这一层生成一颗 element 树。&lt;/p&gt;
+&lt;p&gt;flutter 框架会帮我们处理好 element 和 renderObject 层，对于一般业务开发，我们只需要在 widget 层去实现功能即可。框架会在三个地方帮我们调用&lt;code class=&quot;language-text&quot;&gt;createElement&lt;/code&gt;去生成对应的 element 对象，下面我们分别来看看这三个地方。&lt;/p&gt;
+&lt;p&gt;第一个地方就是生成 element 树的根节点。flutter 是通过调用&lt;code class=&quot;language-text&quot;&gt;runApp&lt;/code&gt;来启动的，如下&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;runApp&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;MyApp&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在&lt;code class=&quot;language-text&quot;&gt;runApp&lt;/code&gt;中会做很多初始化的工作，其中就包含了生成 element 树的根节点并挂载。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;runApp&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Widget app&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  WidgetsFlutterBinding&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;ensureInitialized&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/// 这里就会生成element树的根节点&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;scheduleAttachRootWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;app&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;scheduleWarmUpFrame&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;沿着&lt;code class=&quot;language-text&quot;&gt;scheduleAttachRootWidget&lt;/code&gt;调用栈一路找下去，最后会生成一个&lt;code class=&quot;language-text&quot;&gt;RenderObjectToWidgetAdapter&lt;/code&gt;对象，并调用它的&lt;code class=&quot;language-text&quot;&gt;attachToRenderTree&lt;/code&gt;方法，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;RenderObjectToWidgetAdapter&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;RenderObject&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;RenderObjectWidget&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;token metadata symbol&quot;&gt;@override&lt;/span&gt;
+  RenderObjectToWidgetElement&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; RenderObjectToWidgetElement&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  RenderObjectToWidgetElement&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;attachToRenderTree&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;BuildOwner owner&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; RenderObjectToWidgetElement&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;T&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; element &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;element &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      owner&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;lockState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;// 如果root element为空，则调用createElement生成root element&lt;/span&gt;
+        element &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;element &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        element&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;assignOwner&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;owner&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      owner&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;buildScope&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;element&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;// 并挂载在element树上&lt;/span&gt;
+        element&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;mount&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// This is most likely the first time the framework is ready to produce&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// a frame. Ensure that we are asked for one.&lt;/span&gt;
+      SchedulerBinding&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;instance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;ensureVisualUpdate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      element&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;_newWidget &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      element&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;markNeedsBuild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; element&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;先判断当前 root element 存不存在，如果不存在，就会调用&lt;code class=&quot;language-text&quot;&gt;createElement&lt;/code&gt;生成新的 root element，并调用&lt;code class=&quot;language-text&quot;&gt;element.mount(null, null)&lt;/code&gt;进行挂载&lt;/p&gt;
+&lt;p&gt;第二个地方就是进行 mount 时，如果当前 element 是 MultiChildRenderObjectElement，则会为它的 widget 的 children widget 生成对应的 element，并挂载。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;  &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;mount&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Element parent&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;dynamic&lt;/span&gt; newSlot&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;mount&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;parent&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; newSlot&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    _children &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; List&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;Element&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;widget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;children&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;length&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    Element previousChild&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;int i &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; _children&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;length&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;/// inflateWidget就是调用createElement并进行mount&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; Element newChild &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;inflateWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;widget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;children&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;i&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; previousChild&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      _children&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;i&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; newChild&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      previousChild &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; newChild&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;  Element &lt;span class=&quot;token function&quot;&gt;inflateWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Widget newWidget&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;dynamic&lt;/span&gt; newSlot&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;newWidget &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; Key key &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; newWidget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;key&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;key &lt;span class=&quot;token operator&quot;&gt;is&lt;/span&gt; GlobalKey&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; Element newChild &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; newWidget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;createElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    newChild&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;mount&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; newSlot&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; newChild&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;第三个地方就是进行 rebuild 时，更新 child element，如果 child element 为 null，且新的 widget 不为 null，则也会调用&lt;code class=&quot;language-text&quot;&gt;inflateWidget&lt;/code&gt;来新建 element 且挂载。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;Element &lt;span class=&quot;token function&quot;&gt;updateChild&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Element child&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Widget newWidget&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;dynamic&lt;/span&gt; newSlot&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// newWidget为null，则直接返回null&lt;/span&gt;
+   &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;newWidget &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+   &lt;span class=&quot;token comment&quot;&gt;//child不为null，且newWidget也不为null&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// 如果widget相等，则直接用之前的element&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;widget &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; newWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// 如果canUpdate返回true，也直接用之前的element&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Widget&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;canUpdate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;widget&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; newWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;/// ...&lt;/span&gt;
+        child&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;update&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;newWidget&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; child&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+   &lt;span class=&quot;token comment&quot;&gt;// child element为null，且newWidget不为null，则生成新的child element&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;inflateWidget&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;newWidget&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; newSlot&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在维护更新 element 树的同时，会每次将更新点同步到 RenderObject 上。最后，flutter 根据 RenderObject 来渲染出页面。为了更高效的渲染，在 layout 阶段会通过 RelayoutBoundary 来控制 relayout 的范围，在 paint 阶段会通过 RepaintBoundary 只重新绘制受响应的部分。&lt;/p&gt;
+&lt;h2&gt;结构图&lt;/h2&gt;
+&lt;p&gt;从 Widget，Element，RenderObject 角度分别列举了它们的父类和子类，&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/ef851692a408435ff5ad219739abc2de/fd995/structure.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 51.73228346456693%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAIAAAA7N+mxAAAACXBIWXMAABYlAAAWJQFJUiTwAAABUUlEQVQoz32RyVLDMAyG+/6vAxcOnWEphV6YAgMzbZpmT+wmbhJv8RI7OGSgB1o0PtiSP+mXNBv+NSNElyUCleZcdHYJs8b21uIC+VdP5Xo3JjJG931vTD9ejLWXYamUFB1ou0XC5mH9jhhXZg2bh7hcxOUrODr8BGut2xZPhxDqajhnTdEqXAY1ABh5xccWRjnhUUMAZtb+wE6JQ4oC5gUoADiU1QTrXtYESMl0r+DOy+ZL5kWnnqdPQgjOu1PDw6D0aGPUWKfKuZJwf39zDaNUaAKbAPNqho711vP9IGqadpqK0zN8wy4jk/KzZi8VjYksKZrv3x7j9NYP73abmrczpVQnhOuScf53bMqYoGEbRDLMhTZRIzYV2SKaYmF/V+UKYkKzvEiyHABIhHqG2G84onyVHNxz6uXinp2EadSUUql1SrpjJ6lU+5q6mmfX+QXXGD4KF78emAAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/ef851692a408435ff5ad219739abc2de/cc182/structure.webp 148w,
+/static/ef851692a408435ff5ad219739abc2de/f7e40/structure.webp 295w,
+/static/ef851692a408435ff5ad219739abc2de/1a2f4/structure.webp 590w,
+/static/ef851692a408435ff5ad219739abc2de/4837b/structure.webp 885w,
+/static/ef851692a408435ff5ad219739abc2de/2f819/structure.webp 1180w,
+/static/ef851692a408435ff5ad219739abc2de/c3475/structure.webp 2540w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/ef851692a408435ff5ad219739abc2de/cf440/structure.png 148w,
+/static/ef851692a408435ff5ad219739abc2de/d2d38/structure.png 295w,
+/static/ef851692a408435ff5ad219739abc2de/b9e4f/structure.png 590w,
+/static/ef851692a408435ff5ad219739abc2de/f9b6a/structure.png 885w,
+/static/ef851692a408435ff5ad219739abc2de/2d849/structure.png 1180w,
+/static/ef851692a408435ff5ad219739abc2de/fd995/structure.png 2540w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/ef851692a408435ff5ad219739abc2de/b9e4f/structure.png&quot;
+          alt=&quot;structure&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;注意点&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;flutter 渲染分为三层，框架会自动处理好 Element 层和 RenderObject 层，大部分时候只需要编写 Widget 层即可。&lt;/li&gt;
+&lt;li&gt;Widget 是不可变的，总应该将它的属性标记为&lt;code class=&quot;language-text&quot;&gt;final&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;对于无状态的 Widget，总是应该使用 StatelessWidget，避免额外的创建和维护 State。&lt;/li&gt;
+&lt;li&gt;在更新 element 时，会直接判断 new widget 与 old widget 是否相等，如果相等则直接复用旧的 element。所以我们可以通过 state 来提前保存生成好的子 widget，而不必每次都在 build 中生成新的子 widget。&lt;/li&gt;
+&lt;li&gt;对于在整个渲染树中复用的 element，可以给它对应的 widget 增加一个 global key。这样在更新时，会通过&lt;code class=&quot;language-text&quot;&gt;Widget.canUpdate&lt;/code&gt;来判断是否可以复用 element。&lt;/li&gt;
+&lt;li&gt;RenderObject 并没有定义节点的布局模型，它有 2 个子类，一个是 RenderBox，定义了节点在笛卡尔坐标系中的布局方式，一个是 RenderSliver，定义了节点在滚动时的布局方式。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;小结&lt;/h2&gt;
+&lt;p&gt;我们大部分时候都是直接与 Widget 在打交道，而很少关心底层的 Element 和 RenderObject。Widget 在 flutter 中承担了非常多的功能，而不仅仅只是组合 UI，例如 flutter 中的路由管理 Navigator 就是 StatefulWidget，样式主题 Theme 是 StatelessWidget 等。flutter 提供了非常丰富的 Widget，有 Material Design 风格的 material widget，有 IOS 风格的 cupertino widget。&lt;/p&gt;
+&lt;h2&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.didierboelens.com/2019/09/flutter-internals/&quot;&gt;flutter-internals&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[flutter 学习小结（一）]]></title><description><![CDATA[2019 年，在前端圈听到最多的就是 flutter 了。作为一个跨平台新宠，国内已有一些大厂，将它用在了实际的项目中。对于一个新技术，到底要不要跟进学习，笔者不做任何评论。笔者只是纯粹以学习的目的，去学习了 flutter，并通过写一个 demo…]]></description><link>https://snayan.github.io//post/2019/flutter-learn-1/</link><guid isPermaLink="false">https://snayan.github.io//post/2019/flutter-learn-1/</guid><pubDate>Sat, 16 Nov 2019 15:41:00 GMT</pubDate><content:encoded>&lt;p&gt;2019 年，在前端圈听到最多的就是 flutter 了。作为一个跨平台新宠，国内已有一些大厂，将它用在了实际的项目中。对于一个新技术，到底要不要跟进学习，笔者不做任何评论。笔者只是纯粹以学习的目的，去学习了 flutter，并通过写一个 demo 加深对它的理解。下面将结合自己开发的一个 demo 项目，从前端的角度去阐述，希望能对你学习 flutter 有所帮助。&lt;/p&gt;
+&lt;p&gt;flutter demo 项目地址：&lt;a href=&quot;https://github.com/snayan/flutter_juejin&quot;&gt;点击这里&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;跨平台&lt;/h2&gt;
+&lt;h3&gt;渲染&lt;/h3&gt;
+&lt;p&gt;flutter 最大的特性就是跨平台。一套代码，即可搞定 iOS，Android，web 三端，真可谓之强大。为何它能跨平台呢，因为它将 widget 和渲染器从平台移到了应用程序自身上。它通过自带渲染引擎 skia，封装了系统提供的 2D 绘图接口。不管是 iOS，android，web，只需要提供一个 2D 渲染环境(canvas)，flutter 就可以渲染界面。&lt;/p&gt;
+&lt;p&gt;业界其他跨平台方案还有 H5，react native 等。当做一个技术选型时，需要根据实际业务需求来衡量，所以这里对它们不做任何优劣之分，仅仅只是从实现原理去理解它们。只有真正了解它们的实现差异，才能对某一个具体业务选择最合适的方案。&lt;/p&gt;
+&lt;p&gt;h5，最简单，平台支持度最高的。它需要不同平台提供一个 web view，渲染方式就是 web view 提供的渲染引擎去完成的。不同平台的 webview 实现方式可能不一样，但是它们都遵循 w3c 标准，所以一套 H5 代码能运行在不同平台之上。渲染之前需要通过平台生成一个 webview 实例，然后通过 http 请求，加载所需的静态资源（包含 html，css，js，image 等），这些前置步骤会导致一个白屏时间的存在。并且 js 是运行时编译的，所以它的运行速度不如原生的快。对于平台功能，需要通过 bridge 等方式来获得支持。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/1d59af1fd52ecdbe37c23cd7f7704e04/eef7a/h5.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 49.1283676703645%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAIAAAA7N+mxAAAACXBIWXMAAAsSAAALEgHS3X78AAACI0lEQVQoz2P4++/vv/9QAGT/RwL/wOAvGP35+/fGzZvnz5+/e/cuUANEkAGo6Nfn79/ffPr54QtcAwT8+QPUgmzcnx/fvgABnM9QeWVR0MGW0AOtPnvrKi4vBOmHWAsm3337nbf5dsyKa4mrb8SsvHHm6WeghUVb72RtvAUUZ1DZksCwzI55lRvDMlvVjTF3b915/ebNWxB49+71yz2nLglVHGQoP8BSc4ghe3fPtkv3HjxkqzrAUHOIAyiiuyuHYZUH81p/hpVuWjuz/v/59/vPnx+/f/788/v/3z9P3n1xmHVBf9IZs6lntfrPbL/17ufvvy5zLzrMueg05yKD9s5szvUhMlsTuTeEae7MBDsYGoJADwN9DvfE3x9ffn98/efbZ4SfgbaxrQsS2xzLui5QfWcGUOjxt9dRJ3vm3N8FZL/5+jNn4+30DbeKtt+LWXrBf+bRmCXnCrfdydtyJ3PDLQa9XbkMqzxZgM5e5aG2Lf3/7/9Hnl3m3Rieemry/9//bj5/K1R/mKfhiGLfKaC3WWqO8DQeU+g9Kd11gqfuMIPatmSGZfbMK90Zltopb479/+f/8efXONaHJJyYAGTfev5OouWYWNsx9QlnuOsPc9UcYq8+JN99UrztOG/9EYaNz07Of7Bn8cP98x7s3vD0BNCp7399mXN/95E314Dsr7/+bLz2ZtP1Nztuv99w7c3qy69WXny18fqbNZdfr770CgARebbPqRWqvAAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/1d59af1fd52ecdbe37c23cd7f7704e04/cc182/h5.webp 148w,
+/static/1d59af1fd52ecdbe37c23cd7f7704e04/f7e40/h5.webp 295w,
+/static/1d59af1fd52ecdbe37c23cd7f7704e04/1a2f4/h5.webp 590w,
+/static/1d59af1fd52ecdbe37c23cd7f7704e04/d51b6/h5.webp 631w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/1d59af1fd52ecdbe37c23cd7f7704e04/cf440/h5.png 148w,
+/static/1d59af1fd52ecdbe37c23cd7f7704e04/d2d38/h5.png 295w,
+/static/1d59af1fd52ecdbe37c23cd7f7704e04/b9e4f/h5.png 590w,
+/static/1d59af1fd52ecdbe37c23cd7f7704e04/eef7a/h5.png 631w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/1d59af1fd52ecdbe37c23cd7f7704e04/b9e4f/h5.png&quot;
+          alt=&quot;h5&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;rn，使用 jsx 的方式声明 UI，然后通过 bridge 通信，使用平台控件来渲染界面。相比 h5 的 webview 渲染，平台控件渲染减少了 web view 实例化的过程，并且体验也更加流畅一些。每次 jsx 的变化，都需要通过 bridge 通知到平台那边。所以对于动画，滚动等高频率的改变，它的性能就会急剧下降。跟 h5 类似，也存在 js 的运行时性能不够好，对于平台功能，需要通过 bridge 等方式来获得支持。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/f53f1be58636ad62c3e8795fa16075e9/b2a12/rn.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 47.77777777777777%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAIAAAA7N+mxAAAACXBIWXMAAAsSAAALEgHS3X78AAACH0lEQVQoz2P4DwP/gBDGAKF///7+/Qvk/v0LEn//4cPFi5du3Ljx5s1bkCBI/j/Dl3cf3zx79fndx/+oACj5588fZJE/v358+fLl169fcBEGv0NNAQeaXPdWd95cCxFquLYs8mT3518/gOwt19/4L7oSvfJ64OKreVvuAkW233wbufJ60tpbVTvvMTAsd2JZ7cGw1MbzYDVEs83eQpYVrmeuX3n/+EHR2gsM5QfZaw8x1BwSaz78/sXTqo0XGcoOMFQf1Ow5xcCw2pNlrR/Dcmf/Yy0Qza6H6/g2hj//BPTb35UXX9jPuuC78LLHgsspG+4AZTdcfe2/5ErU6hu5m24ziGyOUd6RzrUxHOjyx/cf3rl71+tAveHewpff34MDDwqAgff6+ZOXzx7/+P4d4WfmdQFAexhWe3kdavj59TswSLwPN8ptT3794xNQeuO11wGLr+RsuZO18bb/vLMB886mrLuev+1u0rqbpdvuMjCs8mRZA3S2k8/RZoh5joeqGVf7Pnj9/P+/X007bzEU7pXrOiHccpSx6hBL9WHRtuMqfae46g/r9p8G+tmbdW0gwwpXX5hmh4OVTGt8X375AGT3H37IXnPIcOpZzQmnBRuPijQdFW05pjXxDHfdYZsZ5xkOvr5y+PW1/a8uX/n4EKL57Ps7e19e/PUXFMmPP/zYd/f98Ycfjz38ePDe+4P33x+4+/7Igw/77rw78+QTAGQdt3ulN47oAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/f53f1be58636ad62c3e8795fa16075e9/cc182/rn.webp 148w,
+/static/f53f1be58636ad62c3e8795fa16075e9/f7e40/rn.webp 295w,
+/static/f53f1be58636ad62c3e8795fa16075e9/1a2f4/rn.webp 590w,
+/static/f53f1be58636ad62c3e8795fa16075e9/eae19/rn.webp 630w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/f53f1be58636ad62c3e8795fa16075e9/cf440/rn.png 148w,
+/static/f53f1be58636ad62c3e8795fa16075e9/d2d38/rn.png 295w,
+/static/f53f1be58636ad62c3e8795fa16075e9/b9e4f/rn.png 590w,
+/static/f53f1be58636ad62c3e8795fa16075e9/b2a12/rn.png 630w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/f53f1be58636ad62c3e8795fa16075e9/b9e4f/rn.png&quot;
+          alt=&quot;rn&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;flutter，由于自带高性能的渲染引擎，所有的 UI 显示都可以自己搞定，不需要 bridge 等中间层通信，所以在渲染方面表现出的性能要比 rn 优秀一点。flutter 支持 AOT，在 release 编译中，会将 dart 代码编译成对应平台的本地代码，其运行速度远比 js 的快。对于平台功能，flutter 也提供了类似 bridge 的 Method Channel 的方式来获得支持。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/883f359513d17cdc5fd17459828c3e3a/83cbb/flutter.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 48.40764331210191%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAIAAAA7N+mxAAAACXBIWXMAAAsSAAALEgHS3X78AAAB/UlEQVQoz2P4jwT+/PsLQX///4MAoCCEfPjw4blz527evPn9+3e4eoYPb98/e/z07avX/1EBUM9foCFI3F+/fv358wdiFlSz3d4K+90VtrvLA4+3VVxe2HB1eeHFueueHPv/9/+fv3+QjfsL1ta8/2HA0mvhK69X7rzHwLDChXG1B8Mqd4YVbmyrfcS2pTCs9o7Y1/D03uPXb9+8g4G3b9++fvP25cO7dpNPMpTuZ6g4YDzpDAPDak+mtX4Mq71EN8dkX5hZcHFu6rmpKx8fBtr86/cvoNPBIQB0/7+/YPd2H3ocu/ZG2qbb9XseMMhsS5beliSyOVZ/T/5fkKL//1D9DPHkp8+f79+/9/jxk1+/fyP8zLTWn31dEOMaP6kt8RNub5p6d2vnjTV7X10Cyn3/9TthzQ23+Zdi1t30XnTJcspJl9lno1Zdj1p7033h5dxNt4HO9mZe6w/UzLbWn2ttgPT2VIa1fvGHO///+PP09RvNnhMMlQdk+06x1R1iqjrIXndYtOuEVO8p5tpDNjPOM7CuC+BaHwK0HOhnjyMNEad6PY40Tbi1CeTU7z8sZ5yT6DxuPPO8fM9JkdZjIi3HpLtOqE08w9NwxGfRZYYLH+5d/HD//Pt7Nz49QYvnP3/+3nn3/eqrrzfefLv2+iuQAUFA9pWXXx+8/w4AX42+1Xdro3kAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/883f359513d17cdc5fd17459828c3e3a/cc182/flutter.webp 148w,
+/static/883f359513d17cdc5fd17459828c3e3a/f7e40/flutter.webp 295w,
+/static/883f359513d17cdc5fd17459828c3e3a/1a2f4/flutter.webp 590w,
+/static/883f359513d17cdc5fd17459828c3e3a/939a5/flutter.webp 628w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/883f359513d17cdc5fd17459828c3e3a/cf440/flutter.png 148w,
+/static/883f359513d17cdc5fd17459828c3e3a/d2d38/flutter.png 295w,
+/static/883f359513d17cdc5fd17459828c3e3a/b9e4f/flutter.png 590w,
+/static/883f359513d17cdc5fd17459828c3e3a/83cbb/flutter.png 628w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/883f359513d17cdc5fd17459828c3e3a/b9e4f/flutter.png&quot;
+          alt=&quot;flutter&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;新创建一个 flutter 项目时，目录结构中会有 ios，android，web 三个目录，它们分别就是对应到三个端的宿主平台代码。一般在开发时，不需要关心它们，实际 flutter 项目的代码，会放在 lib 目录中。flutter 选择了 dart 作为开发语言，dart 也是类似 JavaScript 的单线程语言，与 JavaScript 有许多相似之处，学习成本很低，这里不详细展开，更多可以去&lt;a href=&quot;http://dartlang.org/&quot;&gt;官网&lt;/a&gt;了解。需要提到的一点是，官方有&lt;a href=&quot;https://dart.dev/tools/dart2js&quot;&gt;dart2js&lt;/a&gt;的工具，将 dart 代码转换为 js 代码。实际上 flutter 能运行到 web 端，也就是在编译的时候，会进行 dart2js 的转换。&lt;/p&gt;
+&lt;h3&gt;通信&lt;/h3&gt;
+&lt;p&gt;有时候，产品功能会比较复杂，需要调用原生操作系统底层能力去实现某一部分功能，比如打开相机拍照等。仅仅使用 flutter 框架能力是无法实现的，这个时候就需要 flutter 层去调用原生层的服务了。flutter 通&lt;a href=&quot;https://api.flutter.dev/flutter/services/MethodChannel-class.html&quot;&gt;MethodChannel&lt;/a&gt;去实现这种场景，与 H5 通过 bridge 调用 native 功能的方式比较类似。如不清楚 H5 与 native 的通信细节，可以看看我之前写的&lt;a href=&quot;/post/understand_the_details_of_h5_and_native(ios)_communication/&quot;&gt;「理解 h5 与 native(ios)通信细节」&lt;/a&gt;。下面，我们通过&lt;a href=&quot;https://pub.dev/packages/url_launcher&quot;&gt;url_launcher&lt;/a&gt;来详细了解一下 MethodChannel 的实现和使用。&lt;/p&gt;
+&lt;p&gt;url_launcher 的功能之一，就是支持在 iOS 和 android 设备上打开一个 URL 链接。在 flutter 中使用如下&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token function&quot;&gt;_launchURL&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; url &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;https://flutter.dev&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;canLaunch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;launch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;Could not launch $url&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;选择&lt;code class=&quot;language-text&quot;&gt;canLaunch&lt;/code&gt;函数作为切人点，一起看看它在 flutter 中的实现如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; MethodChannel _channel &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;MethodChannel&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;plugins.flutter.io/url_launcher&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;/// Checks whether the specified URL can be handled by some app installed on the&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;/// device.&lt;/span&gt;
+Future&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;bool&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;canLaunch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;String urlString&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;urlString &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; _channel&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;invokeMethod&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;bool&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&apos;canLaunch&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;String&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Object&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;url&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; urlString&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;实现比较简单，就是简单的判断了 urlString 是否为空，然后通过&lt;code class=&quot;language-text&quot;&gt;MethodChannel#invokeMethod&lt;/code&gt;去调用平台的接口了，并将参数封装为 Map 的形式传递过去。我们选择 Android 平台，看看平台是如何通过 MethodChannel 定义接口的，iOS 中实现也是类似的步骤。&lt;/p&gt;
+&lt;p&gt;第一步，需要在 MainActivity 中注册 MethodChannel&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;kotlin&quot;&gt;&lt;pre class=&quot;language-kotlin&quot;&gt;&lt;code class=&quot;language-kotlin&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// Android入口&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; MainActivity&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;FlutterActivity&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;override&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;fun&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;onCreate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;savedInstanceState&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Bundle&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;super&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;onCreate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;savedInstanceState&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 这里会注册插件&lt;/span&gt;
+    GeneratedPluginRegistrant&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;registerWith&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;java&quot;&gt;&lt;pre class=&quot;language-java&quot;&gt;&lt;code class=&quot;language-java&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;GeneratedPluginRegistrant&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;registerWith&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;PluginRegistry&lt;/span&gt; registry&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 先判断是否已经注册过了&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;alreadyRegisteredWith&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;registry&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+   &lt;span class=&quot;token class-name&quot;&gt;UrlLauncherPlugin&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;registerWith&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;registry&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;registrarFor&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;io.flutter.plugins.urllauncher.UrlLauncherPlugin&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;第二步，定义接口，通过&lt;code class=&quot;language-text&quot;&gt;call.argument&lt;/code&gt;获取参数，&lt;code class=&quot;language-text&quot;&gt;call.method&lt;/code&gt;获取方法名称&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;java&quot;&gt;&lt;pre class=&quot;language-java&quot;&gt;&lt;code class=&quot;language-java&quot;&gt;&lt;span class=&quot;token annotation punctuation&quot;&gt;@Override&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;onMethodCall&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;MethodCall&lt;/span&gt; call&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Result&lt;/span&gt; result&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;String&lt;/span&gt; url &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; call&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;argument&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;url&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;switch&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;call&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;method&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;canLaunch&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token function&quot;&gt;onCanLaunch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;result&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;launch&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token function&quot;&gt;onLaunch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;call&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; result&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;case&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;closeWebView&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token function&quot;&gt;onCloseWebView&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;result&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+      result&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;notImplemented&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;break&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;第三步，实现并返回结果&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;java&quot;&gt;&lt;pre class=&quot;language-java&quot;&gt;&lt;code class=&quot;language-java&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;onCanLaunch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Result&lt;/span&gt; result&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;String&lt;/span&gt; url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  result&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;success&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;urlLauncher&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;canLaunch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;/* urlLauncher.canLaunch */&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;/** Returns whether the given {@code url} resolves into an existing component. */&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;boolean&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;canLaunch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;String&lt;/span&gt; url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token class-name&quot;&gt;Intent&lt;/span&gt; launchIntent &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Intent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Intent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ACTION_VIEW&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  launchIntent&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;setData&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Uri&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;parse&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token class-name&quot;&gt;ComponentName&lt;/span&gt; componentName &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;
+    launchIntent&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;resolveActivity&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;applicationContext&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getPackageManager&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; componentName &lt;span class=&quot;token operator&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+    &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;{com.android.fallback/com.android.fallback.Fallback}&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;componentName&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;toShortString&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;对于一个底层能力的插件，需要在 iOS 和 Android 端分别实现，这样在 flutter 层就无需关注原生实现细节，只需要通过 MethodChannel 调用就可以了。感觉实际项目开发中，还是需要 iOS，Android 同学去开发底层能力，然后业务功能可以使用 flutter 开发。幸好，大部分这种通用底层能力的接口，官方或社区都以插件的形式实现了，直接安装即可使用。&lt;/p&gt;
+&lt;h2&gt;包管理&lt;/h2&gt;
+&lt;p&gt;flutter 选择 dart 作为开发语言，dart 使用的包管理是&lt;a href=&quot;https://pub.dev/&quot;&gt;pub&lt;/a&gt;，它与 npm 类似。下面列举它们的差异点。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;包管理&lt;/th&gt;
+&lt;th&gt;pub&lt;/th&gt;
+&lt;th&gt;npm&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;配置文件&lt;/td&gt;
+&lt;td&gt;pubspec.yaml&lt;/td&gt;
+&lt;td&gt;package.json&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;版本锁文件&lt;/td&gt;
+&lt;td&gt;pubspec.lock&lt;/td&gt;
+&lt;td&gt;Package-lock.json&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;安装目录&lt;/td&gt;
+&lt;td&gt;flutter 目录.pub-cache 下&lt;/td&gt;
+&lt;td&gt;项目 node_modules 下&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;如需在 flutter 中安装一个插件，比如 url_launch，步骤如下，&lt;/p&gt;
+&lt;p&gt;第一步，在 pubspec.yaml 中 dependencies 中声明，如是开发环境依赖包，则在 dev_dependencies 中声明，与 package.json 类似。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;yaml&quot;&gt;&lt;pre class=&quot;language-yaml&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;dependencies&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;flutter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;sdk&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; flutter
+
+  &lt;span class=&quot;token key atrule&quot;&gt;url_launcher&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ^5.2.3&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;第二步，可以执行如下命令，一般在 pubspec.yaml 中改变了，vscode 获取 Android studio 会自动安装的，所以这一步一般可以省略。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;bash&quot;&gt;&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;flutter pub get&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;第三步，就是直接在项目中引用使用即可，如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;dart&quot;&gt;&lt;pre class=&quot;language-dart&quot;&gt;&lt;code class=&quot;language-dart&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;package:url_launcher/url_launcher.dart&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token function&quot;&gt;_launchURL&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; url &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;https://flutter.dev&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;canLaunch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;launch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;url&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&apos;Could not launch $url&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h2&gt;小结&lt;/h2&gt;
+&lt;p&gt;对于跨平台的框架，一般需要满足最基本的两个条件，其一是能够在不同平台上高效的渲染，，其二是能够通过某种方式调用平台的服务。flutter 无疑在这两方面都做的比较出色，它通过自带的渲染引擎可以高效的在 Android 和 iOS，web 等平台上渲染界面，同时通过 method channel 等 bridge 方式调用平台服务。&lt;/p&gt;
+&lt;p&gt;flutter 选择 dart 作为开发语言，它也有类似 npm 的包管理器 pub，可以很方便的安装或者发布特定功能的插件。&lt;/p&gt;
+&lt;h2&gt;参考&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://hackernoon.com/whats-revolutionary-about-flutter-946915b09514&quot;&gt;What’s Revolutionary about Flutter&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://hackernoon.com/why-native-app-developers-should-take-a-serious-look-at-flutter-e97361a1c073&quot;&gt;Why native app developers should take a serious look at Flutter&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[DIY 一个 Babel 插件]]></title><description><![CDATA[Babel，是一个 JavaScript 的编译工具，它可以将 es6+语法的代码，转换为浏览器兼容的低版本的代码。它简直就是一个神兵利器，前端工程师拥有了它，就可以在项目中使用一些较新的 es 语法。笔者决定弄懂它，并实现一个自己的 Babel 插件。Babel…]]></description><link>https://snayan.github.io//post/2019/diy_a_babel_plugin/</link><guid isPermaLink="false">https://snayan.github.io//post/2019/diy_a_babel_plugin/</guid><pubDate>Tue, 06 Aug 2019 19:45:00 GMT</pubDate><content:encoded>&lt;p&gt;Babel，是一个 JavaScript 的编译工具，它可以将 es6+语法的代码，转换为浏览器兼容的低版本的代码。它简直就是一个神兵利器，前端工程师拥有了它，就可以在项目中使用一些较新的 es 语法。笔者决定弄懂它，并实现一个自己的 Babel 插件。&lt;/p&gt;
 &lt;p&gt;Babel 的工作原理，可以用如下公式表述。它实际上就是接受输入的源代码，然后对它做一些处理和转换，最后输出为目标版本的代码。&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;babel&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token parameter&quot;&gt;sourceCode&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; distCode&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;在将输入的源码做处理或者转换时，这就需要用到了它的插件系统。一个插件只负责处理一件事，比如&lt;code class=&quot;language-text&quot;&gt;@babel/plugin-transform-arrow-functions&lt;/code&gt; ，就是负责将箭头函数转换为普通函数的插件。Babel 提供了非常多的插件，这样就足以保证可以将新的 es 语法转换为旧版本的代码形式。想了解详细的 Babel 插件系统，可以查看&lt;a href=&quot;https://babeljs.io/docs/en/plugins&quot;&gt;Babel#Plugins&lt;/a&gt;。&lt;/p&gt;
