@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Fri, 03 Jan 2020 11:49:14 GMT</lastBuildDate><item><title><![CDATA[2019年小结]]></title><description><![CDATA[2019 年呢，外界给我的感受是「艰难」。996 ICU，华为 251，网易裁员等，发生了太多不好的事情。有时候觉得自己是幸运的，这些事情没有一件发生在自己身上；有时候又觉得自己是束手无策的，如果发生在自己身上，我能怎么办。人，总是喜欢多想。对我而言呢，201…]]></description><link>https://snayan.github.io//post/2020/summary_of_2019/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/summary_of_2019/</guid><pubDate>Fri, 03 Jan 2020 19:30:00 GMT</pubDate><content:encoded>&lt;p&gt;2019 年呢，外界给我的感受是「艰难」。996 ICU，华为 251，网易裁员等，发生了太多不好的事情。有时候觉得自己是幸运的，这些事情没有一件发生在自己身上；有时候又觉得自己是束手无策的，如果发生在自己身上，我能怎么办。人，总是喜欢多想。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Fri, 03 Jan 2020 13:14:34 GMT</lastBuildDate><item><title><![CDATA[2019年小结]]></title><description><![CDATA[2019 年，还算比较充实。按照年初定的目标，大部分完成了，除了 12 篇文章，目前只完成了 9 篇。Blog 使用 gastby 重构学习数据结构和算法 【读了 4 本书籍和一个专栏】学习了解 flutter【写了 2 个 demo，做了一个分享，写了三篇文章】阅读 1…]]></description><link>https://snayan.github.io//post/2020/summary_of_2019/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/summary_of_2019/</guid><pubDate>Fri, 03 Jan 2020 19:30:00 GMT</pubDate><content:encoded>&lt;p&gt;2019 年，还算比较充实。&lt;/p&gt;
 
         &lt;h2 id=&apos;toc-2-1&apos; &gt;
           目标
         &lt;/h2&gt;
       
-&lt;p&gt;对我而言呢，2019 年，还行。按照年初定的目标，大部分完成了，除了 12 篇文章，目前只完成了 9 篇。&lt;/p&gt;
+&lt;p&gt;按照年初定的目标，大部分完成了，除了 12 篇文章，目前只完成了 9 篇。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li class=&quot;task-list-item&quot;&gt;
 &lt;p&gt;&lt;input type=&quot;checkbox&quot; checked disabled&gt; Blog 使用 gastby 重构&lt;/p&gt;
@@ -27,18 +27,17 @@
           学习
         &lt;/h2&gt;
       
-&lt;p&gt;今年公司提供了学习福利，可以订阅「极客时间」上的学习专栏。我订阅的第一篇是「数据结构和算法之美」，感觉非常不错，以至于后面都没有购买书籍，大部分时间都花在「极客时间」的专栏学习上。从我订阅的几篇来说，有些专栏质量不行，有些却非常不错，建议订阅购买人数多的。后面，我应该会结合书籍和专栏一起学习，毕竟有些经典的书籍还是需要认真读一读的。&lt;/p&gt;
-&lt;p&gt;数据结构和算法，是我今年花的比较多的时间去学习的。因为它实在是太重要了，太基础了。「数据结构和算法之美」专栏中部分优质内容读了 2 遍，也购买了 4 本书籍。自己也建了一个 repo，「&lt;a href=&quot;https://github.com/snayan/algorithm-demo&quot;&gt;algorithm-demo&lt;/a&gt;」，动手实现了很多的题目。虽说现在又忘的差不多了 😭，但遇到实际问题，可以想到对应的解决思路，应该也算有所收获。&lt;/p&gt;
-&lt;p&gt;flutter 是下半年开始学习的。行业内，它的热度太高，所以我也去学习了解了一下。可怕的不是不会，而是不知道。对于开发跨平台业务来说，它确实不错。感觉来说，它可能更适合移动端开发者去使用，因为一些性能调优或者系统 bug，移动端开发者更加熟悉。如果你也想开始学习它，不妨先看看我的系列&lt;a href=&quot;https://snayan.github.io/search?query=flutter&quot;&gt;flutter 学习笔记&lt;/a&gt;，和&lt;a href=&quot;https://github.com/snayan/flutter_juejin&quot;&gt;flutter_juejin&lt;/a&gt; demo，这样会更加轻松。我会继续关注它。&lt;/p&gt;
+&lt;p&gt;今年公司提供了学习福利，可以订阅「极客时间」上的学习专栏。我订阅的第一篇是「数据结构和算法之美」，感觉非常不错，以至于后面都没有购买书籍，大部分时间都花在「极客时间」的专栏学习上。从我订阅的几篇来说，有些专栏质量不行，有些却非常不错，建议订阅购买人数多的。&lt;/p&gt;
+&lt;p&gt;数据结构和算法，是我今年花的比较多的时间去学习的。因为它实在是太重要了，太基础了。「数据结构和算法之美」专栏中部分优质内容读了 2 遍，也购买了 4 本书籍。自己也建了一个 repo，「&lt;a href=&quot;https://github.com/snayan/algorithm-demo&quot;&gt;algorithm-demo&lt;/a&gt;」，动手实现了很多的题目。现在感觉又忘的差不多了 😭。&lt;/p&gt;
+&lt;p&gt;flutter 是下半年开始学习的。行业内，它的热度太高，所以我也去学习了解了一下，记录了一些&lt;a href=&quot;https://snayan.github.io/search?query=flutter&quot;&gt;学习笔记&lt;/a&gt;，也开发了一个小的&lt;a href=&quot;https://github.com/snayan/flutter_juejin&quot;&gt;demo&lt;/a&gt;。对于开发跨平台业务来说，它确实不错。感觉来说，它可能更适合移动端开发者去使用，因为一些性能调优或者系统 bug，移动端开发者更加熟悉。我会继续关注它。&lt;/p&gt;
 &lt;p&gt;其他一些内容，就相对比较零散，随便看了看，有「React 实战进阶 45 讲」，「趣谈网络协议」，「更了不起的 NodeJs 卷一」。&lt;/p&gt;
-&lt;p&gt;大概 6 月份开始启动 gastby 重构自己的 blog 系统，断断续续，终于完成。12 月份，又增加了 table of content，每篇文章都有自动生成文章目录，感觉对读者应该很实用。用 gastby 重构，是因为 gastby 使用的是 react 技术栈，而自己又比较熟悉它，并且相对 hexo 而言，gastby 可发挥的空间太多。现在这个版本，我还是比较满意的。如果哪天又不满意了，再重构吧。生命不息，折腾不止。&lt;/p&gt;
+&lt;p&gt;大概 6 月份开始启动 gastby 重构自己的 blog 系统，断断续续，终于完成。12 月份，又增加了 table of content，每篇文章都有自动生成文章目录，感觉不错。用 gastby 重构，是因为 gastby 使用的是 react 技术栈，而自己又比较熟悉它，并且相对 hexo 而言，gastby 自由太多。&lt;/p&gt;
 
         &lt;h2 id=&apos;toc-2-3&apos; &gt;
           工作
         &lt;/h2&gt;
       
 &lt;p&gt;工作上，真心觉得我们小组不错，做的一些事儿也很有意思，有游戏引擎相关，游戏平台相关，微前端相关，CLI 脚手架相关等。目前我主要是在开发和维护 CLI 脚手架，提供快速创建 Vue 和 React 项目，屏蔽繁琐的业务配置和工程配置工作，也有参与到游戏平台基础组件库的开发工作。如果你打算考虑新机会，不妨来我们组玩玩，可以通过邮箱&lt;a href=&quot;mailto:%20snayan@sina.com&quot;&gt;snayan@sina.com&lt;/a&gt;找我内推。&lt;/p&gt;
-&lt;p&gt;今年绩效拿了 A，感觉开心不起来，因为我觉得我拿不了 A，老婆倒是开心得不得了。2020 继续加油，希望可以开心的拿个 A。&lt;/p&gt;
 
         &lt;h2 id=&apos;toc-2-4&apos; &gt;
           生活
@@ -49,7 +48,6 @@
 &lt;blockquote&gt;
 &lt;p&gt;世界上只有一种真正的英雄主义，就是认清了生活的真相后还依然热爱它&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;2019，所有的不好，都已经过去，再多的艰难，我们也都过来了。&lt;/p&gt;
 &lt;p&gt;愿 2020，爱你爱你。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[flutter 学习小结（三）]]></title><description><![CDATA[上一篇文章中，我们学习了 flutter 中三个主要的 widget，分别是 StatelessWidget，StatefulWidget，和 RenderObjectWidget；也简单介绍了 Widget，Element 和 RenderObject…]]></description><link>https://snayan.github.io//post/2019/flutter-learn-3/</link><guid isPermaLink="false">https://snayan.github.io//post/2019/flutter-learn-3/</guid><pubDate>Sat, 30 Nov 2019 17:22:00 GMT</pubDate><content:encoded>&lt;p&gt;&lt;a href=&quot;/post/2019/flutter-learn-2&quot;&gt;上一篇文章&lt;/a&gt;中，我们学习了 flutter 中三个主要的 widget，分别是 StatelessWidget，StatefulWidget，和 RenderObjectWidget；也简单介绍了 Widget，Element 和 RenderObject 之间的关系。这一篇，将介绍如何在 flutter 应用中进行状态管理以及其基本的原理。&lt;/p&gt;
 &lt;p&gt;状态管理，实际上就是对数据的管理，这些数据可以是与用户交互的数据，网络请求的数据，或者当前动画的状态数据。在进行状态管理时，需要根据当前状态的影响范围来决定其管理方式。一般是「就近原则」，就是把状态放在距离使用它最近的地方维护。对于组件内部状态（local state），放在组件内部维护就好了；对于多个组件需要共同使用的状态（shared state），就将它放在最近公共祖先中来维护；对于全局状态（global state），一般放在 app 全局状态中维护。现在很多 react 开发者，提到状态管理，就是使用 redux 放在全局管理，也不管这些数据的使用场景。这样做，通常会导致全局状态混乱且不好维护，而且也会造成一些渲染方面的性能问题，是非常不建议的。在 flutter 应用中，基本原则跟 react 是一样的，只不过具体实现方式略有差异而已。&lt;/p&gt;
 
