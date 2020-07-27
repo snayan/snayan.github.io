@@ -1,4 +1,644 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Fri, 03 Jan 2020 13:14:34 GMT</lastBuildDate><item><title><![CDATA[2019年小结]]></title><description><![CDATA[2019 年，还算比较充实。按照年初定的目标，大部分完成了，除了 12 篇文章，目前只完成了 9 篇。Blog 使用 gastby 重构学习数据结构和算法 【读了 4 本书籍和一个专栏】学习了解 flutter【写了 2 个 demo，做了一个分享，写了三篇文章】阅读 1…]]></description><link>https://snayan.github.io//post/2020/summary_of_2019/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/summary_of_2019/</guid><pubDate>Fri, 03 Jan 2020 19:30:00 GMT</pubDate><content:encoded>&lt;p&gt;2019 年，还算比较充实。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Mon, 27 Jul 2020 13:02:32 GMT</lastBuildDate><item><title><![CDATA[React Fiber 分享]]></title><description><![CDATA[最近给组内同事做了一次技术分享，有关 React fiber 的。内容涉及了 Stack reconciler，Fiber reconciler，以及它们之间的区别。事后整理了下文字稿，篇幅有点长，内容如下。react 中，一个 virtual dom 是使用 element…]]></description><link>https://snayan.github.io//post/2020/stack_reconciler_vs_fiber_reconciler/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/stack_reconciler_vs_fiber_reconciler/</guid><pubDate>Mon, 13 Jul 2020 11:00:00 GMT</pubDate><content:encoded>&lt;p&gt;最近给组内同事做了一次技术分享，有关 React fiber 的。内容涉及了 Stack reconciler，Fiber reconciler，以及它们之间的区别。事后整理了下文字稿，篇幅有点长，内容如下。&lt;/p&gt;
+
+        &lt;h2 id=&apos;toc-2-1&apos; &gt;
+          Jsx &amp;&amp; element
+        &lt;/h2&gt;
+      
+&lt;p&gt;react 中，一个 virtual dom 是使用 element 来表示的。element 结构如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;typescript&quot;&gt;&lt;pre class=&quot;language-typescript&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt; ReactElement &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  $$&lt;span class=&quot;token keyword&quot;&gt;typeof&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;any&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;any&lt;/span&gt;
+  key&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;any&lt;/span&gt;
+  ref&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;any&lt;/span&gt;
+  props&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;any&lt;/span&gt;
+  _owner&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ReactInstance
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Jsx 语法会被 Babel 编译为 &lt;code class=&quot;language-text&quot;&gt;React.createElement&lt;/code&gt; 形式，最后返回的都是 element 对象。&lt;/p&gt;
+
+        &lt;h2 id=&apos;toc-2-2&apos; &gt;
+          Stack reconciler
+        &lt;/h2&gt;
+      
+
+        &lt;h3 id=&apos;toc-3-1&apos; &gt;
+          InternalComponent Tree
+        &lt;/h3&gt;
+      
+&lt;p&gt;在 v16 之前，react 采用 Stack reconciler 策略来更新 virtual dom 的状态。它会给每一个 element 对象都生成一个 InternalComponent（react 内部对象，不会暴露出去），这样 Element tree 会组织成 InternalComponent tree。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;jsx&quot;&gt;&lt;pre class=&quot;language-jsx&quot;&gt;&lt;code class=&quot;language-jsx&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object CompositeComponent&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  currentElement&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;App&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  publicInstance&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; object App&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  renderedComponent&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object CompositeComponent&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    currentElement&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token class-name&quot;&gt;Main&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    publicInstance&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    renderedComponent&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object DOMComponent&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      currentElement&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;div&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      node&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object HTMLDivElement&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      renderedChildren&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token string&quot;&gt;&apos;.0&apos;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object DOMComponent&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          currentElement&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;button&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          node&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; object HTMLButtonElement&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          renderedChildren&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token string&quot;&gt;&apos;.1&apos;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object DOMComponent&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          currentElement&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token tag&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;&amp;lt;&lt;/span&gt;span&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;/&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          node&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; object HTMLSpanElement&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          renderedChildren&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;每一个 InternalComponent 通过 &lt;code class=&quot;language-text&quot;&gt;renderedComponent&lt;/code&gt; 或者&lt;code class=&quot;language-text&quot;&gt;renderChildren&lt;/code&gt;来关联当前组件&lt;code class=&quot;language-text&quot;&gt;render&lt;/code&gt;出来的 element。通过这样的引用关系，它们就在 react 内部形成了一棵树。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/b46108b768ac8532fca6d73df7b74693/24b80/stack-v-dom.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 371px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 108.08625336927224%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAWCAYAAADAQbwGAAAACXBIWXMAAAsSAAALEgHS3X78AAACs0lEQVQ4y5VU2XLaQBDk//8lD6nKS16Schyb4CMcNmBxuGxzI4RupD07swsS4AqJ2aqunZVGrZnpma1w9zuUXwVzf4CtLsm+glhfQfEQGgDn3IIxZrG1OQTPoZhH8KGVgFlaa1Tk+ieQNTDqfsEbAelv6OAGWkQQQmE4GKDdbuPh4QGO41i703WwmA5hvuXrX/TzeE8o/DuoqAXu15F792Q3IcMmlEisk1LKOhZLa1VYBBOZtPbWhQi3DppSYYiiaOu6IymIhBA2VbMbSHOm6MNUItpISKX3ERY/Nx+UhFof7bPZ7CDlDvo9B+46QmfC4UxzpLncExapCCGRJOnuBY4Ii9QNpJQ7WyNjEjlBHQRQUZIbd0Shj9l0bNM3z95H+b9V+JEot1YIvr4nUe6grSgNUi4pHT+Cg7a5BOI79Buf8PL4GUiINKjZPjwnwmJRhDXouAHm3SJbUf9FdaiwftRbZxEqkVOb0ATkCdXRo3Jyaov87BqWhIU75wJRnJQqWx5TH5y39m1DjZ3E0cEU6A8LciTKKmIIUoXxIkT/ZY5wo7COKG11XmRl27ReM/QXCvVhiMZziN5coTth8MIULM+RZRny3X4KptnLCJuGcAnUOkvcOitrd4jQXcfYbFKkaQrP82iKEmu/h3keBMGecOTmmK4Z5oG0mHjMnrncyxHSjP9LbUO4reWBKIUQh+eCxERh5vdvk2NWHMflBVApmI8dt2dBtTH2aDSmS4CVF0RxWUiCub3H4wnVUVlUTrXAipTuzRheXInGwMNgnhPoYyoJTQJGK4bBgqM/y9F69vG85BjSuXJK/kXArUCNoY+vV23c91YYuMCryyk6SbvAcAX7/NtNj7qDzkt9mnDkZrh+ilB98nHRWqDa9VF16FJ9S2x9H18T/HJiXHc8XDQXqPUiiz/YWquL4XskegAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/b46108b768ac8532fca6d73df7b74693/cc182/stack-v-dom.webp 148w,
+/static/b46108b768ac8532fca6d73df7b74693/f7e40/stack-v-dom.webp 295w,
+/static/b46108b768ac8532fca6d73df7b74693/23066/stack-v-dom.webp 371w&quot;
+          sizes=&quot;(max-width: 371px) 100vw, 371px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/b46108b768ac8532fca6d73df7b74693/cf440/stack-v-dom.png 148w,
+/static/b46108b768ac8532fca6d73df7b74693/d2d38/stack-v-dom.png 295w,
+/static/b46108b768ac8532fca6d73df7b74693/24b80/stack-v-dom.png 371w&quot;
+          sizes=&quot;(max-width: 371px) 100vw, 371px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/b46108b768ac8532fca6d73df7b74693/24b80/stack-v-dom.png&quot;
+          alt=&quot;stack v-dom&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;需要注意的是，如果 children 是一个数组，那么&lt;code class=&quot;language-text&quot;&gt;renderChildren&lt;/code&gt;就会有多个子节点&lt;/strong&gt;。可以仔细再观察一下，其实叶子节点都是 HostComponent，因为视图最后是通过 HostComponent 渲染的。我们再来完整看一下 Element tree 与 InternalComponent tree 的联系，&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/d29c08627e3602781f3dae1ee3e6e209/05c6f/stack-v-dom-full-2.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 80.30942334739804%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAQCAYAAAAWGF8bAAAACXBIWXMAAAsSAAALEgHS3X78AAACQUlEQVQ4y31U246bMBDl/3+pUp/bSKvtqlLVfdhLFCAxAWODr2D7dAxJdpPurtFoMNgzc84Zu7DGQmuNcRyRUsI6ElKcyYeTfxspP6d1Qgjs9zUYa9B3ByT1B0VbdmjYkT4yaKOgtMFkBkSxgSy/I/Y/4LyCCwkVr/Dr9Q4xxUsCpTSGYaB9DkxGFD3vYYymHwqT8ogmIU7kbQkrnhcf44Rck/Yax7G5VJh9RtZ1LYx16KRFcUkVcjoyf4YGWJ/eYU3X0E9z7/0CPcaAjjcoJJcQTOBIsOcTX5m36BhU/4LkqaIY1s2zg7TiqkLOOZqmgRwl2LhHcdy2OO5bHNhhFUdqgi4R+E90228IC4cj3BxRixq/qwcKFC8Bs8UYL0kKY0mEaYJ3EwUhVRWWDSloeCNApK5zWh+oUh/8wke6oeCcoPAkgCcx3OgI2tuiiVAOoyEa8OU4V3m2gr00aOsWvOcLZGsMtJ3wWHvcP4nFK+MIgYMjyyJky+/nIHjXm4XoBLRaG9s5jznDp/IaOaPm1FtixhwCHFGT/0V6z4paarW1F67hF7lJF4ufY8vwuTQYzbxQMFGTcxJP2ZwsXUEvvuLjbNt2xuZvi7unAcchoCTxNo8cD68aXIXrgLebbwNnWNpFNJxOibDUPuuc0byVxOf8xuF/Fd7Id7oI8iTS0VLEm1q/p0DHdfyQx+Krdlj6jR5F1XDGl1NhLN1OvVnm+VLIan/K4UcB8ziUDOVzhd1uByklmqrB7rlEVVdLd7wP+A89jeCr6I2A9wAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/d29c08627e3602781f3dae1ee3e6e209/cc182/stack-v-dom-full-2.webp 148w,
+/static/d29c08627e3602781f3dae1ee3e6e209/f7e40/stack-v-dom-full-2.webp 295w,
+/static/d29c08627e3602781f3dae1ee3e6e209/1a2f4/stack-v-dom-full-2.webp 590w,
+/static/d29c08627e3602781f3dae1ee3e6e209/6252a/stack-v-dom-full-2.webp 711w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/d29c08627e3602781f3dae1ee3e6e209/cf440/stack-v-dom-full-2.png 148w,
+/static/d29c08627e3602781f3dae1ee3e6e209/d2d38/stack-v-dom-full-2.png 295w,
+/static/d29c08627e3602781f3dae1ee3e6e209/b9e4f/stack-v-dom-full-2.png 590w,
+/static/d29c08627e3602781f3dae1ee3e6e209/05c6f/stack-v-dom-full-2.png 711w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/d29c08627e3602781f3dae1ee3e6e209/b9e4f/stack-v-dom-full-2.png&quot;
+          alt=&quot;full stack v-dom&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+
+        &lt;h3 id=&apos;toc-3-2&apos; &gt;
+          Recursion Update
+        &lt;/h3&gt;
+      
+&lt;p&gt;在 Stack Reconciler 策略中，react 采用 &lt;strong&gt;递归&lt;/strong&gt;的方式来生成或者更新 InternalComponent tree。下面我们以更新场景，通过伪代码简单看下它的实现。每一个 InternalComponent 实例都会有一个 &lt;code class=&quot;language-text&quot;&gt;receiveComponent&lt;/code&gt;的方法，它定义如下,&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;typescript&quot;&gt;&lt;pre class=&quot;language-typescript&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 我们忽略其他参数&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// nextElement 就是更新的element对象，它是通过render生成的。&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;receiveComponent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;nextElement&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; ReactElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;每次更新时，通过组件的&lt;code class=&quot;language-text&quot;&gt;render&lt;/code&gt;方法返回新的 element 对象，然后会调用当前 InternalComponent 的&lt;code class=&quot;language-text&quot;&gt;receiveComponent&lt;/code&gt;方法。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;InternalComponent&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token function&quot;&gt;receiveComponent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;nextElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; prevElement &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;_currentElement
+
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;updateComponent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;prevElement&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextElement&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token function&quot;&gt;updateComponent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;prevParentElement&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextParentElement&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 更新当前节点的props和state&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; prevProps &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; prevParentElement&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;props
+    &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; nextProps &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; nextParentElement&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;props
+    &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; nextState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;_processPendingState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextProps&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextContext&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;_publicInstance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;props &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; nextProps
+    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;_publicInstance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;state &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; nextState
+
+    &lt;span class=&quot;token comment&quot;&gt;// 更新子节点&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; prevComponentInstance &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;_renderedComponent
+    &lt;span class=&quot;token comment&quot;&gt;// 上次render出来的element&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; prevRenderedElement &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; prevComponentInstance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;_currentElement
+    &lt;span class=&quot;token comment&quot;&gt;// 调用component 的 render，获取新的element&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; nextRenderedElement &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;_publicInstance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 判断是否是仅仅需要更新子节点&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;shouldUpdateReactComponent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;prevRenderedElement&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextRenderedElement&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// 子节点，递归调用receiveComponent&lt;/span&gt;
+      prevComponentInstance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;receiveComponent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextRenderedElement&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// 否则，卸载旧的子节点，然后走新建子节点流程&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;通过递归的方式，利用浏览器调用栈来保存当前执行中的一些数据。这个过程是不可以中断的，必须等到执行栈为空，才可以处理其他事情。这样带来的问题如下，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;如果当前组件层次非常深，或者某一个组件更新耗时非常长，用户操作（点击，输入）不能得到立即响应，表现出卡顿&lt;/li&gt;
+&lt;li&gt;对于动画场景而言，如果一帧时间超过 16ms，就会出现掉帧，动画不流畅&lt;/li&gt;
+&lt;li&gt;对于一些低优先级的组件（比如隐藏，屏幕外），也会同样占用更新资源，没有优先级之分。&lt;/li&gt;
+&lt;/ol&gt;
+
+        &lt;h2 id=&apos;toc-2-3&apos; &gt;
+          Fiber reconciler
+        &lt;/h2&gt;
+      
+&lt;p&gt;为了解决 Stack reconciler 出现的问题，react 团队开始采用新架构，希望可以实现一下几个目标，&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;Ability to split interruptible work in chunks.&lt;/li&gt;
+&lt;li&gt;Ability to prioritize, rebase and reuse work in progress.&lt;/li&gt;
+&lt;li&gt;Ability to yield back and forth between parents and children to support layout in React.&lt;/li&gt;
+&lt;li&gt;…&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+
+        &lt;h3 id=&apos;toc-3-3&apos; &gt;
+          Fiber Tree
+        &lt;/h3&gt;
+      
+&lt;p&gt;类似 Stack reconciler，react 会通过 &lt;a href=&quot;https://github.com/facebook/react/blob/v16.13.1/packages/react-reconciler/src/ReactFiber.js#L743&quot;&gt;createFiberFromElement&lt;/a&gt; 给每一个 element 对象生成一个 Fiber node，Element tree 也会以这样的层次关联形式一颗 Fiber tree&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;json&quot;&gt;&lt;pre class=&quot;language-json&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object FiberNode&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; App&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  stateNode&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; object App&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  return&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; object FiberNode&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  sibling&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  child&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object FiberNode&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Main&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    stateNode&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    return&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; object FiberNode&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    sibling&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    child&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object FiberNode&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;div&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      stateNode&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object DOMComponent&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      return&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; object FiberNode&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      sibling&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      child&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object FiberNode&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;button&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        stateNode&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object HTMLButtonElement&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        return&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; object FiberNode&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        sibling&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object FiberNode&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;span&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          stateNode&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object HTMLSpanElement&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          return&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; object FiberNode&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          sibling&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          child&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;每一个 Fiber node 的 return 指向的是当前节点的父节点，child 指向当前节点的第一个子节点，如果有多个子节点，则其他子节点通过 sibling 链接起来。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/110a4a47f4abd88c53d18a63aadf9cae/04655/fiber-tree.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 431px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 100%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsSAAALEgHS3X78AAACh0lEQVQ4y5WU/U/TQBjH+5/7iz+YEANGBjExMTHGmBgRGG9GNBhUHBvDN94WTYB1FNq146693l3fvj7tAMfcGD7bbc31+unzfL/PnfFhh+HTvo/3X2183GVY3/PRCSLkkWUZ+uNyLgs0Mp0gixIgBbjP4boujNLSCaZWLNx9uoXJhSam3tiwPFk8lA4AEhHFLNeATy/OX65TiFCAMQajtt9BbcfD92OFtbqJte0WZJQNzzDH0ZdBI0QMhYR+MziOA8uyYBR39UWJMWWWqKGwXqAkjCRYF5jC5xye58FISYNUREUZYSgRyr/AmzRknXOEgYAMKc8oRrvdhm3bMDJJCTuiWCQJKKW8FVBpBaVU8R/HMSUTQggBY2OPo5q7+9NG5YCh0gjARHxz2UPm8zBKyxZKKye483gDk4tNTI9w+aptLiroH8aXXQ+VHx62jzRWayZWt0yEOhuZydAMuy53S0wjiWyEy6OBMbU5dX0eWklorYaWdCug7Ui0Dzk6xLHcsBhZn2a9uo0EzlQ8lOsMz97+wny1g7nqOfZ/txBpWbTDIDNuBE4vt/CIXJ4sH6K0cIyH5SaOzzhpGYFR9wdB8F9QI/A1fFdAkZSt0zYs27u2IG90TuDbQg0kRAq7eznSGlGk/9FO0TxjvNC236R+w7pAceGyDAna4zJ9Lps7jhRC4Y/cMYZDLntHPjjpf9aROCWXk+TqaCnCFwlcP8Ep7SDXp4OAFguVDM6wcHbTwZPyN7z+bGGxzmEy0hQRgpQGXb1ruFiocjxfbeDVehPzNY4DUwwGPiibmJhv4t6LPYzPHWGifALTy3sxJaPyLFLMbJ7h/mwLYy8bGJ89xBhdVxusu7vS68A/w5YFv7daQDkAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/110a4a47f4abd88c53d18a63aadf9cae/cc182/fiber-tree.webp 148w,
+/static/110a4a47f4abd88c53d18a63aadf9cae/f7e40/fiber-tree.webp 295w,
+/static/110a4a47f4abd88c53d18a63aadf9cae/1f7bb/fiber-tree.webp 431w&quot;
+          sizes=&quot;(max-width: 431px) 100vw, 431px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/110a4a47f4abd88c53d18a63aadf9cae/cf440/fiber-tree.png 148w,
+/static/110a4a47f4abd88c53d18a63aadf9cae/d2d38/fiber-tree.png 295w,
+/static/110a4a47f4abd88c53d18a63aadf9cae/04655/fiber-tree.png 431w&quot;
+          sizes=&quot;(max-width: 431px) 100vw, 431px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/110a4a47f4abd88c53d18a63aadf9cae/04655/fiber-tree.png&quot;
+          alt=&quot;fiber tree&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;注意跟 InternalComponent tree 中不同是，每一个节点，最多只能有一个 child&lt;/strong&gt;。一个 &lt;a href=&quot;https://github.com/facebook/react/blob/v16.13.1/packages/react-reconciler/src/ReactFiber.js#L128-L257&quot;&gt;Fiber node&lt;/a&gt;，也是一个对象，除了 return ，child，sibling 之外，列觉一些比较重要的信息如下，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;statNode，存储 class component instance 或者 dom&lt;/li&gt;
+&lt;li&gt;type，跟 react element type 一致&lt;/li&gt;
+&lt;li&gt;alternate，指向 workInProgress 中对应 Fiber node&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/facebook/react/blob/769b1f270e1251d9dbdce0fcbd9e92e502d059b8/packages/shared/ReactWorkTags.js&quot;&gt;tag&lt;/a&gt;，标志当前 Fiber node 组件的类型，根据 react element type 而得出。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/facebook/react/blob/b87aabdfe1b7461e7331abb3601d9e6bb27544bc/packages/shared/ReactSideEffectTags.js&quot;&gt;effectTag&lt;/a&gt;，当前 Fiber node 一些副作用的任务类型，有 Placement，Update，Remove 等&lt;/li&gt;
+&lt;li&gt;effectNext，指向下一个需要执行 effect 的 Fiber node；通过它，可以把 Fiber node 链接成一个单链表；然后在 commit 阶段，遍历 effectNext 执行更新。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;每一个 Fiber node，可以理解为一个最小更新单元(a unit of work)， 不同的组件(tag)，在更新阶段会有不同的事情要处理，比如（Placement，Update，LifeCycle。。。），这些不同的任务，通过 effectTag 来区分。&lt;/p&gt;
+&lt;p&gt;使用 Fiber reconciler 之后，react 将一次完整的更新分为 2 个阶段，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;第一个阶段是 render 阶段，从根组件开始，构建出一个 workInProgress tree，这个阶段是可以中断的，异步的。一些在 render 阶段执行的生命周期方法（比如，willMount，willReceiveXXX，render）等就被要求是无副作用的，可多次执行的。&lt;/li&gt;
+&lt;li&gt;第二个阶段就是 commit 阶段，render 阶段完成之后，就可以得到一颗完整的 workInProgress tree。commit 阶段就是将这颗树的状态同步更新到视图上，且执行一些有副作用的方法（比如，didMount，didUpdate）。为了保持视图状态的一致性，所以这个阶段是同步的，不可中断的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/73b542f4b477fe588a15479849dfcb20/d2b4f/wip-tree2.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 561px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 94.8306595365419%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAATCAYAAACQjC21AAAACXBIWXMAAAsSAAALEgHS3X78AAAB/ElEQVQ4y5VUS4vbMBjU/z+VXgo99NJLoVB6SHIJJbB5PyAtLDlsSDZvwq7t2I7ttfXwVJ9cZ71pXvvB5AuWNR5pRmJpmiIvpRQ45wckSQKhe6ok3N1Ow4GS4t/br/PyIi5GPwQiiOPYkOagCmOFJ5djHwk4ew7L4wheJKQeT4REwjMIqTLCnJkIT1XCFfaaINbdj7TSUOAlySYr9apSaHIqFgQBPM+D7/sIw/CgLFd+qWjc3gs8eQJrO8azL8B6vR7q9brBcDjUXxKHl4vEx6DiQuF7y8an8iM+Vx7x9c4GG4/HIIxGI0wmkzcKLynLTEwxnPhojhy0NBqjXbaH5yZcW+6Jp2AmGnqZZIqU8qb9K45LSW4rEyJymy2XSywWC6zXa2y323cv+X4Roffg4vfUx595BNZut1GtVg36/f5/plwiJFO+NSx8+PGAjz/H+PLrGcxxHBMZ27ax06fh1LLOEVJ3A45dIHSXcPzkvCnHsbnVOGZZFkil67om4Lkxp7J47nkRrNvtotFooNVqYTAYmOXTPhYdv/XkGIXT6RSz2cyEm3p2RhXyOB0ruWYYu7Qnx6S3hJ7RlZXff8X9K5K+SyGFej6fm3BvNhujKL/OKOir1cqM0X/6+FXCWq2GUqlk0Gw2EUWRUUrXWqfTQaVSQblcNrcRGXaN8C+m2sNUVhMNPgAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/73b542f4b477fe588a15479849dfcb20/cc182/wip-tree2.webp 148w,
+/static/73b542f4b477fe588a15479849dfcb20/f7e40/wip-tree2.webp 295w,
+/static/73b542f4b477fe588a15479849dfcb20/72cfd/wip-tree2.webp 561w&quot;
+          sizes=&quot;(max-width: 561px) 100vw, 561px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/73b542f4b477fe588a15479849dfcb20/cf440/wip-tree2.png 148w,
+/static/73b542f4b477fe588a15479849dfcb20/d2d38/wip-tree2.png 295w,
+/static/73b542f4b477fe588a15479849dfcb20/d2b4f/wip-tree2.png 561w&quot;
+          sizes=&quot;(max-width: 561px) 100vw, 561px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/73b542f4b477fe588a15479849dfcb20/d2b4f/wip-tree2.png&quot;
+          alt=&quot;workInProgress tree&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+
+        &lt;h3 id=&apos;toc-3-4&apos; &gt;
+          render 阶段
+        &lt;/h3&gt;
+      
+&lt;p&gt;render 阶段就是重新构建 workInProgress tree，它会如下类似执行，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// concurrent 模式下，构建 workInProgress tree&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;workLoopConcurrent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// Perform work until Scheduler asks us to yield&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;workInProgress &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;shouldYield&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    workInProgress &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;performUnitOfWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;workInProgress&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// sync 模式下，构建 workInProgress tree&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;workLoopSync&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// Already timed out, so perform work without checking if we need to yield.&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;workInProgress &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    workInProgress &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;performUnitOfWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;workInProgress&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;通过对比可以得到，concurrent 模式和 sync 模式的区别就是在构建 workInProgress tree 时是否可以中断。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;performUnitOfWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;unitOfWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 获取WIP node 对应的current node&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; current &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; unitOfWork&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;alternate
+
+  &lt;span class=&quot;token comment&quot;&gt;// 调用beginWork，对当前 node 处理，得到 child | null&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 如果 next 为 null，则表明遍历到最底部了，没有子节点了&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; next &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;beginWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;current&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; unitOfWork&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;next &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 如果没有child了，就开始 complete 当前 node&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 此时，unitOfWork就是 child，如果当前 node 有 sibling，则返回 sibling，&lt;/span&gt;
+    next &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;completeUnitOfWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;unitOfWork&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; next
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;performUnitOfWork&lt;/code&gt; 是 DFS（Depth-first search）遍历过程，先将当前节点执行&lt;code class=&quot;language-text&quot;&gt;beginWork&lt;/code&gt;，然后开始找子节点，对子节点执行&lt;code class=&quot;language-text&quot;&gt;beginWork&lt;/code&gt;，如果没有子节点了，就执行&lt;code class=&quot;language-text&quot;&gt;completeWork&lt;/code&gt;。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;beginWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;current&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; workInProgress&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// statNode会存component instance 或者 dom node&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; instance &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; workInProgress&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;stateNode
+
+  &lt;span class=&quot;token comment&quot;&gt;// 这里只是列举了class component情况，注意如果是function component会有不同处理&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; nextChildren &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; instance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;// 这里会根据render出来的element去创建Fiber，&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 有其他逻辑，比如根据key来处理，&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;current &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    workInProgress&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;child &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;mountChildFibers&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;workInProgress&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextChildren&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    workInProgress&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;child &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;reconcileChildFibers&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+      workInProgress&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      current&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;child&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      nextChildren
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 返回child fiber&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; workInProgress&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;child
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;beginWork&lt;/code&gt;会根据不同的&lt;code class=&quot;language-text&quot;&gt;tag&lt;/code&gt;来做不同的处理，&lt;code class=&quot;language-text&quot;&gt;effectTag&lt;/code&gt;也是在此方法中生成的，具体代码没有列举出来。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;completeUnitOfWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;unitOfWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// Attempt to complete the current unit of work, then move to the next&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// sibling. If there are no more siblings, return to the parent fiber.&lt;/span&gt;
+  workInProgress &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; unitOfWork
+  &lt;span class=&quot;token keyword&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; current &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; workInProgress&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;alternate
+    &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; returnFiber &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; workInProgress&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;return
+
+    &lt;span class=&quot;token comment&quot;&gt;//complete task&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;completeWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;current&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; workInProgress&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token comment&quot;&gt;//这里省略了effectNext的生成过程&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 。。。&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; siblingFiber &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; workInProgress&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;sibling
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;siblingFiber &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// If there is more work to do in this returnFiber, do that next.&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; siblingFiber
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// Otherwise, return to the parent&lt;/span&gt;
+    workInProgress &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; returnFiber
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;workInProgress &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;// We&apos;ve reached the root.&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;workInProgressRootExitStatus &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; RootIncomplete&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    workInProgressRootExitStatus &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; RootCompleted
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;当子节点为&lt;code class=&quot;language-text&quot;&gt;null&lt;/code&gt;时，就会进入&lt;code class=&quot;language-text&quot;&gt;completeUnitOfWork&lt;/code&gt;，它会先对当前节点执行&lt;code class=&quot;language-text&quot;&gt;completeWork&lt;/code&gt;，如果有兄弟节点，则直接返回兄弟节点（兄弟节点后面也会进入&lt;code class=&quot;language-text&quot;&gt;beginWork&lt;/code&gt; -&gt; &lt;code class=&quot;language-text&quot;&gt;completeWork&lt;/code&gt;流程），否则就对父节点执行&lt;code class=&quot;language-text&quot;&gt;completeWork&lt;/code&gt;。对于我们上面的例子，执行流程如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;txt&quot;&gt;&lt;pre class=&quot;language-txt&quot;&gt;&lt;code class=&quot;language-txt&quot;&gt;beginWork App -&amp;gt; beginWork Main -&amp;gt; beginWork div -&amp;gt; beginWork button -&amp;gt;  completeWork button
+																																								    |
+																																								    v
+completeWork App &amp;lt;-	completeWork Main &amp;lt;- completeWork div	&amp;lt;- completeWork span &amp;lt;-	beginWork span&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;类似于执行栈的调用，&lt;/p&gt;
+&lt;p&gt;
+  &lt;img style=&quot;text-align: center; max-width: 100%&quot; src=&quot;/fiber-stack-5a32b0a2b12c07723b9757b08268c837.gif&quot;&gt;
+&lt;/p&gt;
+&lt;!-- ![Fiber stack](./img/gif/fiber-stack.gif) --&gt;
+&lt;p&gt;在&lt;code class=&quot;language-text&quot;&gt;completeWork&lt;/code&gt;之后，根据节点的&lt;code class=&quot;language-text&quot;&gt;effectTag&lt;/code&gt;来决定是否将当前节点加入到&lt;code class=&quot;language-text&quot;&gt;effectNext&lt;/code&gt;链表中去。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; effectTag &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; workInProgress&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;effectTag
+
+&lt;span class=&quot;token comment&quot;&gt;// Skip both NoWork and PerformedWork tags when creating the effect&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// list. PerformedWork effect is read by React DevTools but shouldn&apos;t be&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// committed.&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;effectTag &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; PerformedWork&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;returnFiber&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;lastEffect &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    returnFiber&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;lastEffect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;nextEffect &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; workInProgress
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    returnFiber&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;firstEffect &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; workInProgress
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  returnFiber&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;lastEffect &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; workInProgress
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/fe687d670025dbb722e026c92c143ef0/aff45/effectList.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 475px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 75.15789473684211%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAIAAABr+ngCAAAACXBIWXMAAAsSAAALEgHS3X78AAACNklEQVQoz21Sy2oUQRTtnR/hSsGNfxBREF250Y1Z6MqVq0Q0opBVjEoQRRAZN4IoClloUHDjLGNghM4DTUbQOJkxJpN5dfWjunu6q6rr4a2anslrilrU455zzz33Wnzze/LqejJ7h/gOkUpIqQ4seDn8aJbF7PfBtSPB2NHgh42bQdhCKqMySRTnQ8L3s1gyQuzXV1WzAw8/evd7/PHiytKWol3h+cp1leepblcBlxCHWSxz0KeWR64+XD43Ufqy2IYrF0YtYOJYRZFmgR2GitIB3jIRHLYQso7IWi0kbHiFOhJUBIFWlKZ55p4GGbZZ4XJ6/xQtzREKvyzNZMrkELPADsBHUQ+s6xGNKp4+40+cwPOzccCCzZ0I4UYnTOKkn1hKsYcJISs/gR7X5TR1Hd+EGbqKHd0bCWfOpzuVTKcQB5IbcJYpxwEIE7KDmU5i+pRt2PjW8fDuSVz9udHOqvUw44A3ycG5XDbYaAwAz/yIDfyXGeV+Q7VqpIPGnq9emix9nN/WYWAJJNOGMSaheqVwTJ99+DP5sry87hldXPVLJM3OzcLa6PTK529NDe44WqwGEyJdHd1EyeiUfXp84W3xH7SyjrVB+WyE2KtVtytVHgUKuYNWW7p0hKB7LE7K687SatP1iEJ/kV3Mtsq5PaSbzJyNbx/Lii8G3en3GfBApj3AKvIVU8nrGzDw8dOLeZNoEheu4KkRas/pu+B7wP05kJpUf9CFN/GTC+mnB7t5eoO4f/0H5cA+V3QdyX0AAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/fe687d670025dbb722e026c92c143ef0/cc182/effectList.webp 148w,
+/static/fe687d670025dbb722e026c92c143ef0/f7e40/effectList.webp 295w,
+/static/fe687d670025dbb722e026c92c143ef0/ef8fc/effectList.webp 475w&quot;
+          sizes=&quot;(max-width: 475px) 100vw, 475px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/fe687d670025dbb722e026c92c143ef0/cf440/effectList.png 148w,
+/static/fe687d670025dbb722e026c92c143ef0/d2d38/effectList.png 295w,
+/static/fe687d670025dbb722e026c92c143ef0/aff45/effectList.png 475w&quot;
+          sizes=&quot;(max-width: 475px) 100vw, 475px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/fe687d670025dbb722e026c92c143ef0/aff45/effectList.png&quot;
+          alt=&quot;effectList&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;类似上面这颗树，得到的 effect List 如下，&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/b9f697ff9dd9c36b14d43592710d574c/d68ed/effectList2.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 14.466292134831463%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAADCAIAAAAcOLh5AAAACXBIWXMAAAsSAAALEgHS3X78AAAAvklEQVQI12P4////u/cfHjx8+OnzVyD7z9+/z5+/ePz4yc+fv4Dcr1+/Pnr0+MWLl//B4M3bdw8fPvr85SuEy/B9SdHf98//AbU9vf5tftbPvTP+/voJ5P48vvLrtJjft08A2f++fvi+rvH7ivI/718Aub/vnf02N/3H1h6GTxV6fx5f+f/79+9rBz4WKn2bnQJU+v/vn++raz4k8/w6sfL/v79/3zz60ubyqdbk77Mb///+/nV248c8uS8TggCc5ZkrityUCAAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/b9f697ff9dd9c36b14d43592710d574c/cc182/effectList2.webp 148w,
+/static/b9f697ff9dd9c36b14d43592710d574c/f7e40/effectList2.webp 295w,
+/static/b9f697ff9dd9c36b14d43592710d574c/1a2f4/effectList2.webp 590w,
+/static/b9f697ff9dd9c36b14d43592710d574c/04f0c/effectList2.webp 712w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/b9f697ff9dd9c36b14d43592710d574c/cf440/effectList2.png 148w,
+/static/b9f697ff9dd9c36b14d43592710d574c/d2d38/effectList2.png 295w,
+/static/b9f697ff9dd9c36b14d43592710d574c/b9e4f/effectList2.png 590w,
+/static/b9f697ff9dd9c36b14d43592710d574c/d68ed/effectList2.png 712w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/b9f697ff9dd9c36b14d43592710d574c/b9e4f/effectList2.png&quot;
+          alt=&quot;effectList2&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这样做的好处是，在 commit 阶段只需遍历&lt;code class=&quot;language-text&quot;&gt;effectNext&lt;/code&gt;就可以了，而不需要遍历整颗树。&lt;/p&gt;
+
+        &lt;h3 id=&apos;toc-3-5&apos; &gt;
+          commit 阶段
+        &lt;/h3&gt;
+      
+&lt;p&gt;commit 阶段就会开始真正的更新视图了，它会处理如下事情&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在更新之前，执行一些方法，比如是&lt;code class=&quot;language-text&quot;&gt;getSnapshotBeforeUpdate&lt;/code&gt;，获取更新之前的状态&lt;/li&gt;
+&lt;li&gt;执行更新，包括，dom 的更新，创建，删除等&lt;/li&gt;
+&lt;li&gt;将 workInProgress tree 切换为 current tree，因为视图已经根据 workInProgress 更新了&lt;/li&gt;
+&lt;li&gt;之前更新之后的一些方法，比如&lt;code class=&quot;language-text&quot;&gt;componentDidMount&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;componentDidUpdate&lt;/code&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;代码大致如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;commitRoot&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;root&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// finishedWork 就是 WIP tree&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; finishedWork &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;finishedWork
+  root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;finishedWork &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+
+  &lt;span class=&quot;token comment&quot;&gt;// Get the list of effects.&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 从RootFiber的firstEffect开始&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; firstEffect &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; finishedWork&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;firstEffect &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt; finishedWork
+
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;firstEffect &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// The first phase a &quot;before mutation&quot; phase. We use this phase to read the&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// state of the host tree right before we mutate it. This is where&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// getSnapshotBeforeUpdate is called.&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;commitBeforeMutationEffects&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token comment&quot;&gt;// The next phase is the mutation phase, where we mutate the host tree.&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 包括 Placement | Update | Deletion | Hydrating&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// componentWillUnmount,&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;commitMutationEffects&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;root&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;token comment&quot;&gt;// The work-in-progress tree is now the current tree. This must come after&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// the mutation phase, so that the previous tree is still current during&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// componentWillUnmount, but before the layout phase, so that the finished&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// work is current during componentDidMount/Update.&lt;/span&gt;
+    root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;current &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; finishedWork
+
+    &lt;span class=&quot;token comment&quot;&gt;// The next phase is the layout phase, where we call effects that read&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// the host tree after it&apos;s been mutated. The idiomatic use case for this is&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// layout, but class component lifecycles also fire here for legacy reasons.&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// componentDidMount/componentDidUpdate.&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;commitLayoutEffects&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;root&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; expirationTime&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// No effects.&lt;/span&gt;
+    root&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;current &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; finishedWork
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;对于第 1，2，4 步，都是通过遍历&lt;code class=&quot;language-text&quot;&gt;effectNext&lt;/code&gt;来执行的。类似代码如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 遍历 nextEffect 链表&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;executeEffect&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextEffect &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; effectTag &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; nextEffect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;effectTag
+    &lt;span class=&quot;token comment&quot;&gt;// 根据effectTag 做一些事情&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 。。。&lt;/span&gt;
+    nextEffect &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; nextEffect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;nextEffect
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;render 阶段 和 commit 阶段执行流程如下，&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/d948bc1f80b97c0109292678175abb94/3064a/workloop.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 584px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 80.65068493150686%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAQCAIAAACZeshMAAAACXBIWXMAAAsSAAALEgHS3X78AAABpElEQVQoz42TD2+DIBDF/f7fcFvm1k5R/NeKAoKg+7U2jTHNsktL4I5373F3Jus/TClV17UQ4nK57P0Jf2unrrtqY7F9LISAZ1nXZVmMMX3fxxiP4EvXFuePMEGguPeMgSykDDH2w8CmKIpxHI/gUanq8609f7VSHgQHrVVRNOfzrJRzbp/6AVZ9Lz/T+uu7zvN9jItRqblpbFWtfT9ZOwzDEfyH+Xmu2lZIqaeH/QVe7rb3UKdKyoNzO75gJkCdvffwsLler1LKeZ55Mx42OF+DqXBVVbSUynOJxtLhPM+7rgNJRjxZluGkbUcwYfBIpTZQkQJY27b4NzaYh7txfCGbMOnD3UivtQb/fBI/kNaYF7IBIBud0HJk5cF4nsOnrc3LsrnPafIs0iYShVBtmjf9qGC91WlZkBHr2mTZJAQKk3WJQL1zZckIyjRNy7Lc5pR3kovj6XRiHY3xjMrPjxfCZxltuDFT+2HUId46BAkv3PqEMcwImZx7tMr7cffxJK5ObZWOxXvoxeR80zR0Aqkwk4U9nDTGTtOi9SylEYIVVYB/AW9hoM7D2JM/AAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/d948bc1f80b97c0109292678175abb94/cc182/workloop.webp 148w,
+/static/d948bc1f80b97c0109292678175abb94/f7e40/workloop.webp 295w,
+/static/d948bc1f80b97c0109292678175abb94/d0231/workloop.webp 584w&quot;
+          sizes=&quot;(max-width: 584px) 100vw, 584px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/d948bc1f80b97c0109292678175abb94/cf440/workloop.png 148w,
+/static/d948bc1f80b97c0109292678175abb94/d2d38/workloop.png 295w,
+/static/d948bc1f80b97c0109292678175abb94/3064a/workloop.png 584w&quot;
+          sizes=&quot;(max-width: 584px) 100vw, 584px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/d948bc1f80b97c0109292678175abb94/3064a/workloop.png&quot;
+          alt=&quot;work loop&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这个图里使用了&lt;code class=&quot;language-text&quot;&gt;requestIdleCallback&lt;/code&gt;来代表 react 里做时间分片；实际上，react 并不是使用的 rIC，而是自己使用 Message channel 实现的，至于为什么不使用 rIC，是因为 &lt;a href=&quot;https://github.com/facebook/react/issues/13206#issuecomment-418923831&quot;&gt;rIC 在 1s 内执行频率不够&lt;/a&gt;，感兴趣的可以自己去看看。&lt;/p&gt;
+
+        &lt;h2 id=&apos;toc-2-4&apos; &gt;
+          小结
+        &lt;/h2&gt;
+      
+&lt;p&gt;从 stack reconciler 切换到 fiber reconciler，React 团队做的事情是，改变了遍历一颗树的方式。stack reconciler 中是使用递归，利用 JS 调用栈的方式，遍历 InternalComponent tree，这个过程是不可中断的，对于高优先级或者用户操作，需要等待执行栈为空才可以得到处理。而在 fiber reconciler 中，使用循环，通过&lt;code class=&quot;language-text&quot;&gt;beginWork&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;completeWork&lt;/code&gt;模拟入栈，出栈操作，达到遍历 fiber tree，这个过程可以根据&lt;code class=&quot;language-text&quot;&gt;shouldYield&lt;/code&gt;来停止，使用 workInProgress 来暂存当前节点，稍后可以继续恢复遍历。&lt;/p&gt;
+
+        &lt;h2 id=&apos;toc-2-5&apos; &gt;
+          参考资料
+        &lt;/h2&gt;
+      
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/acdlite/react-fiber-architecture&quot;&gt;React Fiber Architecture&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/facebook/react/issues/7942&quot;&gt;Contributing to fiber&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://reactjs.org/docs/implementation-notes.html&quot;&gt;Notes for Stack reconciler&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://indepth.dev/inside-fiber-in-depth-overview-of-the-new-reconciliation-algorithm-in-react/&quot;&gt;Inside fiber in depth&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=ZCuYPiUIONs&quot;&gt;A Cartoon Intro to Fiber - React Conf 2017&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[2019年小结]]></title><description><![CDATA[2019 年，还算比较充实。按照年初定的目标，大部分完成了，除了 12 篇文章，目前只完成了 9 篇。Blog 使用 gastby 重构学习数据结构和算法 【读了 4 本书籍和一个专栏】学习了解 flutter【写了 2 个 demo，做了一个分享，写了三篇文章】阅读 1…]]></description><link>https://snayan.github.io//post/2020/summary_of_2019/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/summary_of_2019/</guid><pubDate>Fri, 03 Jan 2020 19:30:00 GMT</pubDate><content:encoded>&lt;p&gt;2019 年，还算比较充实。&lt;/p&gt;
 
         &lt;h2 id=&apos;toc-2-1&apos; &gt;
           目标
