@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Mon, 27 Jul 2020 13:02:32 GMT</lastBuildDate><item><title><![CDATA[React Fiber 分享]]></title><description><![CDATA[最近给组内同事做了一次技术分享，有关 React fiber 的。内容涉及了 Stack reconciler，Fiber reconciler，以及它们之间的区别。事后整理了下文字稿，篇幅有点长，内容如下。react 中，一个 virtual dom 是使用 element…]]></description><link>https://snayan.github.io//post/2020/stack_reconciler_vs_fiber_reconciler/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/stack_reconciler_vs_fiber_reconciler/</guid><pubDate>Mon, 13 Jul 2020 11:00:00 GMT</pubDate><content:encoded>&lt;p&gt;最近给组内同事做了一次技术分享，有关 React fiber 的。内容涉及了 Stack reconciler，Fiber reconciler，以及它们之间的区别。事后整理了下文字稿，篇幅有点长，内容如下。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Fri, 21 Aug 2020 09:09:50 GMT</lastBuildDate><item><title><![CDATA[React Fiber 分享]]></title><description><![CDATA[最近给组内同事做了一次技术分享，有关 React fiber 的。内容涉及了 Stack reconciler，Fiber reconciler，以及它们之间的区别。事后整理了下文字稿，篇幅有点长，内容如下。react 中，一个 virtual dom 是使用 element…]]></description><link>https://snayan.github.io//post/2020/stack_reconciler_vs_fiber_reconciler/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/stack_reconciler_vs_fiber_reconciler/</guid><pubDate>Mon, 13 Jul 2020 11:00:00 GMT</pubDate><content:encoded>&lt;p&gt;最近给组内同事做了一次技术分享，有关 React fiber 的。内容涉及了 Stack reconciler，Fiber reconciler，以及它们之间的区别。事后整理了下文字稿，篇幅有点长，内容如下。&lt;/p&gt;
 
         &lt;h2 id=&apos;toc-2-1&apos; &gt;
           Jsx &amp;&amp; element
@@ -271,7 +271,7 @@
   &lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;注意跟 InternalComponent tree 中不同是，每一个节点，最多只能有一个 child&lt;/strong&gt;。一个 &lt;a href=&quot;https://github.com/facebook/react/blob/v16.13.1/packages/react-reconciler/src/ReactFiber.js#L128-L257&quot;&gt;Fiber node&lt;/a&gt;，也是一个对象，除了 return ，child，sibling 之外，列觉一些比较重要的信息如下，&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;statNode，存储 class component instance 或者 dom&lt;/li&gt;
+&lt;li&gt;stateNode，存储 class component instance 或者 dom&lt;/li&gt;
 &lt;li&gt;type，跟 react element type 一致&lt;/li&gt;
 &lt;li&gt;alternate，指向 workInProgress 中对应 Fiber node&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://github.com/facebook/react/blob/769b1f270e1251d9dbdce0fcbd9e92e502d059b8/packages/shared/ReactWorkTags.js&quot;&gt;tag&lt;/a&gt;，标志当前 Fiber node 组件的类型，根据 react element type 而得出。&lt;/li&gt;
@@ -419,7 +419,7 @@
 completeWork App &amp;lt;-	completeWork Main &amp;lt;- completeWork div	&amp;lt;- completeWork span &amp;lt;-	beginWork span&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;类似于执行栈的调用，&lt;/p&gt;
 &lt;p&gt;
-  &lt;img style=&quot;text-align: center; max-width: 100%&quot; src=&quot;/fiber-stack-5a32b0a2b12c07723b9757b08268c837.gif&quot;&gt;
+  &lt;img style=&quot;text-align: center; max-width: 100%&quot; src=&quot;/fiber-stack-a4a6babf0ce02e545a6be044460f2938.gif&quot;&gt;
 &lt;/p&gt;
 &lt;!-- ![Fiber stack](./img/gif/fiber-stack.gif) --&gt;
 &lt;p&gt;在&lt;code class=&quot;language-text&quot;&gt;completeWork&lt;/code&gt;之后，根据节点的&lt;code class=&quot;language-text&quot;&gt;effectTag&lt;/code&gt;来决定是否将当前节点加入到&lt;code class=&quot;language-text&quot;&gt;effectNext&lt;/code&gt;链表中去。&lt;/p&gt;
