@@ -1,4 +1,333 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Fri, 21 Aug 2020 09:09:50 GMT</lastBuildDate><item><title><![CDATA[React Fiber 分享]]></title><description><![CDATA[最近给组内同事做了一次技术分享，有关 React fiber 的。内容涉及了 Stack reconciler，Fiber reconciler，以及它们之间的区别。事后整理了下文字稿，篇幅有点长，内容如下。react 中，一个 virtual dom 是使用 element…]]></description><link>https://snayan.github.io//post/2020/stack_reconciler_vs_fiber_reconciler/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/stack_reconciler_vs_fiber_reconciler/</guid><pubDate>Mon, 13 Jul 2020 11:00:00 GMT</pubDate><content:encoded>&lt;p&gt;最近给组内同事做了一次技术分享，有关 React fiber 的。内容涉及了 Stack reconciler，Fiber reconciler，以及它们之间的区别。事后整理了下文字稿，篇幅有点长，内容如下。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Wed, 02 Sep 2020 12:17:57 GMT</lastBuildDate><item><title><![CDATA[React Time Slice（-） -   requestIdleCallback polyfill]]></title><description><![CDATA[React 从 v16.0.0 开始，实现了异步渲染模式（Concurrency Mode），解决了之前 Stack Reconciler…]]></description><link>https://snayan.github.io//post/2020/react_time-slice_1/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/react_time-slice_1/</guid><pubDate>Wed, 02 Sep 2020 20:30:00 GMT</pubDate><content:encoded>&lt;p&gt;React 从 v16.0.0 开始，实现了异步渲染模式（Concurrency Mode），解决了之前 Stack Reconciler 采用同步更新的问题。异步渲染，实际上就是将一个大的渲染任务，分成很多个小的任务，每个任务执行完就交出主线程，使得其他线程可以处理其他事情（比如渲染，响应用户点击等）。最常见的实现方式就是使用&lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt;将这些小任务加到事件队列（event queue）里，利用浏览器的 &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop&quot;&gt;event loop&lt;/a&gt; 来异步执行。本篇是 React Time Slice 系列中的第一篇，深入分析 React v16.0.0 是如何实现 requestIdleCallback polyfill。&lt;/p&gt;
+&lt;p&gt;为了尽可能地提高渲染性能，React 希望这些小的任务可以在浏览器空闲时间去执行。浏览器提供了&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback&quot;&gt;requestIdleCallback&lt;/a&gt;来保证可以在空闲时间执行一些操作。但是它有兼容性问题，对于不支持 rIC 的浏览器，React 团队使用&lt;code class=&quot;language-text&quot;&gt;requestAnimationFrame&lt;/code&gt;和&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;来实现，并且是自动调节&lt;code class=&quot;language-text&quot;&gt;frame rate&lt;/code&gt;的。下面是它的实现逻辑，&lt;/p&gt;
+&lt;p&gt;首先定义特殊的 message 事件，并监听&lt;code class=&quot;language-text&quot;&gt;message&lt;/code&gt;事件，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 定义message 事件名&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; messageKey &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&quot;__reactIdleCallback$&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;
+  Math&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;random&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;toString&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;36&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;slice&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// 监听message&lt;/span&gt;
+window&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;addEventListener&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;message&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; idleTick&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;对于 rIC 的实现，使用 rAF 来保证在下一帧触发&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token function-variable function&quot;&gt;rIC&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;callback&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 先是存储callback&lt;/span&gt;
+  scheduledRICCallback &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; callback
+  &lt;span class=&quot;token comment&quot;&gt;// 判断是否正在rAF调度&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;isAnimationFrameScheduled&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    isAnimationFrameScheduled &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;requestAnimationFrame&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;animationTick&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;先将需要执行的&lt;code class=&quot;language-text&quot;&gt;callback&lt;/code&gt;保存起来，接着触发 rAF。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;animationTick&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;rafTime&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  isAnimationFrameScheduled &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;isIdleScheduled&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    isIdleScheduled &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
+    window&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;postMessage&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;messageKey&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;*&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在 rAF 触发函数里，调用&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;，触发 message 事件。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;idleTick&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;event&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 检查是否内部触发的message，&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;event&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;source &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; window &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt; event&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;data &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; messageKey&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  isIdleScheduled &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 获取之前存的callback&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; callback &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; scheduledRICCallback
+  scheduledRICCallback &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;callback &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 真正执行callback&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;callback&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;frameDeadlineObject&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在 message 事件里，才是真正执行&lt;code class=&quot;language-text&quot;&gt;callback&lt;/code&gt;。看完它的实现，有几个疑惑，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;为什么不直接要用 rAF？&lt;/li&gt;
+&lt;li&gt;为什么不直接使用&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;？&lt;/li&gt;
+&lt;li&gt;为什么不使用&lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt;?&lt;/li&gt;
+&lt;/ol&gt;
+
+        &lt;h2 id=&apos;toc-2-1&apos; &gt;
+          如果用 rAF 实现
+        &lt;/h2&gt;
+      
+&lt;p&gt;我们知道 rIC 的触发时机是，如果在一帧里有剩余时间，则在当前帧的结尾处触发 rIC，或者是当前页面没有更新，是处于空闲的状态，也会触发 rIC。rAF 的触发时机是，在一帧的开头。&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/cea3fea54fb577ee83f2ef85ecab0683/60142/frame.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 43.23570432357043%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAJCAIAAAC9o5sfAAAACXBIWXMAAAPoAAAD6AG1e1JrAAABC0lEQVQoz5VRXU/CMBTt/38wMajRhAf1V/hiMk3MNCA4o0HGCGCBbNgWx1Ym0nvrZrvGB4Px5qQ5uR+nvadEKaX/EwDgRgjnfFcvYgXtoKWUjDE7jIiAdb0Kc34nq3StUOu4hpKQnbd+yjSU6QC2VKuphqnWM1QU1IepE8qLdsSfaRYlRTBa9mbZw0h0ItYaiJfXeHHbnFzsJVeHeacpbk4SryGD8znn98NlKjdk/Fb4fRZMVr35uj0UjzQrte5C5vf50zjOumfMO1h4jVXrmF8fxZf7sntKmfBD8Z5vCAJos21JrD3u2eXieemR1mtEaQlIUNsfhgFYkywBE0bQArXjzk/y17/ib7DxBUTXBOA1TRKsAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/cea3fea54fb577ee83f2ef85ecab0683/cc182/frame.webp 148w,
+/static/cea3fea54fb577ee83f2ef85ecab0683/f7e40/frame.webp 295w,
+/static/cea3fea54fb577ee83f2ef85ecab0683/1a2f4/frame.webp 590w,
+/static/cea3fea54fb577ee83f2ef85ecab0683/92382/frame.webp 717w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/cea3fea54fb577ee83f2ef85ecab0683/cf440/frame.png 148w,
+/static/cea3fea54fb577ee83f2ef85ecab0683/d2d38/frame.png 295w,
+/static/cea3fea54fb577ee83f2ef85ecab0683/b9e4f/frame.png 590w,
+/static/cea3fea54fb577ee83f2ef85ecab0683/60142/frame.png 717w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/cea3fea54fb577ee83f2ef85ecab0683/b9e4f/frame.png&quot;
+          alt=&quot;A typical frame&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;如果直接使用 rAF，Fiber tree 的更新操作会在 rAF 里执行，整体增加了当前帧完成所需的时间，会导致帧率下降。&lt;/p&gt;
+
+        &lt;h2 id=&apos;toc-2-2&apos; &gt;
+          如果用 postMessage 实现
+        &lt;/h2&gt;
+      
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;的常用使用场景是，不同域的父子页面(使用 iframe)之间通信，至于具体使用方式，可以自己查看&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage&quot;&gt;MDN 文档&lt;/a&gt;。但在这里，它的用途并不涉及跨域通信，仅仅是异步调用。如果只是使用&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;，实现代码大致如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; scheduledRICCallback &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; isIdleScheduled &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
+
+window&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;addEventListener&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;message&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; idleTick&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;idleTick&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token parameter&quot;&gt;event&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;event&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;source &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; window &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt; event&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;data &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; messageKey&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  isIdleScheduled &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; callback &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; scheduledRICCallback
+  scheduledRICCallback &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;callback &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; start &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; Date&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;callback&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      didTimeout&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token function-variable function&quot;&gt;timeRemaining&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;// Is there maximum value that timeRemaining() will return? Yes, it’s currently 50ms&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;// see: https://developers.google.com/web/updates/2015/08/using-requestidlecallback#faq&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; Math&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;50&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Date&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; start&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;ric&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token parameter&quot;&gt;callback&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  scheduledRICCallback &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; callback
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;isIdleScheduled&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    isIdleScheduled &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
+    window&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;postMessage&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;messageKey&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;*&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;这样实现的主要问题是，对于当前帧剩余时间的计算是不准确的，它总是默认还有 50ms 的剩余时间，在帧率为 60fps 时，一帧的执行时间才大致 17ms 左右。所以 React 团队使用 rAF 来动态算出当前帧率，计算出当前帧执行截止时间。动态计算当前帧率逻辑大致如下，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;初始以当前帧率为 30fps，则每一帧执行时间大约为 33ms&lt;/li&gt;
+&lt;li&gt;如果连续 2 帧的执行时间都小于当前帧率下的每帧执行时间，则表明当前帧率有待提高&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 帧截止时间&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; frameDeadline &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// 初始当前帧率为30fps，则帧执行时间为33ms&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// 上一帧执行时间&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; previousFrameTime &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;33&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// 30fps下，每一帧执行时间&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; activeFrameTime &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;33&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// 计算rIC参数，剩余时间&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; frameDeadlineObject &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  timeRemaining&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;typeof&lt;/span&gt; performance &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;object&quot;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;typeof&lt;/span&gt; performance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;now &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;function&quot;&lt;/span&gt;
+      &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; frameDeadline &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; performance&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; frameDeadline &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; Date&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;now&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;animationTick&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;rafTime&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 计算出下一帧执行时间，这里的frameDeadline为上一帧的截止时间&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; nextFrameTime &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; rafTime &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; frameDeadline &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; activeFrameTime
+  &lt;span class=&quot;token comment&quot;&gt;// 如果连续2帧的执行时间都小于帧执行时间，则说明可以提高帧率&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextFrameTime &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; activeFrameTime &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; previousFrameTime &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; activeFrameTime&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextFrameTime &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// 最高提高的120fps，&lt;/span&gt;
+      nextFrameTime &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;8&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 取连续2帧中执行时间较大的，防止执行超过帧截止时间&lt;/span&gt;
+    activeFrameTime &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;
+      nextFrameTime &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; previousFrameTime &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; previousFrameTime &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; nextFrameTime
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    previousFrameTime &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; nextFrameTime
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 计算出帧截止时间&lt;/span&gt;
+  frameDeadline &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; rafTime &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; activeFrameTime
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;调整逻辑示意图如下，React 的实现中没有针对场景 1 做处理，即不会将帧率调整降低，&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/7442a82b68d01a0c19bc2d2dbc96e438/448d4/frame-rate2.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 53.41098169717138%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALCAYAAAB/Ca1DAAAACXBIWXMAAAsSAAALEgHS3X78AAABoklEQVQoz42TS07DQAyGcykkxDG4BKy75g5suABixQoJsYMtbBBF0FD1AQK1SdM0kDRpM533z0xetAIElqw4v+1PHmfioDKtdfFU5imkjct3IQSiKIIUEpDKqLqoreu1UlA2VzGcDZjSNb+CWk2B5HmjawNtYvUV11CnFmQFe54IHF+RRrMA20b7IZLTdgWyeglIn98wPDkroUZz7HT1ZGmusHeUYauV4KbLGyhnDEHrDC87h0gv3OZELFviev8A59u7CG/amxNaI0zjtsdx3+d4nX0dnxOK/M5D3vbBemGj0/cPA7pF/NDF8nVcAgkzOzKeUwUmVPExkmAFaSBFjmsspjOzo8zOBG7yJGdIjbakEkRatXRu+p3OmOPJK90dMzz6Cr3BB0btAdyJgs3HXReLt0uw6SW8qYdhL4LnvqAz0XgyPe6IojNiCOcMjhcL+GvuJQrhbInEC00s4RsPhn2s3rvQ+QBxGiOcLhBPoqLWj3nTmxGxucPvVu6RUIoVFfiPOfUl/dWre7rIMnMbJP6q/3XC9b/BWhAEmM/nP+bW7RPbyE7LrQAsjQAAAABJRU5ErkJggg==&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/7442a82b68d01a0c19bc2d2dbc96e438/cc182/frame-rate2.webp 148w,
+/static/7442a82b68d01a0c19bc2d2dbc96e438/f7e40/frame-rate2.webp 295w,
+/static/7442a82b68d01a0c19bc2d2dbc96e438/1a2f4/frame-rate2.webp 590w,
+/static/7442a82b68d01a0c19bc2d2dbc96e438/93064/frame-rate2.webp 601w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/7442a82b68d01a0c19bc2d2dbc96e438/cf440/frame-rate2.png 148w,
+/static/7442a82b68d01a0c19bc2d2dbc96e438/d2d38/frame-rate2.png 295w,
+/static/7442a82b68d01a0c19bc2d2dbc96e438/b9e4f/frame-rate2.png 590w,
+/static/7442a82b68d01a0c19bc2d2dbc96e438/448d4/frame-rate2.png 601w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/7442a82b68d01a0c19bc2d2dbc96e438/b9e4f/frame-rate2.png&quot;
+          alt=&quot;adjust frame rate&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;第一种场景，下一帧的开始时间大于上一帧的截止时间，说明估算的帧执行时间偏小，帧率可以调整降低&lt;/li&gt;
+&lt;li&gt;第二种场景，下一帧的开始时间等于上一帧的截止时间，说明估算的帧执行时间正确，帧率不需要调整&lt;/li&gt;
+&lt;li&gt;第三种场景，下一帧的开始时间小于上一帧的截止时间，说明估算的帧执行时间偏大，帧率可以调整增高&lt;/li&gt;
+&lt;/ol&gt;
+
+        &lt;h2 id=&apos;toc-2-3&apos; &gt;
+          为什么不要用 setTimeout
+        &lt;/h2&gt;
+      
+&lt;p&gt;既然&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;的作用是异步调度，那么为什么不使用&lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt;呢，它同样是可以实现异步调度？&lt;/p&gt;
+&lt;p&gt;如果不使用 rIC，我们是无法真正准确的确定帧空闲时机的。上面使用&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;实现异步调度，是为了交出 js 线程执行权，让渲染相关线程得到执行。上面结合使用 rAF 动态计算出当前帧率，得出帧截止时间，从而可以较准确的计算得到 rIC 中参数&lt;code class=&quot;language-text&quot;&gt;timeRemaining&lt;/code&gt;。需要注意的是，帧截止时间是在 rAF 中以当前帧开始时间为基准算的，就是说，我们默认&lt;code class=&quot;language-text&quot;&gt;callback&lt;/code&gt;在计算完成帧截止时间之后就开始执行的。但是如前面所说，我们不能直接在 rAF 里执行&lt;code class=&quot;language-text&quot;&gt;callback&lt;/code&gt;，而是使用异步调度。异步调度越早开始，那么&lt;code class=&quot;language-text&quot;&gt;timeRemaining&lt;/code&gt;得到值的误差就会越小。例如，帧开始时间是 10ms，以 10ms 为基准计算得到帧截止时间为 30ms，也就是说帧执行时间会总共有 20ms，如果异步调度是在 5ms 之后开真正执行&lt;code class=&quot;language-text&quot;&gt;callback&lt;/code&gt;，那么在&lt;code class=&quot;language-text&quot;&gt;callback&lt;/code&gt;中调用&lt;code class=&quot;language-text&quot;&gt;timeRemaining&lt;/code&gt;得到的时间只有&lt;code class=&quot;language-text&quot;&gt;30 - 5 = 25&lt;/code&gt;，比预期的少了 5ms。&lt;/p&gt;
+&lt;p&gt;为了减少误差，React 使用了&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;，而不是&lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt;，因为&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;比&lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt;要早得到执行。对于现代浏览器来说，使用&lt;code class=&quot;language-text&quot;&gt;setTimeout(callback,0)&lt;/code&gt;，会存在 4ms 的执行间隔限制。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers&quot;&gt;https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#timers&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;If timeout is less than 0, then set timeout to 0.&lt;/li&gt;
+&lt;li&gt;If nesting level is greater than 5, and timeout is less than 4, then set timeout to 4.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;考虑如下代码，在&lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt;里调用&lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt;，当&lt;code class=&quot;language-text&quot;&gt;cb&lt;/code&gt;执行 5 次之后，则后面&lt;code class=&quot;language-text&quot;&gt;cb&lt;/code&gt;必须至少间隔 4ms 执行。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: 4 ms is &lt;a href=&quot;http://www.whatwg.org/specs/web-apps/current-work/multipage/timers.html#timers&quot;&gt;specified by the HTML5 spec&lt;/a&gt; and is consistent across browsers released in 2010 and onward. Prior to (Firefox 5.0 / Thunderbird 5.0 / SeaMonkey 2.2), the minimum timeout value for nested timeouts was 10 ms.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;cb&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token function&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;cb&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;cb&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;使用&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;可以较早于&lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt;执行，下面是 MDN 上的描述&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;To implement a 0 ms timeout in a modern browser, you can use &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;window.postMessage()&lt;/code&gt;&lt;/a&gt; as &lt;a href=&quot;http://dbaron.org/log/20100309-faster-timeouts&quot;&gt;described here&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;React 团队实现这个 polyfill 的作者也做了&lt;a href=&quot;https://github.com/facebook/react/pull/8833#issuecomment-273974686&quot;&gt;如下说明&lt;/a&gt;,&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;I originally used &lt;code class=&quot;language-text&quot;&gt;setTimeout(idle, 0)&lt;/code&gt; but since it adjusts to at least 4ms and sometimes more, you end up dropping a bit more than I’d like from the available frame time. However, in practice &lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt; can be delayed up to 4ms anyway because of the internal browser scheduling around the frame.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;我自己也亲自在 Chrome(84.0.4147.125)中做了测试如下，&lt;/p&gt;
+&lt;p&gt;&lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/b2c5596960b8d3e67e0ce7bf514a6dfc/9a004/postMessage.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-wrapper&quot;
+    style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;&quot;
+  &gt;
+    &lt;span
+      class=&quot;gatsby-resp-image-background-image&quot;
+      style=&quot;padding-bottom: 29.40516273849607%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAGCAYAAADDl76dAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAoUlEQVQY05WQSw7CMAxEc5f8nCaN0ySiHyj3v9XgItjApl08yfLieTwqpYR937EsMxpH1BTAgwd5D20MjGCtPY0aYkTvHa0GtEK4CQvLnAieREwOWuvTKCLC9rxj3So6E2aRzSOJMMA69776TXoGFSVhbRM4e4yjQ5J3vbMwh+hz1VwR5pxxfxwdrihTgZWlu9DZX4cUIjIzuEygEC4n+uUFrfGu/2i2U0gAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    &gt;&lt;/span&gt;
+    &lt;picture&gt;
+        &lt;source
+          srcset=&quot;/static/b2c5596960b8d3e67e0ce7bf514a6dfc/cc182/postMessage.webp 148w,
+/static/b2c5596960b8d3e67e0ce7bf514a6dfc/f7e40/postMessage.webp 295w,
+/static/b2c5596960b8d3e67e0ce7bf514a6dfc/1a2f4/postMessage.webp 590w,
+/static/b2c5596960b8d3e67e0ce7bf514a6dfc/4837b/postMessage.webp 885w,
+/static/b2c5596960b8d3e67e0ce7bf514a6dfc/2f819/postMessage.webp 1180w,
+/static/b2c5596960b8d3e67e0ce7bf514a6dfc/9d157/postMessage.webp 1782w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/webp&quot;
+        /&gt;
+        &lt;source
+          srcset=&quot;/static/b2c5596960b8d3e67e0ce7bf514a6dfc/cf440/postMessage.png 148w,
+/static/b2c5596960b8d3e67e0ce7bf514a6dfc/d2d38/postMessage.png 295w,
+/static/b2c5596960b8d3e67e0ce7bf514a6dfc/b9e4f/postMessage.png 590w,
+/static/b2c5596960b8d3e67e0ce7bf514a6dfc/f9b6a/postMessage.png 885w,
+/static/b2c5596960b8d3e67e0ce7bf514a6dfc/2d849/postMessage.png 1180w,
+/static/b2c5596960b8d3e67e0ce7bf514a6dfc/9a004/postMessage.png 1782w&quot;
+          sizes=&quot;(max-width: 590px) 100vw, 590px&quot;
+          type=&quot;image/png&quot;
+        /&gt;
+        &lt;img
+          class=&quot;gatsby-resp-image-image&quot;
+          style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;box-shadow:inset 0px 0px 0px 400px white;&quot;
+          src=&quot;/static/b2c5596960b8d3e67e0ce7bf514a6dfc/b9e4f/postMessage.png&quot;
+          alt=&quot;postMessage vs setTimeout&quot;
+          title=&quot;&quot;
+        /&gt;
+      &lt;/picture&gt;
+  &lt;/span&gt;
+  &lt;/a&gt;&lt;/p&gt;
+
+        &lt;h2 id=&apos;toc-2-4&apos; &gt;
+          小结
+        &lt;/h2&gt;
+      
+&lt;p&gt;React v16.0.0 中实现 rIC 的核心思路就是，使用 rAF 动态计算帧率，使用&lt;code class=&quot;language-text&quot;&gt;postMessage&lt;/code&gt;实现异步调用。当然，它的实现中也有一些场景没有考虑，有一些不足之处，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;浏览器会对 rAF 进行一些优化，有些情况不会触发 rAF，例如切换到后台时；如果 rAF 得不到执行，那么 callback 就不会按照期望得到触发。&lt;/li&gt;
+&lt;li&gt;它仅仅只支持单个 callback 执行，如果多次执行&lt;code class=&quot;language-text&quot;&gt;rIC(callback)&lt;/code&gt;，也只会有最后一个 callback 被执行，并不是真正符合 rIC 规范。在 &lt;a href=&quot;https://github.com/facebook/react/pull/12746&quot;&gt;v16.4.0 中支持了多个 callback&lt;/a&gt;。&lt;/li&gt;
+&lt;li&gt;当前实现并未支持&lt;code class=&quot;language-text&quot;&gt;timeout&lt;/code&gt;参数，在 &lt;a href=&quot;https://github.com/facebook/react/commit/9b36df86c6ccecb73ca44899386e6a72a83ad445#diff-5fd92c13da957dbd337d4583340fab8b&quot;&gt;v16.2.0 中就实现了&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;当前并未支持&lt;code class=&quot;language-text&quot;&gt;cancelIdleCallback&lt;/code&gt;，在 &lt;a href=&quot;https://github.com/facebook/react/pull/12746&quot;&gt;v16.4.0 中实现了&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+        &lt;h2 id=&apos;toc-2-5&apos; &gt;
+          资料
+        &lt;/h2&gt;
+      
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/facebook/react/pull/8833&quot;&gt;requestIdleCallback polyfill - React v16.0.0 中实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#Minimum_delay_and_timeout_nesting&quot;&gt;Minimum delay and timeout nesting&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://dbaron.org/log/20100309-faster-timeouts&quot;&gt;setTimeout with a shorter delay&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[React Fiber 分享]]></title><description><![CDATA[最近给组内同事做了一次技术分享，有关 React fiber 的。内容涉及了 Stack reconciler，Fiber reconciler，以及它们之间的区别。事后整理了下文字稿，篇幅有点长，内容如下。react 中，一个 virtual dom 是使用 element…]]></description><link>https://snayan.github.io//post/2020/stack_reconciler_vs_fiber_reconciler/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/stack_reconciler_vs_fiber_reconciler/</guid><pubDate>Mon, 13 Jul 2020 11:00:00 GMT</pubDate><content:encoded>&lt;p&gt;最近给组内同事做了一次技术分享，有关 React fiber 的。内容涉及了 Stack reconciler，Fiber reconciler，以及它们之间的区别。事后整理了下文字稿，篇幅有点长，内容如下。&lt;/p&gt;
 
         &lt;h2 id=&apos;toc-2-1&apos; &gt;
           Jsx &amp;&amp; element
