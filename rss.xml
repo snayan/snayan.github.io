@@ -1,4 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Sun, 15 Nov 2020 04:55:55 GMT</lastBuildDate><item><title><![CDATA[React Time Slice（三） -   requestIdleCallback polyfill]]></title><description><![CDATA[还记得我们在第一篇中说过，当前rIC实现版本有一条不足之处，当浏览器切换到其他tab或者后台时，浏览器会出于优化考虑不执行rAF（可查看Background Tabs in Chrome），而 rIC polyfill 的实现依赖rAF的实现，所以rIC…]]></description><link>https://snayan.github.io//post/2020/react_time-slice_3/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/react_time-slice_3/</guid><pubDate>Sun, 15 Nov 2020 10:30:00 GMT</pubDate><content:encoded>&lt;p&gt;还记得我们在&lt;a href=&quot;/post/2020/react_time-slice_1/#toc-2-4&quot;&gt;第一篇&lt;/a&gt;中说过，当前rIC实现版本有一条不足之处，当浏览器切换到其他tab或者后台时，浏览器会出于优化考虑不执行rAF（可查看&lt;a href=&quot;https://developers.google.com/web/updates/2017/03/background_tabs#requestanimationframe&quot;&gt;Background Tabs in Chrome&lt;/a&gt;），而 rIC polyfill 的实现依赖rAF的实现，所以rIC也会得不到执行。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Wed, 06 Jan 2021 12:22:58 GMT</lastBuildDate><item><title><![CDATA[2020年小结]]></title><description><![CDATA[本来不想写2020年小结，感觉没啥可写的，老婆却每天提醒我，该写总结了，絮絮叨叨的。想着，也是不管怎样，还是回顾总结一下，给自己一个交待，同时也需要制定下一年的计划和目标了。2020年，带了一年的口罩，实在是有点憋得慌。婚后第一年，日子如往常一样，快乐大于悲伤。…]]></description><link>https://snayan.github.io//post/2021/summary_of_2020/</link><guid isPermaLink="false">https://snayan.github.io//post/2021/summary_of_2020/</guid><pubDate>Wed, 06 Jan 2021 20:30:00 GMT</pubDate><content:encoded>&lt;p&gt;本来不想写2020年小结，感觉没啥可写的，老婆却每天提醒我，该写总结了，絮絮叨叨的。想着，也是不管怎样，还是回顾总结一下，给自己一个交待，同时也需要制定下一年的计划和目标了。&lt;/p&gt;
+&lt;p&gt;2020年，带了一年的口罩，实在是有点憋得慌。婚后第一年，日子如往常一样，快乐大于悲伤。5月份，迎来了另一位小成员，安姐。依稀记得当时在产房外着急地等待，忐忑不安，害怕，又不停的祈祷。随着门打开，医生说，母女平安，才渐渐平静下来，随之，喜悦感和幸福感，涌上心头。之后的半年，生活都被安姐塞满了，喂奶，换尿布，晒黄疸，打疫苗。满3个月的时候，老婆修完产假开始去上班，奶奶独自带安姐，喂了一顿奶粉，结果却出现了牛奶过敏，安姐全身出现了小红块，浮肿，可把奶奶急坏了。所幸无大碍，医生建议吃氨基酸奶粉。满6个月的时候，病毒性感染，安姐反复发烧，拉肚子，吐奶，那次是最为严重的，医生开了药，也不见好，竟一天跑了3次医院。煎熬一周左右，才逐渐好转。12月份的时候，爷爷也过来了。弟弟也在深圳打工，偶尔过来吃饭。屋子有点小，餐桌上平时都放满了东西，人多时，把桌子上的东西收拾干净，再移到中间，也足够一家人坐着吃饭了。有时候常想，安姐快快长大吧，长大了才能变的足够强大。但偶尔看见奶奶头上的白发，又觉得时间过得太快了！&lt;/p&gt;
+&lt;p&gt;工作上一如既往，平平无奇。有时候，觉得是不是需要学点其他什么东西，但又不会在实际项目中用到，总是提不起动力。前2年，学了很多前端相关知识，对自己帮助确实不小，快速适应和满足工作要求。现阶段，有点力不从心，不知所措。工作中，遇到问题基本上都快速解决，不会有什么大的困难，做的事情也不足以有很大挑战。想深入学习点底层东西，但又不知道学什么好。也想过是不是要转管理，去小公司当个leader，感觉自己也没有那个实力和机会。这一年，学习上懒惰了很多，基本没有深入学习某一块，除了今年要给团队做分享，深入学习了&lt;a href=&quot;/post/2020/stack_reconciler_vs_fiber_reconciler/&quot;&gt;react fiber相关&lt;/a&gt;。平时呢，也就看看一些文章和专栏，不成体系，收获甚微。快到年底的时候，突然对计算机图形学感兴趣了，才开始着手搜集资料，准备入门，不管有没有用处，当个兴趣去学习。学习的少了，输出的自然也少了，文章才写了&lt;a href=&quot;/archives&quot;&gt;4篇&lt;/a&gt;，都是跟react相关的，没有达标。前2年跳槽过于频繁，也经历了几个公司，所有公司都有好的一面和不好的一面，做事不可急躁，需静下心，再沉淀。&lt;/p&gt;
+&lt;p&gt;最近开始有学习股票知识了，心血来潮去办了一个香港银行卡。老婆怕我被割韭菜，限制了额度，盈亏自负，概不加仓。抱着玩玩的态度，答应了，算是添加一项乐趣吧。&lt;/p&gt;
+&lt;p&gt;嗯，其他的也就没什么了。哦，还有断断续续看一本书，「人性的枷锁」，比较印象深刻的一句话，&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;生而受难，难久而终&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;初看，比较悲观，再看，实则洞悉人性，每一天都要积极向上。&lt;/p&gt;
+&lt;p&gt;以上，应该是2020年的回顾了，最最应该感谢的就是老婆和奶奶。自己呢，各项计划都不达标，需要反思。&lt;/p&gt;
+&lt;p&gt;2021年，不能像之前那样懒散和漫无目的了，坚持要按照以前的标准执行，如不达标，接受老婆惩罚&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;读12本书，可以是非技术类型&lt;/li&gt;
+&lt;li&gt;写12篇文章，可以是非技术文章&lt;/li&gt;
+&lt;li&gt;计算机图形学入门，入门要求写一个大作业出来&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;其他计划呢，会学学股票理财，亏额不要超过50%即可。其实还有一件比较重要的事要办，这个就不多说了，早已安排在日程中了。&lt;/p&gt;
+&lt;p&gt;嗯，新年愿望是什么呢？&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;希望安姐健康快乐长大&lt;/li&gt;
+&lt;li&gt;希望家人健康平安&lt;/li&gt;
+&lt;li&gt;想对老婆说，情感桥梁，挑战不息，楚河汉界，兵来将挡&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以上。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[React Time Slice（三） -   requestIdleCallback polyfill]]></title><description><![CDATA[还记得我们在第一篇中说过，当前rIC实现版本有一条不足之处，当浏览器切换到其他tab或者后台时，浏览器会出于优化考虑不执行rAF（可查看Background Tabs in Chrome），而 rIC polyfill 的实现依赖rAF的实现，所以rIC…]]></description><link>https://snayan.github.io//post/2020/react_time-slice_3/</link><guid isPermaLink="false">https://snayan.github.io//post/2020/react_time-slice_3/</guid><pubDate>Sun, 15 Nov 2020 10:30:00 GMT</pubDate><content:encoded>&lt;p&gt;还记得我们在&lt;a href=&quot;/post/2020/react_time-slice_1/#toc-2-4&quot;&gt;第一篇&lt;/a&gt;中说过，当前rIC实现版本有一条不足之处，当浏览器切换到其他tab或者后台时，浏览器会出于优化考虑不执行rAF（可查看&lt;a href=&quot;https://developers.google.com/web/updates/2017/03/background_tabs#requestanimationframe&quot;&gt;Background Tabs in Chrome&lt;/a&gt;），而 rIC polyfill 的实现依赖rAF的实现，所以rIC也会得不到执行。&lt;/p&gt;
 
         &lt;h2 id=&apos;toc-2-1&apos; &gt;
           Fallback to setTimeout
