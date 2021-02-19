@@ -1,4 +1,270 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Mon, 01 Feb 2021 07:55:42 GMT</lastBuildDate><item><title><![CDATA[2020年小结]]></title><description><![CDATA[本来不想写2020年小结，感觉没啥可写的，老婆却每天提醒我，该写总结了，絮絮叨叨的。想着，也是不管怎样，还是回顾总结一下，给自己一个交待，同时也需要制定下一年的计划和目标了。2020年，带了一年的口罩，实在是有点憋得慌。婚后第一年，日子如往常一样，快乐大于悲伤。…]]></description><link>https://snayan.github.io//post/2021/summary_of_2020/</link><guid isPermaLink="false">https://snayan.github.io//post/2021/summary_of_2020/</guid><pubDate>Wed, 06 Jan 2021 20:30:00 GMT</pubDate><content:encoded>&lt;p&gt;本来不想写2020年小结，感觉没啥可写的，老婆却每天提醒我，该写总结了，絮絮叨叨的。想着，也是不管怎样，还是回顾总结一下，给自己一个交待，同时也需要制定下一年的计划和目标了。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[三羊的小站]]></title><description><![CDATA[三羊的小站，记录前端相关知识，思考与总结]]></description><link>https://snayan.github.io/</link><generator>RSS for Node</generator><lastBuildDate>Fri, 19 Feb 2021 08:13:59 GMT</lastBuildDate><item><title><![CDATA[React Hooks 分享]]></title><description><![CDATA[最近在组内分享了一些关于 React Hooks 的内容，主要从源码实现，项目中错误的使用例子，以及使用建议等方面介绍了几个常用的 Hooks。整理了文字稿如下，由于错误例子涉及公司内部项目代码，所以就没有列举出来。useEffect 是最常见，使用最频繁的 Hooks…]]></description><link>https://snayan.github.io//post/2021/guide_to_react_hooks/</link><guid isPermaLink="false">https://snayan.github.io//post/2021/guide_to_react_hooks/</guid><pubDate>Fri, 19 Feb 2021 15:30:00 GMT</pubDate><content:encoded>&lt;p&gt;最近在组内分享了一些关于 React Hooks 的内容，主要从源码实现，项目中错误的使用例子，以及使用建议等方面介绍了几个常用的 Hooks。整理了文字稿如下，由于错误例子涉及公司内部项目代码，所以就没有列举出来。&lt;/p&gt;
+
+        &lt;h2 id=&apos;toc-2-1&apos; &gt;
+          useEffect
+        &lt;/h2&gt;
+      
+&lt;p&gt;useEffect 是最常见，使用最频繁的 Hooks 之一了。它的使用方式如下&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token function&quot;&gt;useEffect&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// do some side effects&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// optional, clean up&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;/* [deps] */&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;先来简单分析一下它的源码，react 对 hooks 的实现，都是分了首次 mount 和后续 update 两个场景。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;mountEffectImpl&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;fiberEffectTag&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; hookEffectTag&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; create&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; deps&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; hook &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;mountWorkInProgressHook&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; nextDeps &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; deps &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;undefined&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; deps
+  sideEffectTag &lt;span class=&quot;token operator&quot;&gt;|=&lt;/span&gt; fiberEffectTag
+  &lt;span class=&quot;token comment&quot;&gt;// 这里传递的destroy为undefined&lt;/span&gt;
+  hook&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;memoizedState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;pushEffect&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;hookEffectTag&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; create&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;undefined&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextDeps&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在 mount 中实现时，useEffect 传递的 cleanup 为 undefined，所以在首次 mount 时，不会调用 cleanup。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;updateEffectImpl&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;fiberEffectTag&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; hookEffectTag&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; create&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; deps&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; hook &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;updateWorkInProgressHook&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; nextDeps &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; deps &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;undefined&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; deps
+  &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; destroy &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;undefined&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;currentHook &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// 获取上一次的值&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; prevEffect &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; currentHook&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;memoizedState
+    destroy &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; prevEffect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;destroy
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextDeps &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// 如果没有传递deps，则每次都会执行&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; prevDeps &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; prevEffect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;deps
+      &lt;span class=&quot;token comment&quot;&gt;// 如果deps相等，则不需要执行（标识为NoHookEffect）&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;areHookInputsEqual&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextDeps&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; prevDeps&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token function&quot;&gt;pushEffect&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;NoHookEffect&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; create&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; destroy&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextDeps&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+  sideEffectTag &lt;span class=&quot;token operator&quot;&gt;|=&lt;/span&gt; fiberEffectTag
+  &lt;span class=&quot;token comment&quot;&gt;// 这里的destroy是上一次effect返回的值&lt;/span&gt;
+  hook&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;memoizedState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;pushEffect&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;hookEffectTag&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; create&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; destroy&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextDeps&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在 update 中实现时，有两点需要注意，其一是会进行 deps 的比较，如果相等，则忽略本次 effect；其二是传递的 destroy 是上一次 effect 中返回的返回的 cleanup 函数。&lt;/p&gt;
+&lt;p&gt;在 render 阶段保存了 effect 相关数据，在 commit 阶段就会一个个去执行了，源码如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;commitHookEffectList&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;unmountTag&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; mountTag&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; finishedWork&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; updateQueue &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; finishedWork&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;updateQueue
+  &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; lastEffect &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; updateQueue &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; updateQueue&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;lastEffect &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;lastEffect &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; firstEffect &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; lastEffect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;next
+    &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; effect &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; firstEffect
+    &lt;span class=&quot;token keyword&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;effect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;tag &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt; unmountTag&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; NoHookEffect&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;// Unmount&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; destroy &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; effect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;destroy
+        effect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;destroy &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;undefined&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;destroy &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;undefined&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token comment&quot;&gt;// 先执行destroy，就是cleanup&lt;/span&gt;
+          &lt;span class=&quot;token function&quot;&gt;destroy&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;effect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;tag &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt; mountTag&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; NoHookEffect&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;// Mount&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;// 然后再执行side effect&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; create &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; effect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;create
+        &lt;span class=&quot;token comment&quot;&gt;// 并且保存返回的cleanup&lt;/span&gt;
+        effect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;destroy &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;create&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// effect 是一个链表结构，所以是一个一个执行&lt;/span&gt;
+      effect &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; effect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;next
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;effect &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; firstEffect&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;从源码实现可以得出，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;如果没有传递 deps 依赖，那么在每次 render 后都会被执行，如果传递了 deps，则会与上一次 deps 的值进行 &lt;a href=&quot;https://github.com/facebook/react/blob/v16.9.0/packages/shared/objectIs.js#L14-L18&quot;&gt;is&lt;/a&gt; 比较，不相等才会被触发，如果传递&lt;code class=&quot;language-text&quot;&gt;[]&lt;/code&gt;，只会触发执行一次&lt;/li&gt;
+&lt;li&gt;它的执行顺序是这样的，render（render 阶段触发） -&gt; clean up（commit 阶段触发） -&gt; side effect（commit 阶段触发）&lt;/li&gt;
+&lt;li&gt;由于每次 render 时，function component 每次都会重新执行，它内部定义的变量每次都会重新定义，如果被 effect 引用了，则保存的就是那被定义的那次的值&lt;/li&gt;
+&lt;li&gt;cleanup 的执行是在下一个 effect 里被执行，所以它里面引用的变量值跟下一个 effect 里的是不同的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;使用建议如下，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;添加正确的 deps，可以避免 effect 无意义的执行，或者避免一些 bug&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;每次 render 时，function 里定义的变量都是独立的，没有任何值的关联（除非使用 useRef 或者定义在 function 外部），应该将每次 render 独立对待思考&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对于将 function 作为 deps 时，需要额外注意，由于是 &lt;a href=&quot;https://github.com/facebook/react/blob/v16.9.0/packages/shared/objectIs.js#L14-L18&quot;&gt;is&lt;/a&gt; 比较，function 每次定义都不相等，所以需要使用到&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;对于 effect 内部执行异步方法时，需要考虑竞态问题（上一次 effect 里的异步方法在当前 effect 里的异步方法后面返回），解决方法是增加一个变量判断是否 unmount 了，如下&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token function&quot;&gt;useEffect&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+ &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; didUnmount &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
+
+ &lt;span class=&quot;token function&quot;&gt;doSomething&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;didUnmount&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+     &lt;span class=&quot;token comment&quot;&gt;// 说明已经重新render了，数据可能是旧的（或者错误的），不需要在处理了&lt;/span&gt;
+     &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt;
+   &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+ &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+ &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+   didUnmount &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
+ &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+        &lt;h2 id=&apos;toc-2-2&apos; &gt;
+          useCallback
+        &lt;/h2&gt;
+      
+&lt;p&gt;上面说过，如果 function 作为&lt;code class=&quot;language-text&quot;&gt;useEffect&lt;/code&gt;的 deps，会导致一些依赖失效，因为 function 是引用类型，每次在重新定义时，它的值就是不相同的。在 function 作为 props 传递给子组件时，同样会有这个问题。这个时候，为了解决这个问题，我们需要保持 function 值不变（就是同一个引用），有如下两种方法，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;将 function 定义到组件外部，所以 function 一经定义就不会再变了，如果定义在组件外部就只能通过传参来引用组件内部变量了&lt;/li&gt;
+&lt;li&gt;使用&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;来包裹，通过添加必要的 deps，来保持不变，如果 deps 变了，则 function 值就变了，否则不变&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;使用方式如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; handlerClick &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;useCallback&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// your function implement&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;/* [deps] */&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;简单分析一下它的源码实现，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;typescript&quot;&gt;&lt;pre class=&quot;language-typescript&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; mountCallback&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;callback&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; deps&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;mixed&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; hook &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;mountWorkInProgressHook&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; nextDeps &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; deps &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; undefined &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; deps
+  &lt;span class=&quot;token comment&quot;&gt;// 将callback和deps存起来&lt;/span&gt;
+  hook&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;memoizedState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;callback&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextDeps&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 并直接返回callback&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; callback
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在首次 mount 时，只是使用数组将 callback 和 deps 保存起来，并直接返回 callback，接着看下 update 场景的实现，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;typescript&quot;&gt;&lt;pre class=&quot;language-typescript&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; updateCallback&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;callback&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; deps&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;mixed&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; hook &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;updateWorkInProgressHook&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; nextDeps &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; deps &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; undefined &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; deps
+  &lt;span class=&quot;token comment&quot;&gt;// 取出上一次存的值，是一个数组，&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; prevState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; hook&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;memoizedState
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;prevState &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextDeps &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// index 0 保存是callback，index 1保存是deps&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; prevDeps&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;mixed&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; prevState&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// 如果deps相同，则直接返回上次存的callback，&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;areHookInputsEqual&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextDeps&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; prevDeps&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; prevState&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 如果deps不相同，则将新的callback和deps存起来&lt;/span&gt;
+  hook&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;memoizedState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;callback&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextDeps&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 返回新的callback&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; callback
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在 update 实现中，会取出上一次存的 callback 和 deps，通过对比 deps 是否相同，如果是，则直接返回上一次的 callback。&lt;/p&gt;
+&lt;p&gt;从实现可以得出，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;如果没有传递 deps 依赖，那么&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;每次返回的都是当前传入的 callback，这样使用没有任何意义。如果传递了 deps，则会与上一次 deps 的值进行 &lt;a href=&quot;https://github.com/facebook/react/blob/v16.9.0/packages/shared/objectIs.js#L14-L18&quot;&gt;is&lt;/a&gt; 比较，如果相等直接返回上一次的 callback。如果传递&lt;code class=&quot;language-text&quot;&gt;[]&lt;/code&gt;，那么&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;返回的总是第一次 mount 中传入的 callback，后面都不会再变化&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;并不关心 callback 是否相同，只是根据 deps 来判断是否返回上一次的 callback&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;使用建议，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;如果 callback 里有引用了组件内部的一些变量（包括 props 参数），则需要将这些变量作为 deps，避免 deps 不正确导致 callback 里引用的变量值不正确，特别是 props 参数引用，比如&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// deps 不正确&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; handlerClick &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;useCallback&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+ &lt;span class=&quot;token comment&quot;&gt;// do something&lt;/span&gt;
+
+ props&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;onSave&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;不需要过渡使用，某些场景下&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;的 deps 可能在每次 render 时都不一样，会导致得到的 callback 每次都不一样，而这种场景使用&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;会适得其反，比如&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// 过度使用例子&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;count&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; setCount&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;useState&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; handlerClick &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;useCallback&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+ &lt;span class=&quot;token function&quot;&gt;setCount&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;count &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;count&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+        &lt;h2 id=&apos;toc-2-3&apos; &gt;
+          useMemo
+        &lt;/h2&gt;
+      
+&lt;p&gt;跟&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;类型，但是不同的是，&lt;code class=&quot;language-text&quot;&gt;useMemo&lt;/code&gt;返回的是 callback 执行之后的结果，而不是&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;中返回的 callback。它的使用方式如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; cacheResult &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;useMemo&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; result
+    &lt;span class=&quot;token comment&quot;&gt;// do something, then return result&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; result
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;/* [deps] */&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;简单分析一下它的源码实现，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;typescript&quot;&gt;&lt;pre class=&quot;language-typescript&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; mountMemo&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;token function-variable function&quot;&gt;nextCreate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  deps&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;mixed&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; hook &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;mountWorkInProgressHook&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; nextDeps &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; deps &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; undefined &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; deps
+  &lt;span class=&quot;token comment&quot;&gt;// 这里存的是callback执行之后的值&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; nextValue &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;nextCreate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  hook&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;memoizedState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;nextValue&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextDeps&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; nextValue
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;typescript&quot;&gt;&lt;pre class=&quot;language-typescript&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; updateMemo&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;token function-variable function&quot;&gt;nextCreate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  deps&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;mixed&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;T&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; hook &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;updateWorkInProgressHook&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; nextDeps &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; deps &lt;span class=&quot;token operator&quot;&gt;===&lt;/span&gt; undefined &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; deps
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; prevState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; hook&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;memoizedState
+  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;prevState &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// Assume these are defined. If they&apos;re not, areHookInputsEqual will warn.&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextDeps &lt;span class=&quot;token operator&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; prevDeps&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;Array&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;mixed&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; prevState&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+      &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;areHookInputsEqual&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;nextDeps&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; prevDeps&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; prevState&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token comment&quot;&gt;// 同样，保存的也是callback执行之后的值&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; nextValue &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;nextCreate&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  hook&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;memoizedState &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;nextValue&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; nextDeps&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; nextValue
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;与&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;的实现基本一样，只是它保存的是 callback 执行之后的值，而并不是 callback 本身。&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;可以直接使用&lt;code class=&quot;language-text&quot;&gt;useMemo&lt;/code&gt;来实现如下，&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;js&quot;&gt;&lt;pre class=&quot;language-js&quot;&gt;&lt;code class=&quot;language-js&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; handlerClick &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;useMemo&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token comment&quot;&gt;// your function implement&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;/* [deps] */&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;通过分析可以得出，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;useMemo&lt;/code&gt;定义时会立即执行 callback 得到结果，而&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;并不会立即执行 callback&lt;/li&gt;
+&lt;/ol&gt;
+
+        &lt;h2 id=&apos;toc-2-4&apos; &gt;
+          小结
+        &lt;/h2&gt;
+      
+&lt;p&gt;本次分析了 React Hooks 中最常见，也最容易误用的三个 Hooks，&lt;code class=&quot;language-text&quot;&gt;useEffect&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;useMemo&lt;/code&gt;。通过简单的源码分析，了解它们的实现方式，得出一些结论，然后给出了一些使用建议。最后，给出如下两条通用性建议，&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;强烈建议使用&lt;a href=&quot;https://www.npmjs.com/package/eslint-plugin-react-hooks&quot;&gt;eslint-plugin-react-hooks&lt;/a&gt;，并开启 error level，这样可以避免很多错误的 deps&lt;/li&gt;
+&lt;li&gt;不确定是否需要使用&lt;code class=&quot;language-text&quot;&gt;useEffect&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;useCallback&lt;/code&gt;，&lt;code class=&quot;language-text&quot;&gt;useMemo&lt;/code&gt;时，就不要用，不用可能只有性能问题，错误使用可能就会产生业务逻辑问题&lt;/li&gt;
+&lt;/ol&gt;
+
+        &lt;h2 id=&apos;toc-2-5&apos; &gt;
+          参考
+        &lt;/h2&gt;
+      
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/facebook/react/tree/v16.9.0&quot;&gt;react v16.9.0 源码&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://overreacted.io/a-complete-guide-to-useeffect/&quot;&gt;https://overreacted.io/a-complete-guide-to-useeffect/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[2020年小结]]></title><description><![CDATA[本来不想写2020年小结，感觉没啥可写的，老婆却每天提醒我，该写总结了，絮絮叨叨的。想着，也是不管怎样，还是回顾总结一下，给自己一个交待，同时也需要制定下一年的计划和目标了。2020年，带了一年的口罩，实在是有点憋得慌。婚后第一年，日子如往常一样，快乐大于悲伤。…]]></description><link>https://snayan.github.io//post/2021/summary_of_2020/</link><guid isPermaLink="false">https://snayan.github.io//post/2021/summary_of_2020/</guid><pubDate>Wed, 06 Jan 2021 20:30:00 GMT</pubDate><content:encoded>&lt;p&gt;本来不想写2020年小结，感觉没啥可写的，老婆却每天提醒我，该写总结了，絮絮叨叨的。想着，也是不管怎样，还是回顾总结一下，给自己一个交待，同时也需要制定下一年的计划和目标了。&lt;/p&gt;
 &lt;p&gt;2020年，带了一年的口罩，实在是有点憋得慌。婚后第一年，日子如往常一样，快乐大于悲伤。5月份，迎来了另一位小成员，安姐。依稀记得当时在产房外着急地等待，忐忑不安，害怕，又不停的祈祷。随着门打开，医生说，母女平安，才渐渐平静下来，随之，喜悦感和幸福感，涌上心头。之后的半年，生活都被安姐塞满了，喂奶，换尿布，晒黄疸，打疫苗。满3个月的时候，老婆修完产假开始去上班，奶奶独自带安姐，喂了一顿奶粉，结果却出现了牛奶过敏，安姐全身出现了小红块，浮肿，可把奶奶急坏了。所幸无大碍，医生建议吃氨基酸奶粉。满6个月的时候，病毒性感染，安姐反复发烧，拉肚子，吐奶，那次是最为严重的，医生开了药，也不见好，竟一天跑了3次医院。煎熬一周左右，才逐渐好转。12月份的时候，爷爷也过来了。弟弟也在深圳打工，偶尔过来吃饭。屋子有点小，餐桌上平时都放满了东西，人多时，把桌子上的东西收拾干净，再移到中间，也足够一家人坐着吃饭了。有时候常想，安姐快快长大吧，长大了才能变的足够强大。但偶尔看见奶奶头上的白发，又觉得时间过得太快了！&lt;/p&gt;
 &lt;p&gt;工作上一如既往，平平无奇。有时候，觉得是不是需要学点其他什么东西，但又不会在实际项目中用到，总是提不起动力。前2年，学了很多前端相关知识，对自己帮助确实不小，快速适应和满足工作要求。现阶段，有点力不从心，不知所措。工作中，遇到问题基本上都快速解决，不会有什么大的困难，做的事情也不足以有很大挑战。想深入学习点底层东西，但又不知道学什么好。也想过是不是要转管理，去小公司当个leader，感觉自己也没有那个实力和机会。这一年，学习上懒惰了很多，基本没有深入学习某一块，除了今年要给团队做分享，深入学习了&lt;a href=&quot;/post/2020/stack_reconciler_vs_fiber_reconciler/&quot;&gt;react fiber相关&lt;/a&gt;。平时呢，也就看看一些文章和专栏，不成体系，收获甚微。快到年底的时候，突然对计算机图形学感兴趣了，才开始着手搜集资料，准备入门，不管有没有用处，当个兴趣去学习。学习的少了，输出的自然也少了，文章才写了&lt;a href=&quot;/archives&quot;&gt;4篇&lt;/a&gt;，都是跟react相关的，没有达标。前2年跳槽过于频繁，也经历了几个公司，所有公司都有好的一面和不好的一面，做事不可急躁，需静下心，再沉淀。&lt;/p&gt;
 &lt;p&gt;最近开始有学习股票知识了，心血来潮去办了一个香港银行卡。老婆怕我被割韭菜，限制了额度，盈亏自负，概不加仓。抱着玩玩的态度，答应了，算是添加一项乐趣吧。&lt;/p&gt;
